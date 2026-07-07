@@ -2,28 +2,43 @@ package com.jamiedev.bygone.core.network;
 
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.client.ClientPacketHandler;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.UUID;
 
-public record SyncPlayerHookS2C(int hookId, UUID playerUUID) implements S2CModPacket<RegistryFriendlyByteBuf> {
-    public static final CustomPacketPayload.Type<SyncPlayerHookS2C> PACkET_ID = new Type<>(Bygone.id("sync_player_hook"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncPlayerHookS2C> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, SyncPlayerHookS2C::hookId,
-            UUIDUtil.STREAM_CODEC, SyncPlayerHookS2C::playerUUID,
-            SyncPlayerHookS2C::new);
-
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return PACkET_ID;
+public class SyncPlayerHookS2C implements BygonePacket {
+    private final int hookId;
+    private final UUID playerUUID;
+    
+    public SyncPlayerHookS2C(int hookId, UUID playerUUID) {
+        this.hookId = hookId;
+        this.playerUUID = playerUUID;
     }
-
+    
+    public static SyncPlayerHookS2C read(FriendlyByteBuf buf) {
+        int id = buf.readVarInt();
+        UUID uuid = buf.readUUID();
+        return new SyncPlayerHookS2C(id, uuid);
+    }
+    
     @Override
-    public void handleClient() {
+    public void write(FriendlyByteBuf buf) {
+        buf.writeVarInt(hookId);
+        buf.writeUUID(playerUUID);
+    }
+    
+    @Override
+    public void handle(Player player) {
         ClientPacketHandler.handle(this);
     }
+    
+    @Override
+    public ResourceLocation id() {
+        return Bygone.id("sync_player_hook");
+    }
+    
+    public int hookId() { return hookId; }
+    public UUID playerUUID() { return playerUUID; }
 }

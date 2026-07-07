@@ -10,7 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -69,7 +68,7 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerWithHook
     private void the_bygone$carapaceLeggingsTick() {
         ItemStack itemstack = this.getItemBySlot(EquipmentSlot.LEGS);
         if (itemstack.is(BGItems.CARAPACE_GREAVES.get()) && this.isEyeInFluid(FluidTags.WATER)) {
-            this.addEffect(new MobEffectInstance(BGMobEffects.CARAPACE.get(), 200, 0));
+            this.addEffect(new MobEffectInstance(BGMobEffects.CARAPACE.get().get(), 200, 0));
         }
     }
 
@@ -81,7 +80,8 @@ public abstract class PlayerMixin extends LivingEntity implements PlayerWithHook
         this.hookId = pHook == null ? 0 : pHook.getId();
         // Sync our hook to the client-side counterparts of other players and ourselves
         if (changed && !this.level().isClientSide) {
-            Services.PLATFORM.sendToTracking(new SyncPlayerHookS2C(pHook == null ? 0 : pHook.getId(), this.getUUID()), this, true);
+            Services.PLATFORM.sendToTrackingClients((ServerLevel) this.level(), this,
+                    new SyncPlayerHookS2C(pHook == null ? 0 : pHook.getId(), this.getUUID()));
         }
     }
 

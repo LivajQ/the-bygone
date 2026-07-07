@@ -2,26 +2,38 @@ package com.jamiedev.bygone.core.network;
 
 import com.jamiedev.bygone.Bygone;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-public record EnforcePacket(boolean enforce) implements CustomPacketPayload {
-    public static final Type<EnforcePacket> TYPE = new Type<>(Bygone.id("sync_progression_status"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, EnforcePacket> STREAM_CODEC = CustomPacketPayload.codec(EnforcePacket::write, EnforcePacket::new);
-
-    public static boolean enforcedProgression = true;
-
-    public EnforcePacket(FriendlyByteBuf buf) {
-        this(buf.readBoolean());
+public class EnforcePacket implements BygonePacket {
+    private final boolean enforce;
+    
+    public EnforcePacket(boolean enforce) {
+        this.enforce = enforce;
     }
-
-    public void write(FriendlyByteBuf buf) {
-        buf.writeBoolean(this.enforce);
+    
+    public static EnforcePacket read(FriendlyByteBuf buf) {
+        return new EnforcePacket(buf.readBoolean());
     }
-
+    
     @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public void write(FriendlyByteBuf buf) {
+        buf.writeBoolean(enforce);
     }
+    
+    @Override
+    public void handle(Player player) {
+        EnforcePacket.enforcedProgression = enforce;
+    }
+    
+    @Override
+    public ResourceLocation id() {
+        return Bygone.id("sync_progression_status");
+    }
+    
+    public boolean enforce() {
+        return enforce;
+    }
+    
+    public static boolean enforcedProgression = true;
 }

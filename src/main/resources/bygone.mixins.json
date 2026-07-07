@@ -15,6 +15,7 @@
     "EmptyMapMixin",
     "FarmlandBlockMixin",
     "FishingHookMixin",
+    "FlowingFluidMixin",
     "LevelMixin",
     "LivingEntityMixin",
     "LivingEntityMixinVex",
@@ -30,6 +31,8 @@
   "client": [
     "client.BipedEntityModelMixin",
     "client.EntityPhaseMeterGuiMixin",
+    "client.ForgeLevelRendererMixin",
+    "client.GuiMixin",
     "client.LevelChunkMixin",
     "client.LevelRendererMixin",
     "client.MixinHeldItemRenderer",

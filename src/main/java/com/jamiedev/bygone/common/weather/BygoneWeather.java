@@ -10,6 +10,7 @@ import com.jamiedev.bygone.common.weather.weather_types.WeatherProperties;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherType;
 import com.jamiedev.bygone.core.network.PacketHandler;
 import com.jamiedev.bygone.core.network.SyncWeatherS2C;
+import com.jamiedev.bygone.core.platform.Services;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +18,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +27,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SuppressWarnings("rawtypes")
@@ -47,27 +46,25 @@ public class BygoneWeather extends SavedData {
     private final Collection<WeatherType> instancedWeatherTypes;
     public BygoneWeather(@Nullable ServerLevel level) {
         this.level = level;
-        instancedWeatherTypes = WEATHER_TYPES.stream()
-            .map((inst) -> inst.get(level))
-            .collect(Collectors.toSet());
+        // instancedWeatherTypes = WEATHER_TYPES.stream()
+        //      .map((inst) -> inst.get(level))
+        //     .collect(Collectors.toSet());
+        instancedWeatherTypes = Services.PLATFORM.getInstancedWeatherTypes(level);
     }
 
     public Optional<WeatherType> getWeatherType(ResourceLocation weatherLocation) {
         return instancedWeatherTypes.stream().filter((weatherType)
             -> weatherType.getId().equals(weatherLocation)).findFirst();
     }
-
+    
     public static BygoneWeather getOrDefault(ServerLevel level) {
         return level.getDataStorage().computeIfAbsent(
-            new SavedData.Factory<>(
+                tag -> BygoneWeather.create(tag, null, level),
                 () -> new BygoneWeather(level),
-                (tag, provider)
-                    -> BygoneWeather.create(tag, provider, level),
-                DataFixTypes.LEVEL
-            ), BygoneWeather.NAME
+                BygoneWeather.NAME
         );
     }
-
+    
     public static BygoneWeather create(CompoundTag tag, HolderLookup.Provider provider, ServerLevel serverLevel) {
         BygoneWeather weather = new BygoneWeather(serverLevel);
         return weather.load(tag, provider);
@@ -80,15 +77,15 @@ public class BygoneWeather extends SavedData {
         return this;
     }
 
-    @Override public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag, @Nullable HolderLookup.Provider provider) {
+    @Override public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
         instancedWeatherTypes.forEach((weather)
             -> compoundTag.put(weather.getId().getPath(), weather.save()));
         return compoundTag;
     }
 
     public void informPlayerOfState(ServerPlayer player) {
-        CompoundTag stateTag = save(new CompoundTag(), null);
-        PacketHandler.sendTo(new SyncWeatherS2C(stateTag), player);
+        CompoundTag stateTag = save(new CompoundTag());
+        Services.PLATFORM.sendToClient(player, new SyncWeatherS2C(stateTag));
     }
 
     public void tick() {
@@ -109,12 +106,11 @@ public class BygoneWeather extends SavedData {
         }
 
         if (!stateTag.isEmpty()) {
-            PacketHandler.sendPacketToAllInLevel(
-                level, new SyncWeatherS2C(stateTag));
+            Services.PLATFORM.sendToAllClients(level, new SyncWeatherS2C(stateTag));
             this.setDirty();
         }
     }
-
+    
     public static class Client {
         private static Client INSTANCE;
         public static Client getInstance() {
@@ -133,9 +129,7 @@ public class BygoneWeather extends SavedData {
         }
         private Client() {
             weatherContext = new BygoneWeather(null);
-            instancedWeatherRenderers = WEATHER_TYPES.stream()
-                .map(WeatherType.Factory::getRenderer)
-                .collect(Collectors.toSet());
+            instancedWeatherRenderers = Services.PLATFORM.getInstancedWeatherRenderers();
         }
     }
 }

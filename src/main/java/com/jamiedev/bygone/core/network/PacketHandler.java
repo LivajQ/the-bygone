@@ -1,18 +1,8 @@
 package com.jamiedev.bygone.core.network;
 
-import com.jamiedev.bygone.Bygone;
-import com.jamiedev.bygone.core.platform.Services;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.List;
-import java.util.Locale;
-
 public class PacketHandler {
 
+    /*
     public static void registerPackets() {
         Services.PLATFORM.registerClientPlayPacket(SyncPlayerHookS2C.PACkET_ID, SyncPlayerHookS2C.CODEC);
         Services.PLATFORM.registerClientPlayPacket(UpdraftMovementS2C.PACKET_ID, UpdraftMovementS2C.CODEC);
@@ -52,5 +42,7 @@ public class PacketHandler {
         return Bygone.id(clazz.getName().toLowerCase(Locale.ROOT));
     }
 
+
+     */
 
 }

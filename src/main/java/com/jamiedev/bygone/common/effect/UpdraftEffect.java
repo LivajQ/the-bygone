@@ -2,6 +2,7 @@ package com.jamiedev.bygone.common.effect;
 
 import com.jamiedev.bygone.core.network.PacketHandler;
 import com.jamiedev.bygone.core.network.UpdraftMovementS2C;
+import com.jamiedev.bygone.core.platform.Services;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,11 +31,11 @@ public class UpdraftEffect extends MobEffect {
             }
 
             if (player instanceof ServerPlayer serverPlayer) {
-                PacketHandler.sendTo(
-                        new UpdraftMovementS2C(verticalVelocityFactor * (amplifier + 1), isDescending),
-                        serverPlayer
+                Services.PLATFORM.sendToClient(
+                        serverPlayer,
+                        new UpdraftMovementS2C(verticalVelocityFactor * (amplifier + 1), isDescending)
                 );
-
+                
                 if (serverPlayer.level() instanceof ServerLevel serverLevel) {
                     double x = serverPlayer.getX();
                     double y = serverPlayer.getY();

@@ -85,11 +85,11 @@ public class BGItems {
     );
     public static final Supplier<Item> GUMBO_BOWL = registerItem(
             "gumbo_bowl",
-            () -> new Item(new Item.Properties().craftRemainder(Items.BOWL).stacksTo(1))
+            () -> new GumboFoodItem(new Item.Properties().craftRemainder(Items.BOWL).stacksTo(1))
     );
     public static final Supplier<Item> GUMBO_BOTTLE = registerItem(
             "gumbo_bottle",
-            () -> new Item(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16))
+            () -> new GumboFoodItem(new Item.Properties().craftRemainder(Items.GLASS_BOTTLE).stacksTo(16))
     );
     public static final Supplier<Item> VERDIGRIS_BLADE = registerItem(
             "verdigris_blade",

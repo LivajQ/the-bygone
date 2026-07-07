@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.item;
 
 import com.jamiedev.bygone.common.util.ShockwaveHandler;
 import com.jamiedev.bygone.core.registry.BGDataComponentTypes;
-import com.jamiedev.bygone.core.registry.BGDataComponents;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -29,6 +28,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class EchoGongItem extends Item {
@@ -42,22 +42,22 @@ public class EchoGongItem extends Item {
     public EchoGongItem(Properties properties) {
         super(properties);
     }
-
+    
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (!level.isClientSide && entity instanceof Player player) {
-            BGDataComponentTypes.EchoGongData data = stack.getOrDefault(BGDataComponents.ECHO_GONG_DATA.value(), BGDataComponentTypes.EchoGongData.EMPTY);
+            BGDataComponentTypes.EchoGongData data = BGDataComponentTypes.EchoGongData.read(stack);
             int charge = data.charge();
-
+            
             if (charge < MAX_CHARGE && !player.getCooldowns().isOnCooldown(this)) {
                 charge = Math.min(charge + CHARGE_PER_TICK, MAX_CHARGE);
-                stack.set(BGDataComponents.ECHO_GONG_DATA.value(), new BGDataComponentTypes.EchoGongData(charge));
-
+                BGDataComponentTypes.EchoGongData.write(stack, new BGDataComponentTypes.EchoGongData(charge));
+                
                 if (charge % 20 == 0) {
                     level.playSound(null, player.getX(), player.getY(), player.getZ(),
                             BGSoundEvents.ECHO_GONG_CHARGE.get(), SoundSource.PLAYERS,
                             0.3F, 1.0F + (charge / (float) MAX_CHARGE) * 0.5F);
-
+                    
                     if (level instanceof ServerLevel serverLevel) {
                         double particleY = player.getY() + 0.5;
                         for (int i = 0; i < 3; i++) {
@@ -65,7 +65,7 @@ public class EchoGongItem extends Item {
                             double distance = level.random.nextDouble() * 0.5;
                             double particleX = player.getX() + Math.cos(angle) * distance;
                             double particleZ = player.getZ() + Math.sin(angle) * distance;
-
+                            
                             serverLevel.sendParticles(ParticleTypes.SONIC_BOOM,
                                     particleX, particleY, particleZ, 1, 0, 0, 0, 0);
                         }
@@ -74,13 +74,13 @@ public class EchoGongItem extends Item {
             }
         }
     }
-
+    
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
-        BGDataComponentTypes.EchoGongData data = itemStack.getOrDefault(BGDataComponents.ECHO_GONG_DATA.value(), BGDataComponentTypes.EchoGongData.EMPTY);
+        BGDataComponentTypes.EchoGongData data = BGDataComponentTypes.EchoGongData.read(itemStack);
         int charge = data.charge();
-
+        
         if (charge >= MAX_CHARGE) {
             if (!level.isClientSide) {
                 player.startUsingItem(hand);
@@ -96,17 +96,17 @@ public class EchoGongItem extends Item {
             return InteractionResultHolder.fail(itemStack);
         }
     }
-
+    
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity user) {
         if (!level.isClientSide && user instanceof Player player) {
             releaseShockwave(level, player, stack);
-            stack.set(BGDataComponents.ECHO_GONG_DATA.value(), new BGDataComponentTypes.EchoGongData(0));
-
+            BGDataComponentTypes.EchoGongData.write(stack, new BGDataComponentTypes.EchoGongData(0));
+            
             player.getCooldowns().addCooldown(this, COOLDOWN_TICKS);
             player.awardStat(Stats.ITEM_USED.get(this));
         }
-
+        
         return stack;
     }
 
@@ -179,19 +179,19 @@ public class EchoGongItem extends Item {
     private boolean isFragileBlock(BlockState state) {
         return state.canBeReplaced();
     }
-
+    
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-
-        BGDataComponentTypes.EchoGongData data = stack.getOrDefault(BGDataComponents.ECHO_GONG_DATA.value(), BGDataComponentTypes.EchoGongData.EMPTY);
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, level, tooltipComponents, tooltipFlag);
+        
+        BGDataComponentTypes.EchoGongData data = BGDataComponentTypes.EchoGongData.read(stack);
         int charge = data.charge();
-
+        
         tooltipComponents.add(Component.translatable("item.bygone.echo_gong.desc1")
                 .withStyle(ChatFormatting.GRAY));
         tooltipComponents.add(Component.translatable("item.bygone.echo_gong.desc2")
                 .withStyle(ChatFormatting.GRAY));
-
+        
         if (charge >= MAX_CHARGE) {
             tooltipComponents.add(Component.translatable("item.bygone.echo_gong.ready")
                     .withStyle(ChatFormatting.GREEN));
@@ -201,15 +201,15 @@ public class EchoGongItem extends Item {
                     .withStyle(ChatFormatting.YELLOW));
         }
     }
-
+    
     @Override
     public boolean isFoil(ItemStack stack) {
-        BGDataComponentTypes.EchoGongData data = stack.getOrDefault(BGDataComponents.ECHO_GONG_DATA.value(), BGDataComponentTypes.EchoGongData.EMPTY);
+        BGDataComponentTypes.EchoGongData data = BGDataComponentTypes.EchoGongData.read(stack);
         return data.charge() >= MAX_CHARGE;
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return 20;
     }
 

@@ -38,12 +38,12 @@ public class LivingEntityMixinVex {
             }
         }
     }
-
+    
     private boolean isWarHornVex(Vex vex, Player player) {
         for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
             ItemStack stack = player.getInventory().getItem(i);
             if (stack.getItem() == BGItems.MALICIOUS_WAR_HORN.get()) {
-                MaliciousWarHornItem.WarHornData data = stack.getOrDefault(BGDataComponents.WAR_HORN_DATA.value(), MaliciousWarHornItem.WarHornData.EMPTY);
+                MaliciousWarHornItem.WarHornData data = MaliciousWarHornItem.WarHornData.read(stack);
                 if (data.activeVexes().contains(vex.getUUID())) {
                     return true;
                 }

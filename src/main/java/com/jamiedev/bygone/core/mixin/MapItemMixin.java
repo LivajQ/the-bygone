@@ -2,6 +2,7 @@ package com.jamiedev.bygone.core.mixin;
 
 import com.jamiedev.bygone.core.registry.BGDimensions;
 import com.jamiedev.bygone.core.util.HeightGetter;
+import com.jamiedev.bygone.core.util.MapHeightHelper;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -18,8 +19,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static com.jamiedev.bygone.Bygone.MAP_HEIGHT;
 
 @Mixin(MapItem.class)
 /*
@@ -42,15 +41,17 @@ public class MapItemMixin {
     private boolean hasCeiling(DimensionType type) {
         return false;
     }
-
+    
     @Inject(method = "update", at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/level/saveddata/maps/MapItemSavedData;getHoldingPlayer(Lnet/minecraft/world/entity/player/Player;)Lnet/minecraft/world/level/saveddata/maps/MapItemSavedData$HoldingPlayer;"))
     private void provideHeightSelector(Level level, Entity viewer, MapItemSavedData data, CallbackInfo ci, @Share("height_getter") LocalRef<HeightGetter> heightGetter) {
         if (viewer.level().dimension() != BGDimensions.BYGONE_LEVEL_KEY)
             heightGetter.set(null);
-        else if (viewer instanceof LivingEntity e)
-            heightGetter.set(() -> the_bygone$getMapHandItem(e).get(MAP_HEIGHT.get()));
+        else if (viewer instanceof LivingEntity e) {
+            ItemStack mapStack = the_bygone$getMapHandItem(e);
+            heightGetter.set(() -> MapHeightHelper.get(mapStack, e.getBlockY()));
+        }
     }
 
     @ModifyExpressionValue(method = "update", at = @At(

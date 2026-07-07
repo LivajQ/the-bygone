@@ -2,27 +2,38 @@ package com.jamiedev.bygone.core.network;
 
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.weather.BygoneWeather;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 
-public record SyncWeatherS2C(CompoundTag tag) implements S2CModPacket<RegistryFriendlyByteBuf> {
-    public static final CustomPacketPayload.Type<SyncWeatherS2C> PACkET_ID = new CustomPacketPayload.Type<>(Bygone.id("sync_weather"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncWeatherS2C> CODEC = StreamCodec.composite(
-        ByteBufCodecs.COMPOUND_TAG, SyncWeatherS2C::tag,
-        SyncWeatherS2C::new
-    );
-
+public class SyncWeatherS2C implements BygonePacket {
+    private final CompoundTag tag;
+    
+    public SyncWeatherS2C(CompoundTag tag) {
+        this.tag = tag;
+    }
+    
+    public static SyncWeatherS2C read(FriendlyByteBuf buf) {
+        return new SyncWeatherS2C(buf.readNbt());
+    }
+    
     @Override
-    public void handleClient() {
+    public void write(FriendlyByteBuf buf) {
+        buf.writeNbt(tag);
+    }
+    
+    @Override
+    public void handle(Player player) {
         BygoneWeather.Client.getInstance().updateContext(tag);
     }
-
+    
     @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return PACkET_ID;
+    public ResourceLocation id() {
+        return Bygone.id("sync_weather");
+    }
+    
+    public CompoundTag tag() {
+        return tag;
     }
 }

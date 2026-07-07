@@ -1,12 +1,13 @@
 package com.jamiedev.bygone.core.platform.services;
 
-import com.jamiedev.bygone.core.network.C2SModPacket;
-import com.jamiedev.bygone.core.network.S2CModPacket;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import com.jamiedev.bygone.client.renderer.weather.WeatherRenderer;
+import com.jamiedev.bygone.common.weather.weather_types.WeatherType;
+import com.jamiedev.bygone.core.network.BygonePacket;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+
+import java.util.Collection;
 
 public interface IPlatformHelper {
 
@@ -41,18 +42,30 @@ public interface IPlatformHelper {
 
         return isDevelopmentEnvironment() ? "development" : "production";
     }
+    
+    void sendToServer(BygonePacket packet);
+    
+    void sendToClient(ServerPlayer player, BygonePacket packet);
+    
+    void sendToTrackingClientsImpl(ServerLevel level, Entity entity, BygonePacket packet);
+    
+    default void sendToAllClients(ServerLevel level, BygonePacket packet) {
+        for (ServerPlayer player : level.players()) {
+            sendToClient(player, packet);
+        }
+    }
+    
+    default void sendToTrackingClients(ServerLevel level, Entity entity, BygonePacket packet) {
+        sendToTrackingClientsImpl(level, entity, packet);
+    }
 
-    <MSG extends S2CModPacket<?>> void registerClientPlayPacket(CustomPacketPayload.Type<MSG> type, StreamCodec<RegistryFriendlyByteBuf, MSG> streamCodec);
-
-    <MSG extends C2SModPacket<?>> void registerServerPlayPacket(CustomPacketPayload.Type<MSG> type, StreamCodec<RegistryFriendlyByteBuf, MSG> streamCodec);
-
-    void sendToClient(S2CModPacket<?> msg, ServerPlayer player);
-
-    void sendToServer(C2SModPacket<?> msg);
-
-    void sendToTracking(S2CModPacket<?> msg, Entity entity, boolean includeSelf);
-
+    /* this seems unused for now
     int getTimeInBygone(Entity entity);
 
     void setTimeInBygone(Entity entity, int time);
+     */
+    
+    Collection<WeatherType> getInstancedWeatherTypes(ServerLevel level);
+    
+    Collection<WeatherRenderer> getInstancedWeatherRenderers();
 }
