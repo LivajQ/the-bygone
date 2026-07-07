@@ -1,7 +1,7 @@
 package com.jamiedev.bygone;
 
+
 import com.jamiedev.bygone.common.entity.*;
-import com.jamiedev.bygone.common.util.Consumer4;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.mixin.AxeItemAccess;
 import com.jamiedev.bygone.core.registry.*;
@@ -9,10 +9,12 @@ import com.jamiedev.bygone.core.util.HeightGetter;
 import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.LevelReader;
@@ -27,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class Bygone {
@@ -296,8 +297,7 @@ public class Bygone {
 
         return false;
     }
-
-
+    
     public static Stream<Block> getKnownBlocks() {
         return getKnown(BuiltInRegistries.BLOCK);
     }
