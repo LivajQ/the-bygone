@@ -18,8 +18,8 @@ public class SpeedWheatBlock extends DoublePlantBlock {
     public SpeedWheatBlock(Properties properties) {
         super(properties);
     }
-
-    protected void entityInside(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
+    
+    public void entityInside(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
         if (!level.isClientSide && (entity instanceof LivingEntity livingentity)) {
             livingentity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, SPEED_WHEAT_SPEED_DURATION, SPEED_WHEAT_SPEED_AMPLIFIER));
         }

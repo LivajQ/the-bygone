@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.common.block.entity.BlemishCatalystBlockEntity;
 import com.jamiedev.bygone.core.registry.BGBlockEntities;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlemishCatalystBlock extends BaseEntityBlock {
     public static final BooleanProperty BLOOM;
-    public static final MapCodec<BlemishCatalystBlock> CODEC = simpleCodec(BlemishCatalystBlock::new);
 
     static {
         BLOOM = BlockStateProperties.BLOOM;
@@ -40,17 +38,12 @@ public class BlemishCatalystBlock extends BaseEntityBlock {
     }
 
     @Override
-    public MapCodec<BlemishCatalystBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BLOOM);
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (state.getValue(BLOOM)) {
             world.setBlock(pos, state.setValue(BLOOM, false), 3);
         }
@@ -70,12 +63,12 @@ public class BlemishCatalystBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected void spawnAfterBreak(BlockState state, ServerLevel world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+    public void spawnAfterBreak(BlockState state, ServerLevel world, BlockPos pos, ItemStack tool, boolean dropExperience) {
         super.spawnAfterBreak(state, world, pos, tool, dropExperience);
         if (dropExperience) {
             this.tryDropExperience(world, pos, tool, this.experience);

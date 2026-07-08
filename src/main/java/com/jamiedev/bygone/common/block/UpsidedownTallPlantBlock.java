@@ -1,6 +1,5 @@
 package com.jamiedev.bygone.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
@@ -26,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
 
     public static final EnumProperty<DoubleBlockHalf> HALF;
-    public static final MapCodec<UpsidedownTallPlantBlock> CODEC = simpleCodec(UpsidedownTallPlantBlock::new);
 
     static {
         HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
@@ -62,12 +60,7 @@ public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
     }
 
     @Override
-    public MapCodec<? extends UpsidedownTallPlantBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         DoubleBlockHalf doubleBlockHalf = state.getValue(HALF);
         if (direction.getAxis() == Direction.Axis.Y && doubleBlockHalf == DoubleBlockHalf.LOWER == (direction == Direction.UP) && (!neighborState.is(this) || neighborState.getValue(HALF) == doubleBlockHalf)) {
             return Blocks.AIR.defaultBlockState();
@@ -91,7 +84,7 @@ public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         if (state.getValue(HALF) != DoubleBlockHalf.UPPER) {
             return super.canSurvive(state, world, pos);
         } else {
@@ -101,7 +94,7 @@ public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
     }
 
     @Override
-    public BlockState playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player) {
         if (!world.isClientSide) {
             if (player.isCreative()) {
                 onBreakInCreative(world, pos, state, player);
@@ -110,7 +103,7 @@ public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
             }
         }
 
-        return super.playerWillDestroy(world, pos, state, player);
+        super.playerWillDestroy(world, pos, state, player);
     }
 
     @Override
@@ -124,7 +117,7 @@ public class UpsidedownTallPlantBlock extends UpsidedownPlantBlock {
     }
 
     @Override
-    protected long getSeed(BlockState state, BlockPos pos) {
+    public long getSeed(BlockState state, BlockPos pos) {
         return Mth.getSeed(pos.getX(), pos.below(state.getValue(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
     }
 }

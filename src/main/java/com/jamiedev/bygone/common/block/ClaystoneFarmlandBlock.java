@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 
 public class ClaystoneFarmlandBlock extends Block {
     public static final IntegerProperty MOISTURE;
-    public static final MapCodec<ClaystoneFarmlandBlock> CODEC = simpleCodec(ClaystoneFarmlandBlock::new);
     public static final int MAX_MOISTURE = 7;
     protected static final VoxelShape SHAPE;
 
@@ -88,12 +86,7 @@ public class ClaystoneFarmlandBlock extends Block {
     }
 
     @Override
-    public MapCodec<ClaystoneFarmlandBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP && !state.canSurvive(world, pos)) {
             world.scheduleTick(pos, this, 1);
         }
@@ -102,7 +95,7 @@ public class ClaystoneFarmlandBlock extends Block {
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         BlockState blockState = world.getBlockState(pos.above());
         return !blockState.isSolid() || blockState.getBlock() instanceof FenceGateBlock || blockState.getBlock() instanceof MovingPistonBlock;
     }
@@ -113,17 +106,17 @@ public class ClaystoneFarmlandBlock extends Block {
     }
 
     @Override
-    protected boolean useShapeForLightOcclusion(BlockState state) {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (!state.canSurvive(world, pos)) {
             setToDirt(null, state, world, pos);
         }
@@ -131,7 +124,7 @@ public class ClaystoneFarmlandBlock extends Block {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         int i = state.getValue(MOISTURE);
         if ((!isSprinklerNearby(world, pos)) && (!isWaterNearby(world, pos))) {
             if (i > 0) {
@@ -158,9 +151,9 @@ public class ClaystoneFarmlandBlock extends Block {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(MOISTURE);
     }
-
+    
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
         return false;
     }
 }

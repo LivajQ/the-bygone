@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGParticleTypes;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
@@ -18,16 +17,11 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SablossomBlock extends GrowingPlantHeadBlock {
     public static final VoxelShape SHAPE = Block.box(4.0F, 0.0F, 4.0F, 12.0F, 15.0F, 12.0F);
-    public static final MapCodec<SablossomBlock> CODEC = simpleCodec(SablossomBlock::new);
 
     public SablossomBlock(BlockBehaviour.Properties p) {
         super(p, Direction.UP, SHAPE, false, 0.00005);
     }
-
-    public MapCodec<SablossomBlock> codec() {
-        return CODEC;
-    }
-
+    
     protected int getBlocksToGrowWhenBonemealed(RandomSource p_222649_) {
         return NetherVines.getBlocksToGrowWhenBonemealed(p_222649_);
     }
@@ -51,7 +45,7 @@ public class SablossomBlock extends GrowingPlantHeadBlock {
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockPos blockpos = pos.relative(this.growthDirection.getOpposite());
         BlockState blockstate = level.getBlockState(blockpos);
         return this.canAttachTo(blockstate) && (blockstate.is(this.getHeadBlock()) || blockstate.is(this.getBodyBlock()) || blockstate.is(BGBlocks.SABLE_LEAVES.get())

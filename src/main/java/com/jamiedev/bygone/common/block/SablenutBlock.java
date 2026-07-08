@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +28,6 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
     public static final int MAX_AGE = 3;
     public static final IntegerProperty AGE;
     public static final DirectionProperty FACING;
-    public static final MapCodec<SablenutBlock> CODEC = simpleCodec(SablenutBlock::new);
     protected static final VoxelShape HANGING_SHAPE;
     protected static final VoxelShape[] SHAPE = new VoxelShape[]{
             Shapes.or(Block.box(0.8, 0, 8, 15.2, 16, 8),
@@ -79,12 +77,12 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
     public static BlockState createNewHangingNut(int age) {
         return BGBlocks.SABLENUT.get().defaultBlockState().setValue(FACING, Direction.UP).setValue(AGE, age);
     }
-
-    protected boolean isRandomlyTicking(BlockState state) {
+    
+    public boolean isRandomlyTicking(BlockState state) {
         return state.getValue(AGE) < 3;
     }
-
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (level.random.nextInt(5) == 0) {
             int i = state.getValue(AGE);
             if (i < 3) {
@@ -92,13 +90,13 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
             }
         }
     }
-
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         int i = state.getValue(AGE);
         return SHAPE[i];
     }
-
-    protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
+    
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -106,17 +104,17 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (!state.canSurvive(world, pos)) {
             spawnFallingSablenut(state, world, pos);
         }
     }
-
-    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+    
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         return facing == state.getValue(FACING) && !state.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
 
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state,  boolean isClient) {
         return state.getValue(AGE) < 3;
     }
 
@@ -134,11 +132,10 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
     }
 
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    public void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         if (!level.isClientSide) {
             BlockPos blockpos = hit.getBlockPos();
             if (projectile.mayInteract(level, blockpos)
-                    && projectile.mayBreak(level)
                     && projectile instanceof Projectile
                     && projectile.getDeltaMovement().length() > 0.6) {
                 spawnFallingSablenut(state, (ServerLevel) level, blockpos);
@@ -147,7 +144,7 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return level.getBlockState(pos.above()).is(BGBlocks.SABLE_WOOD.get()) || level.getBlockState(pos.above()).is(BGBlocks.SABLE_LEAVES.get())
                 ;
     }
@@ -158,11 +155,6 @@ public class SablenutBlock extends Block implements BonemealableBlock, Fallable 
 
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
-    }
-
-    @Override
-    protected MapCodec<SablenutBlock> codec() {
-        return CODEC;
     }
 }
 

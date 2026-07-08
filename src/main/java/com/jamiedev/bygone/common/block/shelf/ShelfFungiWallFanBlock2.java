@@ -41,7 +41,6 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     private static final VoxelShape WEST_SHAPE;
     private static final VoxelShape SOUTH_SHAPE;
     private static final VoxelShape NORTH_SHAPE;
-    public static final MapCodec<ShelfFungiWallFanBlock2> CODEC = simpleCodec(ShelfFungiWallFanBlock2::new);
 
     static {
         UP = PipeBlock.UP;
@@ -99,24 +98,19 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     public static BooleanProperty getFacingProperty(Direction direction) {
         return FACING_PROPERTIES.get(direction);
     }
-
+    
     @Override
-    public MapCodec<ShelfFungiWallFanBlock2> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return this.shapesByState.get(state);
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
         return true;
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         return this.hasAdjacentBlocks(this.getPlacementShape(state, world, pos));
     }
 
@@ -190,7 +184,7 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
             return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
         } else {
@@ -200,7 +194,7 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (world.getGameRules().getBoolean(GameRules.RULE_DO_VINES_SPREAD)) {
             if (random.nextInt(4) == 0) {
                 Direction direction = Direction.getRandom(random);
@@ -328,7 +322,7 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     }
 
     @Override
-    protected boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
+    public boolean canBeReplaced(BlockState state, BlockPlaceContext context) {
         BlockState blockState = context.getLevel().getBlockState(context.getClickedPos());
         if (blockState.is(this)) {
             return this.getAdjacentBlockCount(blockState) < FACING_PROPERTIES.size();
@@ -366,7 +360,7 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         switch (rotation) {
             case CLOCKWISE_180:
                 return state.setValue(NORTH, state.getValue(SOUTH)).setValue(EAST, state.getValue(WEST)).setValue(SOUTH, state.getValue(NORTH)).setValue(WEST, state.getValue(EAST));
@@ -380,7 +374,7 @@ public class ShelfFungiWallFanBlock2 extends ShelfFungiFanBlock {
     }
 
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         switch (mirror) {
             case LEFT_RIGHT:
                 return state.setValue(NORTH, state.getValue(SOUTH)).setValue(SOUTH, state.getValue(NORTH));

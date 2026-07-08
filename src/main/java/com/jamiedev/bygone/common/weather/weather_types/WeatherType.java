@@ -4,8 +4,6 @@ import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.client.renderer.weather.WeatherRenderer;
 import com.jamiedev.bygone.common.weather.BygoneWeather;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;

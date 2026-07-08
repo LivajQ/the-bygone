@@ -13,8 +13,8 @@ public class HauntedGroundBlock extends CarpetBlock {
 	public HauntedGroundBlock(Properties properties) {
 		super(properties);
 	}
-
-	protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
 		if (level.getBrightness(LightLayer.BLOCK, pos) > 11) {
 			dropResources(state, level, pos);
 			level.removeBlock(pos, false);

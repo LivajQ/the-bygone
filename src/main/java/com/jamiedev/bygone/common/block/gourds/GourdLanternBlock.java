@@ -40,7 +40,6 @@ public class GourdLanternBlock extends GrowingPlantBodyBlock implements Bonemeal
     public static final BooleanProperty GROW_VINE;
     protected static final VoxelShape STANDING_SHAPE;
     protected static final VoxelShape HANGING_SHAPE;
-    public static final MapCodec<GourdLanternBlock> CODEC = simpleCodec(GourdLanternBlock::new);
     protected static final VoxelShape[] STANDING_AGING_SHAPE = new VoxelShape[]{
             Shapes.or(Block.box(5.5, 4.0, 5.5, 9.5, 7.0, 9.5),
                     Block.box(6.0, 7.0, 6.0, 9.0, 9.0, 9.0)),
@@ -91,17 +90,12 @@ public class GourdLanternBlock extends GrowingPlantBodyBlock implements Bonemeal
         blockstate = level.getBlockState(blockpos$mutableblockpos);
 
     }
-
-    @Override
-    public MapCodec<GourdLanternBlock> codec() {
-        return CODEC;
-    }
-
-    protected boolean isRandomlyTicking(BlockState state) {
+    
+    public boolean isRandomlyTicking(BlockState state) {
         return state.getValue(AGE) < 2;
     }
-
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (level.random.nextInt(5) == 0) {
             int i = state.getValue(AGE);
             if (i < 2) {
@@ -134,14 +128,12 @@ public class GourdLanternBlock extends GrowingPlantBodyBlock implements Bonemeal
     public boolean getGrowVine(BlockState state) {
         return state.getValue(GROW_VINE);
     }
-
+    
     @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+    public void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
         if (!level.isClientSide) {
             BlockPos blockpos = hit.getBlockPos();
             if (projectile.mayInteract(level, blockpos)
-                    && projectile.mayBreak(level)
-                    && projectile instanceof Projectile
                     && projectile.getDeltaMovement().length() > 0.6) {
                 spawnFallingGourd(state, (ServerLevel) level, blockpos);
             }
@@ -149,20 +141,20 @@ public class GourdLanternBlock extends GrowingPlantBodyBlock implements Bonemeal
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (!state.canSurvive(world, pos)) {
             spawnFallingGourd(state, world, pos);
         }
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return level.getBlockState(pos.above()).isFaceSturdy(level, pos.above(), Direction.DOWN)
                 || (level.getBlockState(pos.below()).isFaceSturdy(level, pos.below(), Direction.UP) && this.isFullyGrown(state));
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         int i = state.getValue(AGE);
         return state.getValue(HANGING) ? HANGING_AGING_SHAPE[i] : STANDING_AGING_SHAPE[i];
     }
@@ -185,20 +177,19 @@ public class GourdLanternBlock extends GrowingPlantBodyBlock implements Bonemeal
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
-
+    
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
         return false;
     }
-
+    
     @Override
-    public @NotNull ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public @NotNull ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         return new ItemStack(this.getBodyBlock());
     }
-
     @Override
     protected GrowingPlantHeadBlock getHeadBlock() {
         return (GrowingPlantHeadBlock) BGBlocks.GOURD_VINE.get();

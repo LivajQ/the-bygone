@@ -3,7 +3,6 @@ package com.jamiedev.bygone.common.block;
 import com.jamiedev.bygone.common.block.entity.DoguEntity;
 import com.jamiedev.bygone.core.registry.BGBlockProperties;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -11,7 +10,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -101,8 +100,6 @@ public class DoguBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
         };
     }
 
-    public final MapCodec<DoguBlock> CODEC = simpleCodec(DoguBlock::new);
-
     public DoguBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(
@@ -110,18 +107,13 @@ public class DoguBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
                         .setValue(POSE, Pose.STANDING).setValue(WATERLOGGED, false)
         );
     }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
-    }
-
-    protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
+    
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return VOXEL_SHAPE_MAP[state.getOptionalValue(FACING).orElse(Direction.DOWN).getOpposite().get2DDataValue()];
     }
 
@@ -143,24 +135,23 @@ public class DoguBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
 
     @Deprecated
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Deprecated
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
-
+    
     @Override
-    protected ItemInteractionResult useItemOn(
-            ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult
-    ) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        ItemStack stack = player.getItemInHand(hand);
         this.updatePose(level, state, pos, player);
-        return ItemInteractionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
-
+    
     void updatePose(Level level, BlockState blockState, BlockPos blockPos, Player player) {
         level.playSound(null, blockPos, SoundEvents.MUD_BRICKS_BREAK, SoundSource.BLOCKS);
         level.setBlock(blockPos, blockState.setValue(POSE, blockState.getValue(POSE).getNextPose()), 3);
@@ -168,17 +159,17 @@ public class DoguBlock extends BaseEntityBlock implements SimpleWaterloggedBlock
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState blockState) {
+    public boolean hasAnalogOutputSignal(BlockState blockState) {
         return true;
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
         return blockState.getValue(POSE).ordinal() + 1;
     }
 
     @Override
-    protected FluidState getFluidState(BlockState blockState) {
+    public FluidState getFluidState(BlockState blockState) {
         return blockState.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(blockState);
     }
 

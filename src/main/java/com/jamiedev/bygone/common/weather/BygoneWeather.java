@@ -8,7 +8,6 @@ import com.jamiedev.bygone.common.weather.weather_types.HauntingsEvent;
 import com.jamiedev.bygone.common.weather.weather_types.InvertedRain;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherProperties;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherType;
-import com.jamiedev.bygone.core.network.PacketHandler;
 import com.jamiedev.bygone.core.network.SyncWeatherS2C;
 import com.jamiedev.bygone.core.platform.Services;
 import net.minecraft.core.HolderLookup;

@@ -4,7 +4,6 @@ import com.jamiedev.bygone.common.block.entity.BlemishSpreadManager;
 import com.jamiedev.bygone.common.block.entity.BlemishSpreadable;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGParticleTypes;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.sounds.SoundEvent;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 
 public class BlemishBlock extends Block implements BlemishSpreadable {
-    public static final MapCodec<BlemishBlock> CODEC = simpleCodec(BlemishBlock::new);
     CactusBlock ref;
 
     public BlemishBlock(BlockBehaviour.Properties settings) {
@@ -74,12 +72,7 @@ public class BlemishBlock extends Block implements BlemishSpreadable {
     }
 
     @Override
-    public MapCodec<BlemishBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         Vec3 vec3d = new Vec3(0.25, 0.05000000074505806, 0.25);
         entity.makeStuckInBlock(state, vec3d);
         entity.hurt(world.damageSources().wither(), 2.0F);

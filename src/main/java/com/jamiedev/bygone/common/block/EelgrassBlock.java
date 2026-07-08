@@ -1,12 +1,10 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -23,14 +21,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public class EelgrassBlock extends GrowingPlantHeadBlock implements LiquidBlockContainer {
-    public static final MapCodec<EelgrassBlock> CODEC = simpleCodec(EelgrassBlock::new);
     protected static final VoxelShape SHAPE = Block.box(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
     private static final double GROW_PER_TICK_PROBABILITY = 0.14;
-
-    @Override
-    public MapCodec<EelgrassBlock> codec() {
-        return CODEC;
-    }
 
     public EelgrassBlock(Properties p_54300_) {
         super(p_54300_, Direction.UP, SHAPE, true, 0.14);
@@ -52,7 +44,7 @@ public class EelgrassBlock extends GrowingPlantHeadBlock implements LiquidBlockC
     }
 
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canPlaceLiquid(BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }
 
@@ -74,7 +66,7 @@ public class EelgrassBlock extends GrowingPlantHeadBlock implements LiquidBlockC
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return Fluids.WATER.getSource(false);
     }
 }

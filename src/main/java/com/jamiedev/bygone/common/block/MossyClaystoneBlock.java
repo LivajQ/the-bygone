@@ -92,7 +92,7 @@ public class MossyClaystoneBlock extends SpreadingSnowyDirtBlock implements Bone
     @Override
     public void performBonemeal(ServerLevel world, @NotNull RandomSource random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.above();
-        BlockState blockState = Blocks.SHORT_GRASS.defaultBlockState();
+        BlockState blockState = Blocks.GRASS.defaultBlockState();
         Optional<Holder.Reference<PlacedFeature>> optional = world.registryAccess().registryOrThrow(Registries.PLACED_FEATURE).getHolder(VegetationPlacements.GRASS_BONEMEAL);
 
         label49:

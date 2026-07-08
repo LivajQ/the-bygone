@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.common.entity.RisingBlockEntity;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
@@ -29,21 +28,18 @@ public abstract class RisingBlock extends Block implements Fallable {
     }
 
     @Override
-    protected abstract MapCodec<? extends RisingBlock> codec();
-
-    @Override
-    protected void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
+    public void onPlace(BlockState state, Level world, BlockPos pos, BlockState oldState, boolean notify) {
         world.scheduleTick(pos, this, this.getRiseDelay());
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         world.scheduleTick(pos, this, this.getRiseDelay());
         return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (canRiseThrough(world.getBlockState(pos.above())) && pos.getY() >= world.getMaxBuildHeight()) {
             RisingBlockEntity fallingBlockEntity = RisingBlockEntity.fall(world, pos, state);
             this.configureRisingBlockEntity(fallingBlockEntity);

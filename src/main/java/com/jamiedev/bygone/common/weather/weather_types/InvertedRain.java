@@ -3,8 +3,7 @@ package com.jamiedev.bygone.common.weather.weather_types;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherProperties.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-
-import javax.annotation.Nullable;
+import net.minecraft.util.Mth;
 
 public class InvertedRain extends WeatherType {
     private static final String TIME = "time";
@@ -65,7 +64,7 @@ public class InvertedRain extends WeatherType {
         }
 
         float rainValue = rain.getValue() + (isRaining.getValue() ? 1 : -1) * 0.01f;
-        rain.setValue(Math.clamp(rainValue, 0f, 1f));
+        rain.setValue(Mth.clamp(rainValue, 0f, 1f));
 
         super.tick();
     }

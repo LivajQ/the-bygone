@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -16,15 +15,10 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SableGrassBlock extends GrowingPlantHeadBlock {
     public static final VoxelShape SHAPE = Block.box(4.0F, 0.0F, 4.0F, 12.0F, 15.0F, 12.0F);
-    public static final MapCodec<SableGrassBlock> CODEC = simpleCodec(SableGrassBlock::new);
     double growPerTickProbability;
 
     public SableGrassBlock(BlockBehaviour.Properties p_154864_) {
         super(p_154864_, Direction.UP, SHAPE, false, 0.00005);
-    }
-
-    public MapCodec<SableGrassBlock> codec() {
-        return CODEC;
     }
 
     protected int getBlocksToGrowWhenBonemealed(RandomSource p_222649_) {
@@ -40,7 +34,7 @@ public class SableGrassBlock extends GrowingPlantHeadBlock {
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         BlockPos blockpos = pos.relative(this.growthDirection.getOpposite());
         BlockState blockstate = level.getBlockState(blockpos);
         return this.canAttachTo(blockstate) && (blockstate.is(this.getHeadBlock()) || blockstate.is(this.getBodyBlock()) || blockstate.is(BGBlocks.SABLE_LEAVES.get())

@@ -4,11 +4,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.jamiedev.bygone.common.block.BlemishCatalystBlock;
 import com.jamiedev.bygone.core.registry.BGBlockEntities;
 import com.jamiedev.bygone.core.registry.BGCriteria;
-import net.minecraft.Optionull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -29,30 +26,30 @@ import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
-public class BlemishCatalystBlockEntity extends BlockEntity implements GameEventListener.Provider<BlemishCatalystBlockEntity.Listener> {
+public class BlemishCatalystBlockEntity extends BlockEntity implements GameEventListener.Holder<BlemishCatalystBlockEntity.Listener> {
     private final BlemishCatalystBlockEntity.Listener eventListener;
-
+    
     public BlemishCatalystBlockEntity(BlockPos pos, BlockState state) {
         super(BGBlockEntities.BLEMISH_CATALYST.get(), pos, state);
         this.eventListener = new BlemishCatalystBlockEntity.Listener(state, new BlockPositionSource(pos));
     }
-
+    
     public static void tick(Level world, BlockPos pos, BlockState state, BlemishCatalystBlockEntity blockEntity) {
         blockEntity.eventListener.getSpreadManager().tick(world, pos, world.getRandom(), true);
     }
-
+    
     @Override
-    protected void loadAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
-        super.loadAdditional(nbt, registryLookup);
+    public void load(CompoundTag nbt) {
+        super.load(nbt);
         this.eventListener.spreadManager.readNbt(nbt);
     }
-
+    
     @Override
-    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+    protected void saveAdditional(CompoundTag nbt) {
         this.eventListener.spreadManager.writeNbt(nbt);
-        super.saveAdditional(nbt, registryLookup);
+        super.saveAdditional(nbt);
     }
-
+    
     @Override
     public BlemishCatalystBlockEntity.Listener getListener() {
         return this.eventListener;
@@ -84,30 +81,30 @@ public class BlemishCatalystBlockEntity extends BlockEntity implements GameEvent
         public GameEventListener.DeliveryMode getDeliveryMode() {
             return DeliveryMode.BY_DISTANCE;
         }
-
+        
         @Override
-        public boolean handleGameEvent(ServerLevel world, Holder<GameEvent> event, GameEvent.Context emitter, Vec3 emitterPos) {
-            if (event.is(GameEvent.ENTITY_DIE)) {
+        public boolean handleGameEvent(ServerLevel world, GameEvent event, GameEvent.Context emitter, Vec3 emitterPos) {
+            if (event == GameEvent.ENTITY_DIE) {
                 Entity var6 = emitter.sourceEntity();
                 if (var6 instanceof LivingEntity livingEntity) {
                     if (!livingEntity.wasExperienceConsumed()) {
-                        DamageSource damageSource = livingEntity.getLastDamageSource();
-                        int i = livingEntity.getExperienceReward(world, Optionull.map(damageSource, DamageSource::getEntity));
+                        //DamageSource damageSource = livingEntity.getLastDamageSource();
+                        int i = livingEntity.getExperienceReward();
                         if (livingEntity.shouldDropExperience() && i > 0) {
                             this.spreadManager.spread(BlockPos.containing(emitterPos.relative(Direction.UP, 0.5)), i);
                             this.triggerCriteria(world, livingEntity);
                         }
-
+                        
                         livingEntity.skipDropExperience();
                         this.positionSource.getPosition(world).ifPresent((pos) -> {
                             this.bloom(world, BlockPos.containing(pos), this.state, world.getRandom());
                         });
                     }
-
+                    
                     return true;
                 }
             }
-
+            
             return false;
         }
 

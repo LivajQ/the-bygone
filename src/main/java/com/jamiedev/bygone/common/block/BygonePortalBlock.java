@@ -2,59 +2,50 @@ package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.block.entity.BygonePortalBlockEntity;
+import com.jamiedev.bygone.common.worldgen.BygoneTeleporter;
+import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
-import com.mojang.serialization.MapCodec;
-import net.minecraft.BlockUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalBlock;
-import net.minecraft.world.level.block.Portal;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.level.portal.PortalShape;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.AXIS;
-
-public class BygonePortalBlock extends Block implements Portal {
-    public static final MapCodec<BygonePortalBlock> CODEC = BlockBehaviour.simpleCodec(BygonePortalBlock::new);
+public class BygonePortalBlock extends Block {
     protected static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    public static final BooleanProperty CENTER = BooleanProperty.create("center");
+    public static final IntegerProperty SIZE = IntegerProperty.create("size", 0, 20);
+    
+    
     EndPortalBlock ref;
 
     public BygonePortalBlock(BlockBehaviour.Properties settings) {
         super(settings);
-    }
-
-    @Override
-    public MapCodec<BygonePortalBlock> codec() {
-        return CODEC;
     }
 
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
@@ -67,22 +58,52 @@ public class BygonePortalBlock extends Block implements Portal {
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    protected boolean canBeReplaced(BlockState state, Fluid fluid) {
+    public boolean canBeReplaced(BlockState state, Fluid fluid) {
         return false;
     }
-
+    
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (entity.canUsePortal(false)) {
-            entity.setAsInsidePortal(this, pos);
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+        if (level.isClientSide) return;
+        if (!entity.canChangeDimensions()) return;
+        
+        entity.handleInsidePortal(pos);
+        
+        if (entity.isOnPortalCooldown()) return;
+        
+        ServerLevel currentLevel = (ServerLevel) level;
+        ResourceKey<Level> bygone = ResourceKey.create(
+                Registries.DIMENSION,
+                new ResourceLocation(Bygone.MOD_ID, "bygone")
+        );
+        ResourceKey<Level> destinationKey =
+                currentLevel.dimension() == bygone ? Level.OVERWORLD : bygone;
+        
+        ServerLevel destinationLevel = currentLevel.getServer().getLevel(destinationKey);
+        if (destinationLevel == null) return;
+        
+        BygoneTeleporter teleporter = new BygoneTeleporter(entity, pos, destinationLevel);
+        if (!teleporter.isValid()) return;
+        
+        entity.setPortalCooldown();
+        
+        Entity result = entity.changeDimension(destinationLevel, teleporter);
+        if (result != null) {
+            result.setPortalCooldown();
+            destinationLevel.getChunkSource().addRegionTicket(
+                    TicketType.PORTAL,
+                    new ChunkPos(teleporter.getTarget()),
+                    3,
+                    teleporter.getTarget()
+            );
         }
     }
-
+    
     @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor world, BlockPos pos, BlockPos posFrom) {
         //Block block = getPortalBase((Level) world, pos);
@@ -124,7 +145,66 @@ public class BygonePortalBlock extends Block implements Portal {
         }
 
     }
-
+    
+    public static boolean placePortal(LevelAccessor level, BlockPos bottomPos, Direction.Axis axis, int size) {
+        List<BlockPos> framePositions = new ArrayList<>();
+        List<BlockPos> hollowPositions = new ArrayList<>();
+        
+        Direction leftDir = axis == Direction.Axis.X ? Direction.EAST : Direction.NORTH;
+        Direction rightDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
+        
+        for (int height = -size; height <= size; height++) {
+            int hollowWidth = size - Math.abs(height);
+            
+            framePositions.add(new BlockPos(0, height + size, 0).relative(leftDir, hollowWidth));
+            framePositions.add(new BlockPos(0, height + size, 0).relative(rightDir, hollowWidth));
+            
+            if (hollowWidth >= 1) {
+                for (int i = 0; i < hollowWidth; i++) {
+                    hollowPositions.add(new BlockPos(0, height + size, 0).relative(leftDir, i));
+                    hollowPositions.add(new BlockPos(0, height + size, 0).relative(rightDir, i));
+                }
+            }
+        }
+        
+        WorldBorder border = level.getWorldBorder();
+        BlockPos center = bottomPos.above(size);
+        
+        for (BlockPos blockPos : framePositions) {
+            if (!level.isEmptyBlock(blockPos.offset(bottomPos)) || !border.isWithinBounds(blockPos.offset(bottomPos))) {
+                return false;
+            }
+        }
+        
+        for (BlockPos blockPos : hollowPositions) {
+            if (!level.isEmptyBlock(blockPos.offset(bottomPos)) || !border.isWithinBounds(blockPos.offset(bottomPos))) {
+                return false;
+            }
+        }
+        
+        for (BlockPos blockPos : framePositions) {
+            level.setBlock(blockPos.offset(bottomPos), BGBlocks.BYGONE_PORTAL_FRAME.get().defaultBlockState(), 3);
+        }
+        
+        for (BlockPos blockPos : hollowPositions) {
+            level.setBlock(blockPos.offset(bottomPos), BGBlocks.BYGONE_PORTAL_FRAME.get().defaultBlockState(), 3);
+        }
+        
+        for (BlockPos blockPos : hollowPositions) {
+            level.setBlock(
+                    blockPos.offset(bottomPos),
+                    BGBlocks.BYGONE_PORTAL.get().defaultBlockState()
+                            .setValue(AXIS, axis)
+                            .setValue(CENTER, blockPos.offset(bottomPos).equals(center))
+                            .setValue(SIZE, size),
+                    3
+            );
+        }
+        
+        return true;
+    }
+    
+    /*
     public Portal.Transition getLocalTransition() {
         return Transition.CONFUSION;
     }
@@ -217,4 +297,5 @@ public class BygonePortalBlock extends Block implements Portal {
         Vec3 vec32 = PortalShape.findCollisionFreePosition(vec31, level, entity, entitydimensions);
         return new DimensionTransition(level, vec32, vec3, yRot + (float)i, xRot, postDimensionTransition);
     }
+     */
 }

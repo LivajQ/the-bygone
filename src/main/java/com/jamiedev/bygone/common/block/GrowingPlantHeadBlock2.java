@@ -36,12 +36,12 @@ public abstract class GrowingPlantHeadBlock2 extends GrowingPlantHeadBlock
     public BlockState getStateForPlacement(LevelAccessor level) {
         return (BlockState)this.defaultBlockState().setValue(AGE, level.getRandom().nextInt(25));
     }
-
-    protected boolean isRandomlyTicking(BlockState state) {
+    
+    public boolean isRandomlyTicking(BlockState state) {
         return (Integer)state.getValue(AGE) < 25;
     }
-
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if ((Integer)state.getValue(AGE) < 25 && random.nextDouble() < this.growPerTickProbability) {
             BlockPos blockpos = pos.relative(this.growthDirection);
             if (this.canGrowInto(level.getBlockState(blockpos))) {
@@ -70,8 +70,8 @@ public abstract class GrowingPlantHeadBlock2 extends GrowingPlantHeadBlock
     protected BlockState updateBodyAfterConvertedFromHead(BlockState head, BlockState body) {
         return body;
     }
-
-    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+    
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         if (facing == this.growthDirection.getOpposite() && !state.canSurvive(level, currentPos)) {
             level.scheduleTick(currentPos, this, 1);
         }

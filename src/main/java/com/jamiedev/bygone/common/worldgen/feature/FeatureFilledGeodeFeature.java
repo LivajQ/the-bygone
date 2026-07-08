@@ -185,7 +185,7 @@ public class FeatureFilledGeodeFeature extends Feature<FeatureFilledGeodeConfig>
 
         for (BlockPos innerDecoratorPlacementPosition : innerDecoratorPlacementPositions) {
             if (!innerAbovePlacements.isEmpty()) {
-                Holder<PlacedFeature> innerAbovePlacement = innerAbovePlacements.getRandom(random).orElseThrow().data();
+                Holder<PlacedFeature> innerAbovePlacement = innerAbovePlacements.getRandom(random).orElseThrow().getData();
                 innerAbovePlacement.value().place(
                         level,
                         featurePlaceContext.chunkGenerator(),
@@ -195,7 +195,7 @@ public class FeatureFilledGeodeFeature extends Feature<FeatureFilledGeodeConfig>
             }
 
             if (!innerPlacements.isEmpty()) {
-                Holder<PlacedFeature> innerPlacement = innerPlacements.getRandom(random).orElseThrow().data();
+                Holder<PlacedFeature> innerPlacement = innerPlacements.getRandom(random).orElseThrow().getData();
                 innerPlacement.value().place(
                         level,
                         featurePlaceContext.chunkGenerator(),
@@ -205,7 +205,7 @@ public class FeatureFilledGeodeFeature extends Feature<FeatureFilledGeodeConfig>
             }
 
             if (!innerBelowPlacements.isEmpty()) {
-                Holder<PlacedFeature> innerBelowPlacement = innerBelowPlacements.getRandom(random).orElseThrow().data();
+                Holder<PlacedFeature> innerBelowPlacement = innerBelowPlacements.getRandom(random).orElseThrow().getData();
                 innerBelowPlacement.value().place(
                         level,
                         featurePlaceContext.chunkGenerator(),

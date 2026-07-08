@@ -1,12 +1,12 @@
 package com.jamiedev.bygone.common.block.shelf;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -17,17 +17,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import org.jetbrains.annotations.NotNull;
 
 public class ShelfPinkFungiVinesHeadBlock extends GrowingPlantHeadBlock implements BonemealableBlock, ShelfVines {
-    public static final MapCodec<ShelfPinkFungiVinesHeadBlock> CODEC = simpleCodec(ShelfPinkFungiVinesHeadBlock::new);
     private static final float GROW_CHANCE = 0.11F;
 
     public ShelfPinkFungiVinesHeadBlock(Properties settings) {
         super(settings, Direction.DOWN, SHAPE, false, 0.1);
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
-    }
-
-    @Override
-    public MapCodec<ShelfPinkFungiVinesHeadBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -46,18 +40,17 @@ public class ShelfPinkFungiVinesHeadBlock extends GrowingPlantHeadBlock implemen
     }
 
     @Override
-    public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(BlockGetter world, BlockPos pos, BlockState state) {
         return new ItemStack(BGBlocks.PINK_FUNGI_VINES_PLANT.get());
     }
-
-
+    
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state, boolean isClient) {
         return false;
     }
 

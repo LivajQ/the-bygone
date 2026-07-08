@@ -1,5 +1,6 @@
 package com.jamiedev.bygone.common.block.shelf;
 
+import com.jamiedev.bygone.common.worldgen.structure.BygoneMineshaftStructure;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class ShelfMoldBlock extends SpreadingSnowyDirtBlock implements BonemealableBlock {
-    public static final MapCodec<ShelfMoldBlock> CODEC = simpleCodec(ShelfMoldBlock::new);
     GrassBlock ref;
 
     public ShelfMoldBlock(Properties settings) {
@@ -51,12 +51,7 @@ public class ShelfMoldBlock extends SpreadingSnowyDirtBlock implements Bonemeala
     }
 
     @Override
-    public MapCodec<ShelfMoldBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state, boolean isClient) {
         return world.getBlockState(pos.above()).isAir();
     }
 
@@ -66,7 +61,7 @@ public class ShelfMoldBlock extends SpreadingSnowyDirtBlock implements Bonemeala
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (!canBeGrass(state, world, pos)) {
             world.setBlockAndUpdate(pos, BGBlocks.BYSTONE.get().defaultBlockState());
         } else {
@@ -85,14 +80,9 @@ public class ShelfMoldBlock extends SpreadingSnowyDirtBlock implements Bonemeala
     }
 
     @Override
-    public Type getType() {
-        return Type.NEIGHBOR_SPREADER;
-    }
-
-    @Override
     public void performBonemeal(ServerLevel world, @NotNull RandomSource random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.above();
-        BlockState blockState = Blocks.SHORT_GRASS.defaultBlockState();
+        BlockState blockState = Blocks.GRASS.defaultBlockState();
         Optional<Holder.Reference<PlacedFeature>> optional = world.registryAccess().registryOrThrow(Registries.PLACED_FEATURE).getHolder(VegetationPlacements.GRASS_BONEMEAL);
 
         label49:

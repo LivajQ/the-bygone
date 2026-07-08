@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -16,7 +15,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class SableGrassPlantBlock extends GrowingPlantBodyBlock {
     public static final VoxelShape SHAPE = Block.box(4.0F, 0.0F, 4.0F, 12.0F, 16.0F, 12.0F);
-    public static final MapCodec<SableGrassPlantBlock> CODEC = simpleCodec(SableGrassPlantBlock::new);
     IntegerProperty AGE;
 
     public SableGrassPlantBlock(BlockBehaviour.Properties p_154873_) {
@@ -25,12 +23,8 @@ public class SableGrassPlantBlock extends GrowingPlantBodyBlock {
 
     }
 
-    public MapCodec<SableGrassPlantBlock> codec() {
-        return CODEC;
-    }
-
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (level.isEmptyBlock(pos.above())) {
             int i = 1;
 

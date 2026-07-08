@@ -3,7 +3,6 @@ package com.jamiedev.bygone.common.block;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,7 +33,6 @@ import java.util.function.Predicate;
 
 public class MegalithLanternBlock extends HorizontalDirectionalBlock {
     public static final DirectionProperty FACING;
-    public static final MapCodec<MegalithLanternBlock> CODEC = simpleCodec(MegalithLanternBlock::new);
     private static final Predicate<BlockState> PUMPKINS_PREDICATE;
 
     static {
@@ -88,12 +86,8 @@ public class MegalithLanternBlock extends HorizontalDirectionalBlock {
         }
 
     }
-
-    public MapCodec<? extends MegalithLanternBlock> codec() {
-        return CODEC;
-    }
-
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+    
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
         if (!oldState.is(state.getBlock())) {
             this.trySpawnGolem(level, pos);
         }

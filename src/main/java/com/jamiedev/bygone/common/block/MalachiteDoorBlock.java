@@ -6,12 +6,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.DoorBlock;
-import net.minecraft.world.level.block.DoublePlantBlock;
-import net.minecraft.world.level.block.SimpleWaterloggedBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -31,41 +29,51 @@ public class MalachiteDoorBlock extends DoorBlock implements SimpleWaterloggedBl
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
     public MalachiteDoorBlock(BlockSetType type, BlockBehaviour.Properties properties) {
-        super(type, properties);
+        super(properties, type);
         this.registerDefaultState(this.defaultBlockState()
                 .setValue(WATERLOGGED, false));
     }
 
     @Override
-    protected @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         return super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }
-
+    
     @Override
-    public @NotNull BlockState playerWillDestroy(Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && (player.isCreative() || !player.hasCorrectToolForDrops(state))) {
-            DoublePlantBlock.preventDropFromBottomPart(level, pos, state, player);
+            if (state.getValue(DoublePlantBlock.HALF) == DoubleBlockHalf.UPPER) {
+                BlockPos below = pos.below();
+                BlockState belowState = level.getBlockState(below);
+                
+                if (belowState.getBlock() == state.getBlock()) {
+                    level.setBlock(below, Blocks.AIR.defaultBlockState(), 35);
+                    level.levelEvent(player, 2001, below, Block.getId(belowState));
+                }
+            }
         }
-
-        return super.playerWillDestroy(level, pos, state, player);
+        
+        super.playerWillDestroy(level, pos, state, player);
     }
-
-
+    
     // This needs an override, since we need to set the state to waterlogged or not.
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @NotNull LivingEntity placer, @NotNull ItemStack stack) {
         BlockPos abovePos = pos.above();
         level.setBlock(abovePos, state.setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, level.getFluidState(abovePos).is(Fluids.WATER)), 3);
     }
-
+    
     @Override
-    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
-        return (pathComputationType == PathComputationType.WATER) ? (state.getValue(OPEN) && state.getValue(WATERLOGGED)) : super.isPathfindable(state, pathComputationType);
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return type == PathComputationType.WATER
+                && state.getValue(OPEN)
+                && state.getValue(WATERLOGGED);
     }
-
+    
+    
     @Override
     @Nullable
     public BlockState getStateForPlacement(BlockPlaceContext context) {
@@ -86,7 +94,7 @@ public class MalachiteDoorBlock extends DoorBlock implements SimpleWaterloggedBl
     }
 
     @Override
-    protected @NotNull FluidState getFluidState(BlockState state) {
+    public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 }

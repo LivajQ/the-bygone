@@ -11,9 +11,6 @@ public class JamiesModBlockSetType {
             new BlockSetType(
                     Bygone.id("ancient").toString(),
                     true,
-                    true,
-                    true,
-                    BlockSetType.PressurePlateSensitivity.EVERYTHING,
                     SoundType.NETHER_WOOD,
                     SoundEvents.NETHER_WOOD_DOOR_CLOSE,
                     SoundEvents.NETHER_WOOD_DOOR_OPEN,
@@ -30,9 +27,6 @@ public class JamiesModBlockSetType {
             new BlockSetType(
                     Bygone.id("sable").toString(),
                     true,
-                    true,
-                    true,
-                    BlockSetType.PressurePlateSensitivity.EVERYTHING,
                     SoundType.NETHER_WOOD,
                     SoundEvents.NETHER_WOOD_DOOR_CLOSE,
                     SoundEvents.NETHER_WOOD_DOOR_OPEN,

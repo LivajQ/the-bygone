@@ -46,8 +46,8 @@ public class SeaglassBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.saveAdditional(pTag, pRegistries);
+    protected void saveAdditional(CompoundTag pTag) {
+        super.saveAdditional(pTag);
         ListTag occlusionDirStrings = new ListTag();
         for (Direction direction : occlusionDirs) {
             CompoundTag compoundTag = new CompoundTag();
@@ -59,8 +59,8 @@ public class SeaglassBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
-        super.loadAdditional(pTag, pRegistries);
+    public void load(CompoundTag pTag) {
+        super.load(pTag);
         ListTag occlusionDirTag = pTag.getList("occlusiondirs", Tag.TAG_COMPOUND);
         for (int i = 0; i < occlusionDirTag.size(); i++) {
             CompoundTag dirCompoundTag = occlusionDirTag.getCompound(i);
@@ -80,7 +80,7 @@ public class SeaglassBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+    public CompoundTag getUpdateTag() {
         CompoundTag compoundTag = new CompoundTag();
         ListTag occlusionDirStrings = new ListTag();
         for (Direction direction : occlusionDirs) {

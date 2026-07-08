@@ -4,7 +4,6 @@ import com.jamiedev.bygone.common.block.entity.BlemishSpreadManager;
 import com.jamiedev.bygone.common.block.entity.BlemishSpreadable;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -32,7 +31,6 @@ import java.util.Iterator;
 
 public class BlemishVeinBlock extends MultifaceBlock implements BlemishSpreadable, SimpleWaterloggedBlock {
     private static final BooleanProperty WATERLOGGED;
-    public static final MapCodec<BlemishVeinBlock> CODEC = simpleCodec(BlemishVeinBlock::new);
 
     static {
         WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -92,11 +90,6 @@ public class BlemishVeinBlock extends MultifaceBlock implements BlemishSpreadabl
 
             return false;
         }
-    }
-
-    @Override
-    public @NotNull MapCodec<BlemishVeinBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -174,7 +167,7 @@ public class BlemishVeinBlock extends MultifaceBlock implements BlemishSpreadabl
     }
 
     @Override
-    protected @NotNull BlockState updateShape(BlockState state, @NotNull Direction direction, @NotNull BlockState neighborState, @NotNull LevelAccessor world, @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, @NotNull Direction direction, @NotNull BlockState neighborState, @NotNull LevelAccessor world, @NotNull BlockPos pos, @NotNull BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -189,12 +182,12 @@ public class BlemishVeinBlock extends MultifaceBlock implements BlemishSpreadabl
     }
 
     @Override
-    protected boolean canBeReplaced(@NotNull BlockState state, BlockPlaceContext context) {
+    public boolean canBeReplaced(@NotNull BlockState state, BlockPlaceContext context) {
         return !context.getItemInHand().is(Item.byBlock(BGBlocks.BLEMISH_VEIN.get())) || super.canBeReplaced(state, context);
     }
 
     @Override
-    protected @NotNull FluidState getFluidState(BlockState state) {
+    public @NotNull FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 

@@ -216,7 +216,7 @@ public class BlemishSpreadManager {
             CODEC = RecordCodecBuilder.create((instance) -> {
                 return instance.group(BlockPos.CODEC.fieldOf("pos").forGetter(BlemishSpreadManager.Cursor::getPos), Codec.intRange(0, 1000).fieldOf("charge").orElse(0).forGetter(BlemishSpreadManager.Cursor::getCharge), Codec.intRange(0, 1).fieldOf("decay_delay").orElse(1).forGetter(BlemishSpreadManager.Cursor::getDecay), Codec.intRange(0, Integer.MAX_VALUE).fieldOf("update_delay").orElse(0).forGetter((cursor) -> {
                     return cursor.update;
-                }), DIRECTION_SET_CODEC.lenientOptionalFieldOf("facings").forGetter((cursor) -> {
+                }), DIRECTION_SET_CODEC.optionalFieldOf("facings").forGetter((cursor) -> {
                     return Optional.ofNullable(cursor.getFaces());
                 })).apply(instance, BlemishSpreadManager.Cursor::new);
             });

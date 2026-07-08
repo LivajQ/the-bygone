@@ -1,12 +1,10 @@
 package com.jamiedev.bygone.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -24,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CrinoidBlock extends BushBlock implements BonemealableBlock, LiquidBlockContainer {
-    public static final MapCodec<CrinoidBlock> CODEC = simpleCodec(CrinoidBlock::new);
     protected static final VoxelShape SHAPE;
 
     static {
@@ -40,16 +37,11 @@ public class CrinoidBlock extends BushBlock implements BonemealableBlock, Liquid
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         Vec3 vec3d = state.getOffset(world, pos);
         return SHAPE.move(vec3d.x, vec3d.y, vec3d.z);
     }
-
-    @Override
-    protected MapCodec<? extends CrinoidBlock> codec() {
-        return CODEC;
-    }
-
+    
     @Override
     protected boolean mayPlaceOn(BlockState floor, BlockGetter world, BlockPos pos) {
         return floor.isFaceSturdy(world, pos, Direction.UP) && !floor.is(Blocks.MAGMA_BLOCK);
@@ -63,7 +55,7 @@ public class CrinoidBlock extends BushBlock implements BonemealableBlock, Liquid
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         BlockState blockState = super.updateShape(state, direction, neighborState, world, pos, neighborPos);
         if (!blockState.isAir()) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
@@ -73,7 +65,7 @@ public class CrinoidBlock extends BushBlock implements BonemealableBlock, Liquid
     }
 
     @Override
-    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader world, BlockPos pos, BlockState state, boolean isClient) {
         return true;
     }
 
@@ -83,7 +75,7 @@ public class CrinoidBlock extends BushBlock implements BonemealableBlock, Liquid
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return Fluids.WATER.getSource(false);
     }
 
@@ -93,7 +85,7 @@ public class CrinoidBlock extends BushBlock implements BonemealableBlock, Liquid
     }
 
     @Override
-    public boolean canPlaceLiquid(@Nullable Player player, BlockGetter world, BlockPos pos, BlockState state, Fluid fluid) {
+    public boolean canPlaceLiquid(BlockGetter world, BlockPos pos, BlockState state, Fluid fluid) {
         return false;
     }
 

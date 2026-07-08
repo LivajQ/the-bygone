@@ -11,7 +11,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BeaconBeamBlock;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.TransparentBlock;
+import net.minecraft.world.level.block.HalfTransparentBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseSeaglassBlock extends TransparentBlock implements BeaconBeamBlock {
+public class BaseSeaglassBlock extends HalfTransparentBlock implements BeaconBeamBlock {
     /**
      * Seaglass code was inspired by <a href="https://github.com/Scouter456/Clear_Fluid_Glass">Scouter456's Clear Fluid Glass!</a>
      * <p>

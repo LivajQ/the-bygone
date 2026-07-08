@@ -1,22 +1,21 @@
 package com.jamiedev.bygone.common.block;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.brigadier.StringReader;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.ScalableParticleOptionsBase;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -35,7 +34,6 @@ import org.joml.Vector3f;
 
 public class LithineOreBlock extends Block {
     public static final BooleanProperty LIT;
-    public static final MapCodec<LithineOreBlock> CODEC = simpleCodec(LithineOreBlock::new);
 
     static {
         LIT = RedstoneTorchBlock.LIT;
@@ -70,12 +68,8 @@ public class LithineOreBlock extends Block {
         }
 
     }
-
-    public MapCodec<LithineOreBlock> codec() {
-        return CODEC;
-    }
-
-    protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+    
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
         interact(state, level, pos);
         super.attack(state, level, pos, player);
     }
@@ -87,29 +81,40 @@ public class LithineOreBlock extends Block {
 
         super.stepOn(level, pos, state, entity);
     }
-
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    
+    @Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        
+        ItemStack stack = player.getItemInHand(hand);
+        
         if (level.isClientSide) {
             spawnParticles(level, pos);
-        } else {
-            interact(state, level, pos);
+            return InteractionResult.SUCCESS;
         }
-
-        return stack.getItem() instanceof BlockItem && (new BlockPlaceContext(player, hand, stack, hitResult)).canPlace() ? ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION : ItemInteractionResult.SUCCESS;
+        
+        interact(state, level, pos);
+        
+        BlockPlaceContext ctx = new BlockPlaceContext(player, hand, stack, hitResult);
+        
+        if (stack.getItem() instanceof BlockItem && ctx.canPlace()) {
+            return InteractionResult.CONSUME;
+        }
+        
+        return InteractionResult.SUCCESS;
     }
-
-    protected boolean isRandomlyTicking(BlockState state) {
+    
+    public boolean isRandomlyTicking(BlockState state) {
         return state.getValue(LIT);
     }
-
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (state.getValue(LIT)) {
             level.setBlock(pos, state.setValue(LIT, false), 3);
         }
 
     }
-
-    protected void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
+    
+    public void spawnAfterBreak(BlockState state, ServerLevel level, BlockPos pos, ItemStack stack, boolean dropExperience) {
         super.spawnAfterBreak(state, level, pos, stack, dropExperience);
         if (dropExperience) {
             this.tryDropExperience(level, pos, stack, UniformInt.of(1, 5));
@@ -129,31 +134,63 @@ public class LithineOreBlock extends Block {
     }
 }
 
-class DustParticleOptions1 extends ScalableParticleOptionsBase {
+class DustParticleOptions1 implements ParticleOptions {
+    
     public static final Vector3f PLASM_PARTICLE_COLOR = Vec3.fromRGB24(14151396).toVector3f();
-    public static final net.minecraft.core.particles.DustParticleOptions REDSTONE;
-    public static final MapCodec<net.minecraft.core.particles.DustParticleOptions> CODEC;
-    public static final StreamCodec<RegistryFriendlyByteBuf, net.minecraft.core.particles.DustParticleOptions> STREAM_CODEC;
-
-    static {
-        REDSTONE = new net.minecraft.core.particles.DustParticleOptions(PLASM_PARTICLE_COLOR, 1.0F);
-        CODEC = RecordCodecBuilder.mapCodec((p_341566_) -> p_341566_.group(ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(DustParticleOptions::getColor), SCALE.fieldOf("scale").forGetter(ScalableParticleOptionsBase::getScale)).apply(p_341566_, net.minecraft.core.particles.DustParticleOptions::new));
-        STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.VECTOR3F, DustParticleOptions::getColor, ByteBufCodecs.FLOAT, ScalableParticleOptionsBase::getScale, net.minecraft.core.particles.DustParticleOptions::new);
-    }
-
+    public static final net.minecraft.core.particles.DustParticleOptions REDSTONE = new net.minecraft.core.particles.DustParticleOptions(PLASM_PARTICLE_COLOR, 1.0F);
+    public static final Codec<DustParticleOptions1> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(o -> o.color),
+                    Codec.FLOAT.fieldOf("scale").forGetter(o -> o.scale)
+            ).apply(instance, DustParticleOptions1::new)
+    );
+    
+    public static final ParticleOptions.Deserializer<DustParticleOptions1> DESERIALIZER =
+            new ParticleOptions.Deserializer<>() {
+                @Override
+                public DustParticleOptions1 fromCommand(ParticleType<DustParticleOptions1> type, StringReader reader) {
+                    Vector3f color = new Vector3f(1, 1, 1);
+                    float scale = 1.0f;
+                    return new DustParticleOptions1(color, scale);
+                }
+                
+                @Override
+                public DustParticleOptions1 fromNetwork(ParticleType<DustParticleOptions1> type, FriendlyByteBuf buf) {
+                    Vector3f color = buf.readVector3f();
+                    float scale = buf.readFloat();
+                    return new DustParticleOptions1(color, scale);
+                }
+            };
+    
     private final Vector3f color;
-
+    private final float scale;
+    
     public DustParticleOptions1(Vector3f color, float scale) {
-        super(scale);
         this.color = color;
+        this.scale = scale;
     }
-
-    public ParticleType<net.minecraft.core.particles.DustParticleOptions> getType() {
+    
+    @Override
+    public void writeToNetwork(FriendlyByteBuf buf) {
+        buf.writeVector3f(color);
+        buf.writeFloat(scale);
+    }
+    
+    @Override
+    public String writeToString() {
+        return "dust_particle_options1";
+    }
+    
+    @Override
+    public ParticleType<DustParticleOptions> getType() {
         return ParticleTypes.DUST;
     }
-
+    
     public Vector3f getColor() {
-        return this.color;
+        return color;
+    }
+    
+    public float getScale() {
+        return scale;
     }
 }
-

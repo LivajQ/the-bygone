@@ -20,7 +20,6 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ArcaneCoreBlock extends Block implements SimpleWaterloggedBlock {
-    public static final MapCodec<ArcaneCoreBlock> CODEC = simpleCodec(ArcaneCoreBlock::new);
     private static final VoxelShape OUTLINE_SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 8.0, 12.0);
 
     SkullBlock ref;
@@ -31,17 +30,12 @@ public class ArcaneCoreBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    public MapCodec<ArcaneCoreBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.WATERLOGGED);
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(BlockStateProperties.WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -50,7 +44,7 @@ public class ArcaneCoreBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(BlockStateProperties.WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
@@ -61,12 +55,12 @@ public class ArcaneCoreBlock extends Block implements SimpleWaterloggedBlock {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return OUTLINE_SHAPE;
     }
 
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, BlockGetter world, BlockPos pos, PathComputationType type) {
         return false;
     }
 }

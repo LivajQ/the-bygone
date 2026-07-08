@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
@@ -22,7 +21,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
 public class IceBouquetBlock extends Block {
-    public static final MapCodec<IceBouquetBlock> CODEC = simpleCodec(IceBouquetBlock::new);
     protected static final VoxelShape DOWN_AABB = Block.box(0.0F, 0.0F, 0.0F, 16.0F, 1.0F, 16.0F);
     public final float iceDamage;
 
@@ -37,11 +35,6 @@ public class IceBouquetBlock extends Block {
 
     public static boolean canSurviveOnBlock(BlockState state) {
         return !state.is(JamiesModTag.ICE_BOUQUET_FORBIDDEN);
-    }
-
-    @Override
-    public @NotNull MapCodec<IceBouquetBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -66,24 +59,24 @@ public class IceBouquetBlock extends Block {
     }
 
     @Override
-    protected @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
+    public @NotNull BlockState updateShape(@NotNull BlockState state, @NotNull Direction facing, @NotNull BlockState facingState, @NotNull LevelAccessor level, @NotNull BlockPos currentPos, @NotNull BlockPos facingPos) {
         return this.canSurvive(state, level, currentPos) ? state : Blocks.AIR.defaultBlockState();
     }
 
     @Override
-    protected boolean canSurvive(@NotNull BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(@NotNull BlockState state, LevelReader level, BlockPos pos) {
         BlockPos belowPos = pos.below();
         BlockState belowState = level.getBlockState(belowPos);
         return canSurviveOnBlock(belowState) && belowState.isFaceSturdy(level, belowPos, Direction.UP);
     }
 
     @Override
-    protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return DOWN_AABB;
     }
 
     @Override
-    protected void entityInside(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
+    public void entityInside(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Entity entity) {
 
         if (entity instanceof LivingEntity livingEntity) {
             if (livingEntity.getType().is(JamiesModTag.ICE_BOUQUET_HEALS)) {

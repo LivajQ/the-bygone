@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
@@ -88,14 +88,11 @@ public abstract class BycoralFeature extends Feature<BlockStateConfiguration> {
             level.setBlock(pos, state, 3);
             if (allowDecoratives) {
                 if (random.nextFloat() < 0.25F) {
-                    BuiltInRegistries.BLOCK
-                            .getRandomElementOf(JamiesModTag.CORALS, random)
-                            .map(Holder::value)
-                            .ifPresent(coralPlantBlock -> level.setBlock(
-                                    blockPos,
-                                    coralPlantBlock.defaultBlockState(),
-                                    2
-                            ));
+                    HolderSet<Block> corals = BuiltInRegistries.BLOCK.getTag(JamiesModTag.CORALS).orElse(null);
+                    if (corals != null && corals.size() > 0) {
+                        Block coral = corals.get(random.nextInt(corals.size())).value();
+                        level.setBlock(blockPos, coral.defaultBlockState(), 2);
+                    }
                 } else if (random.nextFloat() < 0.05F) {
                     BlockState toPlace = Util.getRandom(
                             List.of(
@@ -114,18 +111,19 @@ public abstract class BycoralFeature extends Feature<BlockStateConfiguration> {
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
                     if (random.nextFloat() < 0.2F) {
                         BlockPos relativeBlock = pos.relative(direction);
-                        if (level.getBlockState(relativeBlock).is(Blocks.WATER)) {
-                            BuiltInRegistries.BLOCK.getRandomElementOf(JamiesModTag.WALL_CORALS, random)
-                                    .map(Holder::value)
-                                    .ifPresent(block -> {
-                                        BlockState blockstate1 = block.defaultBlockState();
-                                        if (blockstate1.hasProperty(BaseCoralWallFanBlock.FACING)) {
-                                            blockstate1 = blockstate1.setValue(BaseCoralWallFanBlock.FACING, direction);
-                                        }
-
-                                        level.setBlock(relativeBlock, blockstate1, 2);
-                                    });
+                        HolderSet<Block> wallCorals = BuiltInRegistries.BLOCK.getTag(JamiesModTag.WALL_CORALS).orElse(null);
+                        
+                        if (wallCorals != null && wallCorals.size() > 0) {
+                            Block block = wallCorals.get(random.nextInt(wallCorals.size())).value();
+                            BlockState state1 = block.defaultBlockState();
+                            
+                            if (state1.hasProperty(BaseCoralWallFanBlock.FACING)) {
+                                state1 = state1.setValue(BaseCoralWallFanBlock.FACING, direction);
+                            }
+                            
+                            level.setBlock(relativeBlock, state1, 2);
                         }
+                        
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block.gourds;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -23,7 +22,6 @@ import java.util.Set;
 public class GourdVineBlock extends GrowingPlantHeadBlock {
     public static final IntegerProperty GOURD_TYPE;
     protected static final VoxelShape SHAPE = Block.box(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
-    public static final MapCodec<GourdVineBlock> CODEC = simpleCodec(GourdVineBlock::new);
 
     static {
         GOURD_TYPE = IntegerProperty.create("gourd_type", 0, 2);
@@ -35,11 +33,6 @@ public class GourdVineBlock extends GrowingPlantHeadBlock {
         super(settings, Direction.DOWN, SHAPE, false, 0.1);
         this.registerDefaultState(this.getStateDefinition().any().setValue(GOURD_TYPE, 0));
         this.growPerTickProbability = 0.1;
-    }
-
-    @Override
-    public @NotNull MapCodec<GourdVineBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -76,7 +69,7 @@ public class GourdVineBlock extends GrowingPlantHeadBlock {
     }*/
 
     @Override
-    protected void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, RandomSource random) {
+    public void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, RandomSource random) {
         // Going to keep this for now just in case
         /*if (state.getValue(AGE) < 25 && random.nextDouble() < this.growPerTickProbability) {
             if (random.nextInt(0, 6) == 1){

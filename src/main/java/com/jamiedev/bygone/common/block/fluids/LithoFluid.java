@@ -4,15 +4,14 @@ import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGFluids;
 import com.jamiedev.bygone.core.registry.BGItems;
-import com.jamiedev.bygone.core.registry.BGParticleTypes;
-import com.mojang.serialization.MapCodec;
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.*;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -163,29 +162,45 @@ public abstract class LithoFluid extends FlowingFluid {
         }
     }
 }
-class DustParticleOptions2 extends ScalableParticleOptionsBase {
+class DustParticleOptions2 extends DustParticleOptionsBase {
     public static final Vector3f PLASM_PARTICLE_COLOR = Vec3.fromRGB24(14151396).toVector3f();
     public static final net.minecraft.core.particles.DustParticleOptions REDSTONE;
-    public static final MapCodec<DustParticleOptions> CODEC;
-    public static final StreamCodec<RegistryFriendlyByteBuf, DustParticleOptions> STREAM_CODEC;
-
+    public static final Codec<DustParticleOptions> CODEC;
+    public static final ParticleOptions.Deserializer<DustParticleOptions> DESERIALIZER;
+    
     static {
         REDSTONE = new net.minecraft.core.particles.DustParticleOptions(PLASM_PARTICLE_COLOR, 1.0F);
-        CODEC = RecordCodecBuilder.mapCodec((p_341566_) -> p_341566_.group(ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(DustParticleOptions::getColor), SCALE.fieldOf("scale").forGetter(ScalableParticleOptionsBase::getScale)).apply(p_341566_, net.minecraft.core.particles.DustParticleOptions::new));
-        STREAM_CODEC = StreamCodec.composite(ByteBufCodecs.VECTOR3F, DustParticleOptions::getColor, ByteBufCodecs.FLOAT, ScalableParticleOptionsBase::getScale, net.minecraft.core.particles.DustParticleOptions::new);
+        CODEC = RecordCodecBuilder.create((instance) -> instance.group(
+                ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(DustParticleOptions::getColor),
+                Codec.FLOAT.fieldOf("scale").forGetter(DustParticleOptionsBase::getScale)
+        ).apply(instance, net.minecraft.core.particles.DustParticleOptions::new));
+        
+        DESERIALIZER = new ParticleOptions.Deserializer<DustParticleOptions>() {
+            @Override
+            public DustParticleOptions fromCommand(ParticleType<DustParticleOptions> type, StringReader reader) throws CommandSyntaxException
+            {
+                reader.expect(' ');
+                Vector3f vector3f = readVector3f(reader);
+                reader.expect(' ');
+                float scale = reader.readFloat();
+                return new net.minecraft.core.particles.DustParticleOptions(vector3f, scale);
+            }
+            
+            @Override
+            public DustParticleOptions fromNetwork(ParticleType<DustParticleOptions> type, FriendlyByteBuf buf) {
+                return new net.minecraft.core.particles.DustParticleOptions(readVector3f(buf), buf.readFloat());
+            }
+        };
     }
-
-    private final Vector3f color;
-
+    
     public DustParticleOptions2(Vector3f color, float scale) {
-        super(scale);
-        this.color = color;
+        super(color, scale);
     }
-
+    
     public ParticleType<DustParticleOptions> getType() {
         return ParticleTypes.DUST;
     }
-
+    
     public Vector3f getColor() {
         return this.color;
     }

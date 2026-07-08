@@ -79,7 +79,7 @@ public class MegalithTotemEntity extends BlockEntity implements Clearable {
                         Block block = plantState.getBlock();
                         if ((block instanceof CropBlock || block instanceof SaplingBlock)) {
                             BonemealableBlock bonemealable = (BonemealableBlock) block;
-                            if (bonemealable.isValidBonemealTarget(level, plantPos, plantState)) {
+                            if (bonemealable.isValidBonemealTarget(level, plantPos, plantState, level.isClientSide())) {
                                 if (bonemealable.isBonemealSuccess(level, rand, plantPos, plantState)) {
                                     bonemealable.performBonemeal(serverLevel, rand, plantPos, plantState);
                                     serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER, plantPos.getX() + 0.5, plantPos.getY() + 0.5, plantPos.getZ() + 0.5, 8, 0.2, 0.5, 0.2, 0.1);

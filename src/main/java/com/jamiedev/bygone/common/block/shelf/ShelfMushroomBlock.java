@@ -1,6 +1,5 @@
 package com.jamiedev.bygone.common.block.shelf;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +12,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 public class ShelfMushroomBlock extends Block {
-    public static final MapCodec<ShelfMushroomBlock> CODEC = simpleCodec(ShelfMushroomBlock::new);
     public int variation;
 
     public ShelfMushroomBlock(BlockBehaviour.Properties settings) {
@@ -24,11 +22,6 @@ public class ShelfMushroomBlock extends Block {
     public ShelfMushroomBlock(BlockBehaviour.Properties settings, int variation) {
         super(settings);
         this.variation = variation;
-    }
-
-    @Override
-    public @NotNull MapCodec<ShelfMushroomBlock> codec() {
-        return CODEC;
     }
 
     @Override

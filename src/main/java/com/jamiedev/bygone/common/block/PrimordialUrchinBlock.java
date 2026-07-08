@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.common.block.entity.PrimordialUrchinEntity;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -14,6 +13,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -46,7 +46,6 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     public static final VoxelShape SHAPE;
     public static final BooleanProperty WATERLOGGED;
     public static BooleanProperty ACTIVATEDBOOL;
-    public static final MapCodec<PrimordialUrchinBlock> CODEC = simpleCodec(PrimordialUrchinBlock::new);
     public static boolean test = false;
 
     static {
@@ -85,22 +84,17 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    public MapCodec<PrimordialUrchinBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         return world.getBlockState(pos.below()).isFaceSturdy(world, pos.below(), Direction.UP);
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -112,7 +106,7 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
+    public void tick(BlockState state, ServerLevel world, BlockPos pos, @NotNull RandomSource random) {
         if (!isInWater(state, world, pos)) {
             world.setBlock(pos, this.defaultBlockState().setValue(WATERLOGGED, false), 2);
         }
@@ -122,12 +116,13 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
             world.updateNeighborsAt(pos, this);
         }
     }
-
+    
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
         return false;
     }
-
+    
+    
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         FluidState fluidState = ctx.getLevel().getFluidState(ctx.getClickedPos());
@@ -165,10 +160,10 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    protected void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level world, BlockPos pos, Entity entity) {
         if (!world.isClientSide && world.getDifficulty() != Difficulty.PEACEFUL) {
             if (entity instanceof LivingEntity livingEntity && !(Boolean) state.getValue(ACTIVATEDBOOL)) {
-                if (!livingEntity.isInvulnerableTo(world.damageSources().cactus()) && !livingEntity.hasInfiniteMaterials()) {
+                if (!livingEntity.isInvulnerableTo(world.damageSources().cactus()) && livingEntity instanceof Player p && p.getAbilities().instabuild) {
 
                     world.playLocalSound(
                             (double) pos.getX() + 0.5,
@@ -204,12 +199,12 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    protected boolean isSignalSource(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    protected int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
+    public int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction direction) {
         return state.getValue(ACTIVATED);
     }
 
@@ -220,7 +215,7 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         return RenderShape.MODEL;
     }
 
@@ -230,7 +225,7 @@ public class PrimordialUrchinBlock extends BaseEntityBlock implements SimpleWate
     }
 
     @Override
-    protected FluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 }

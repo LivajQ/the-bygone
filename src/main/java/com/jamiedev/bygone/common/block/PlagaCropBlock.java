@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGItems;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
@@ -29,8 +28,7 @@ public class PlagaCropBlock extends AmaranthCropBlock {
     /**
      * Last stage drops actual "crop / block"
      */
-
-    public static final MapCodec<PlagaCropBlock> CODEC = simpleCodec(PlagaCropBlock::new);
+    
     private static final VoxelShape[] SHAPE_BY_AGE;
 
     static {
@@ -97,12 +95,8 @@ public class PlagaCropBlock extends AmaranthCropBlock {
     protected static boolean hasSufficientLight(LevelReader level, BlockPos pos) {
         return level.getRawBrightness(pos, 0) >= 5;
     }
-
-    public MapCodec<? extends PlagaCropBlock> codec() {
-        return CODEC;
-    }
-
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         return SHAPE_BY_AGE[this.getAge(state)];
     }
 
@@ -129,12 +123,12 @@ public class PlagaCropBlock extends AmaranthCropBlock {
     public final boolean isMaxAge(BlockState state) {
         return this.getAge(state) >= this.getMaxAge();
     }
-
-    protected boolean isRandomlyTicking(BlockState state) {
+    
+    public boolean isRandomlyTicking(BlockState state) {
         return !this.isMaxAge(state);
     }
-
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (level.getRawBrightness(pos, 0) >= 6) {
             int i = this.getAge(state);
             if (i < this.getMaxAge()) {
@@ -160,12 +154,12 @@ public class PlagaCropBlock extends AmaranthCropBlock {
     protected int getBonemealAgeIncrease(Level level) {
         return Mth.nextInt(level.random, 1, 2);
     }
-
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return hasSufficientLight(level, pos) && super.canSurvive(state, level, pos);
     }
-
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (entity instanceof Ravager && level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             level.destroyBlock(pos, true, entity);
         }

@@ -8,7 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -24,15 +24,19 @@ public class WrigglingSoilBlock extends Block {
     public WrigglingSoilBlock(Properties properties) {
         super(properties);
     }
-
+    
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(ItemStack stack, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        ItemStack stack = player.getItemInHand(hand);
+        
         if (stack.is(Items.BUCKET)) {
+            
             if (!level.isClientSide) {
+                
                 ItemStack baitwormBucket = new ItemStack(BGItems.BUCKET_O_BAITWORMS.get());
-
+                
                 level.setBlock(pos, BGBlocks.UMBRAL_SOIL.get().defaultBlockState(), 3);
-
+                
                 if (!player.getAbilities().instabuild) {
                     stack.shrink(1);
                 }
@@ -42,14 +46,16 @@ public class WrigglingSoilBlock extends Block {
                 } else if (!player.getInventory().add(baitwormBucket)) {
                     player.drop(baitwormBucket, false);
                 }
-
+                
                 level.playSound(null, pos, SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
-            return ItemInteractionResult.sidedSuccess(level.isClientSide);
+            
+            return InteractionResult.SUCCESS;
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        
+        return InteractionResult.PASS;
     }
-
+    
     @Override
     public void randomTick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
         for (int x = -1; x <= 1; x++) {
@@ -64,7 +70,7 @@ public class WrigglingSoilBlock extends Block {
                     BlockState cropState = level.getBlockState(cropPos);
 
                     if (cropState.getBlock() instanceof BonemealableBlock bonemealable) {
-                        if (bonemealable.isValidBonemealTarget(level, cropPos, cropState) && random.nextInt(3) == 0) {
+                        if (bonemealable.isValidBonemealTarget(level, cropPos, cropState, level.isClientSide) && random.nextInt(3) == 0) {
                             if (bonemealable.isBonemealSuccess(level, random, cropPos, cropState)) {
                                 bonemealable.performBonemeal(level, random, cropPos, cropState);
                             }

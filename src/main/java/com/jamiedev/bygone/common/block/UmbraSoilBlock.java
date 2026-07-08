@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.init.JamiesModTag;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -15,7 +14,6 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 
 public class UmbraSoilBlock extends Block {
     public static final BooleanProperty SNOWY;
-    public static final MapCodec<UmbraSoilBlock> CODEC = simpleCodec(UmbraSoilBlock::new);
 
     static {
         SNOWY = BlockStateProperties.SNOWY;
@@ -29,12 +27,8 @@ public class UmbraSoilBlock extends Block {
     private static boolean isSnowySetting(BlockState state) {
         return state.is(JamiesModTag.MOSSY);
     }
-
-    protected MapCodec<? extends UmbraSoilBlock> codec() {
-        return CODEC;
-    }
-
-    protected BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
+    
+    public BlockState updateShape(BlockState state, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         return facing == Direction.UP ? state.setValue(SNOWY, isSnowySetting(facingState))
                 : super.updateShape(state, facing, facingState, level, currentPos, facingPos);
     }

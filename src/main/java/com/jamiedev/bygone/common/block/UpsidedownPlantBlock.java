@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.block;
 
 import com.jamiedev.bygone.core.registry.BGBlocks;
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -19,31 +18,29 @@ public abstract class UpsidedownPlantBlock extends Block {
         super(settings);
     }
 
-    @Override
-    protected abstract MapCodec<? extends UpsidedownPlantBlock> codec();
-
     protected boolean canPlantOnTop(BlockState floor, BlockGetter world, BlockPos pos) {
         return floor.is(BlockTags.DIRT) || floor.is(BGBlocks.BYSTONE.get()) || floor.is(BGBlocks.BYSLATE.get());
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return !state.canSurvive(world, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         BlockPos blockPos = pos.above();
         return this.canPlantOnTop(world.getBlockState(blockPos), world, blockPos);
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
         return state.getFluidState().isEmpty();
     }
 
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType type) {
-        return type == PathComputationType.AIR && !this.hasCollision || super.isPathfindable(state, type);
+    public boolean isPathfindable(BlockState state, BlockGetter level, BlockPos pos, PathComputationType type) {
+        return type == PathComputationType.AIR && !this.hasCollision || super.isPathfindable(state, level, pos, type);
     }
+    
 }

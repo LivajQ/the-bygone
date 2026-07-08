@@ -25,7 +25,6 @@ public class GourdDangoWallBlock extends GourdDangoBlock {
     public static final DirectionProperty FACING;
     protected static final float field_31285 = 2.5F;
     private static final Map<Direction, VoxelShape> BOUNDING_SHAPES;
-    public static MapCodec<GourdDangoWallBlock> CODEC;
 
     static {
         FACING = HorizontalDirectionalBlock.FACING;
@@ -48,22 +47,17 @@ public class GourdDangoWallBlock extends GourdDangoBlock {
     }
 
     @Override
-    public MapCodec<GourdDangoWallBlock> codec() {
-        return CODEC;
-    }
-
-    @Override
     public String getDescriptionId() {
         return this.asItem().getDescriptionId();
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return getBoundingShape(state);
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         return canPlaceAt(world, pos, state.getValue(FACING));
     }
 
@@ -92,17 +86,17 @@ public class GourdDangoWallBlock extends GourdDangoBlock {
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return direction.getOpposite() == state.getValue(FACING) && !state.canSurvive(world, pos) ? Blocks.AIR.defaultBlockState() : state;
     }
 
     @Override
-    protected BlockState rotate(BlockState state, Rotation rotation) {
+    public BlockState rotate(BlockState state, Rotation rotation) {
         return state.setValue(FACING, rotation.rotate(state.getValue(FACING)));
     }
 
     @Override
-    protected BlockState mirror(BlockState state, Mirror mirror) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
