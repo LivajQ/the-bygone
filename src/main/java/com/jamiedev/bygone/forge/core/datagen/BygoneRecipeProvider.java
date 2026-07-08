@@ -1,9 +1,8 @@
-package com.jamiedev.bygone.core.datagen;
+package com.jamiedev.bygone.forge.core.datagen;
 
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGItems;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -16,15 +15,15 @@ import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public class BygoneRecipeProvider extends RecipeProvider {
-    public BygoneRecipeProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
-        super(output, registriesFuture);
+    public BygoneRecipeProvider(PackOutput output) {
+        super(output);
     }
 
     @Override
-    public void buildRecipes(@NotNull RecipeOutput exporter) {
+    public void buildRecipes(@NotNull Consumer<FinishedRecipe> exporter) {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, BGItems.AMARANTH_LOAF.get(),1)
                 .pattern("AAA")
@@ -162,14 +161,12 @@ public class BygoneRecipeProvider extends RecipeProvider {
         glowConcretePowder(exporter, BGBlocks.WHITE_GLOW_CONCRETE_POWDER.get(), Items.WHITE_DYE);
         glowConcretePowder(exporter, BGBlocks.YELLOW_GLOW_CONCRETE_POWDER.get(), Items.YELLOW_DYE);*/
     }
-
-
-
-    protected static void glowConcretePowder(RecipeOutput recipeOutput, ItemLike glowConcretePowder, ItemLike dye) {
+    
+    protected static void glowConcretePowder(Consumer<FinishedRecipe> recipeOutput, ItemLike glowConcretePowder, ItemLike dye) {
         ShapelessRecipeBuilder.shapeless(RecipeCategory.BUILDING_BLOCKS, glowConcretePowder, 8).requires(dye).requires(BGBlocks.SHELLSAND.get(), 4).requires(BGBlocks.GLOW_GRAVEL.get(), 4).group("glow_concrete_powder").unlockedBy("has_shellsand", has(BGBlocks.SHELLSAND.get())).unlockedBy("has_glow_gravel", has(BGBlocks.GLOW_GRAVEL.get())).save(recipeOutput);
     }
 
-    void bricksRecipe(RecipeOutput exporter, Block input, Block output) {
+    void bricksRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 4)
                 .pattern("XX")
                 .pattern("XX")
@@ -179,7 +176,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
 
     }
 
-    void slabRecipe(RecipeOutput exporter, Block input, Block output) {
+    void slabRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 6)
                 .pattern("XXX")
                 .define('X', input.asItem())
@@ -189,7 +186,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
     }
 
 
-    void stairsRecipe(RecipeOutput exporter, Block input, Block output) {
+    void stairsRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 4)
                 .pattern("X  ")
                 .pattern("XX ")
@@ -199,7 +196,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void wallsRecipe(RecipeOutput exporter, Block input, Block output) {
+    void wallsRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output) {
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, output, 6)
                 .pattern("XXX")
                 .pattern("XXX")
@@ -209,7 +206,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
 
     }
 
-    void pressurePlateRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
+    void pressurePlateRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 1)
                 .pattern("XX")
                 .define('X', input.asItem())
@@ -218,7 +215,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void chiseledRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory) {
+    void chiseledRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 1)
                 .pattern("X")
                 .pattern("X")
@@ -227,7 +224,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void woodRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory) {
+    void woodRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 3)
                 .pattern("XX")
                 .pattern("XX")
@@ -237,7 +234,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void doorRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
+    void doorRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 3)
                 .pattern("XX")
                 .pattern("XX")
@@ -249,7 +246,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void fenceRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
+    void fenceRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 3)
                 .pattern("WXW")
                 .pattern("WXW")
@@ -260,7 +257,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void fenceGateRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
+    void fenceGateRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 1)
                 .pattern("XWX")
                 .pattern("XWX")
@@ -271,7 +268,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                 .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
     }
 
-    void hangingSignRecipe(RecipeOutput exporter, Block input, Item output, RecipeCategory recipeCategory, String group) {
+    void hangingSignRecipe(Consumer<FinishedRecipe> exporter, Block input, Item output, RecipeCategory recipeCategory, String group) {
         ShapedRecipeBuilder.shaped(recipeCategory, output, 1)
                 .pattern("X X")
                 .pattern("WWW")
@@ -283,7 +280,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                     .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
         }
 
-        void signRecipe(RecipeOutput exporter, Block input, Item output, RecipeCategory recipeCategory, String group) {
+        void signRecipe(Consumer<FinishedRecipe> exporter, Block input, Item output, RecipeCategory recipeCategory, String group) {
             ShapedRecipeBuilder.shaped(recipeCategory, output, 3)
                     .pattern("WWW")
                     .pattern("WWW")
@@ -296,7 +293,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
                     .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
         }
 
-        void trapDoorRecipe(RecipeOutput exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
+        void trapDoorRecipe(Consumer<FinishedRecipe> exporter, Block input, Block output, RecipeCategory recipeCategory, String group) {
             ShapedRecipeBuilder.shaped(recipeCategory, output, 2)
                     .pattern("XXX")
                     .pattern("XXX")
@@ -307,22 +304,23 @@ public class BygoneRecipeProvider extends RecipeProvider {
                     .save(exporter, ResourceLocation.parse(RecipeProvider.getSimpleRecipeName(output.asItem())));
         }
 
-    protected static void oreSmelting(RecipeOutput recipeOutput, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
+    protected static void oreSmelting(Consumer<FinishedRecipe> recipeOutput, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
                                       float pExperience, int pCookingTIme, String pGroup) {
-        oreCooking(recipeOutput, RecipeSerializer.SMELTING_RECIPE, SmeltingRecipe::new, pIngredients, pCategory, pResult,
+        oreCooking(recipeOutput, RecipeSerializer.SMELTING_RECIPE, pIngredients, pCategory, pResult,
                 pExperience, pCookingTIme, pGroup, "_from_smelting");
     }
 
-    protected static void oreBlasting(RecipeOutput recipeOutput, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
+    protected static void oreBlasting(Consumer<FinishedRecipe> recipeOutput, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult,
                                       float pExperience, int pCookingTime, String pGroup) {
-        oreCooking(recipeOutput, RecipeSerializer.BLASTING_RECIPE, BlastingRecipe::new, pIngredients, pCategory, pResult,
+        oreCooking(recipeOutput, RecipeSerializer.BLASTING_RECIPE, pIngredients, pCategory, pResult,
                 pExperience, pCookingTime, pGroup, "_from_blasting");
     }
-
-    protected static <T extends AbstractCookingRecipe> void oreCooking(RecipeOutput recipeOutput, RecipeSerializer<T> pCookingSerializer, AbstractCookingRecipe.Factory<T> factory,
-                                                                       List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult, float pExperience, int pCookingTime, String pGroup, String pRecipeName) {
-        for(ItemLike itemlike : pIngredients) {
-            SimpleCookingRecipeBuilder.generic(Ingredient.of(itemlike), pCategory, pResult, pExperience, pCookingTime, pCookingSerializer, factory).group(pGroup).unlockedBy(getHasName(itemlike), has(itemlike))
+    
+    protected static void oreCooking(Consumer<FinishedRecipe> recipeOutput, RecipeSerializer<? extends AbstractCookingRecipe> pCookingSerializer, List<ItemLike> pIngredients, RecipeCategory pCategory, ItemLike pResult, float pExperience, int pCookingTime, String pGroup, String pRecipeName) {
+        for (ItemLike itemlike : pIngredients) {
+            SimpleCookingRecipeBuilder.generic(Ingredient.of(itemlike), pCategory, pResult, pExperience, pCookingTime, pCookingSerializer)
+                    .group(pGroup)
+                    .unlockedBy(getHasName(itemlike), has(itemlike))
                     .save(recipeOutput, Bygone.MOD_ID + ":" + getItemName(pResult) + pRecipeName + "_" + getItemName(itemlike));
         }
     }

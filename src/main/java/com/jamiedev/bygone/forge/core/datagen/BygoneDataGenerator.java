@@ -1,12 +1,12 @@
-package com.jamiedev.bygone.core.datagen;
+package com.jamiedev.bygone.forge.core.datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
-import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,7 +21,7 @@ public class BygoneDataGenerator {
         //generator.addProvider(true,blockTagsProvider);
         //generator.addProvider(true,new BygoneItemTagProvider(output,lookupProvider,blockTagsProvider.contentsGetter(),existingFileHelper));
         //generator.addProvider(true,BygoneLootTableProvider.create(output,lookupProvider));
-        generator.addProvider(true, new BygoneRecipeProvider(output, lookupProvider));
+        generator.addProvider(true, new BygoneRecipeProvider(output));
 
         //generator.addProvider(true,new BygoneDataPackProvider(output,buildRegistry(),lookupProvider));
         generator.addProvider(event.includeServer(), new BygoneAdvancementProvider(output, lookupProvider, existingFileHelper));
