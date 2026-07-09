@@ -65,7 +65,7 @@ public class BygoneWeatherCommand {
         getProperty(stackCommandContext).ifPresent((property) -> {
             try {
                 String weatherName = ResourceArgument.getResource(stackCommandContext, "weather_type", BygoneWeather.WEATHER_TYPE_REGISTRY_KEY)
-                    .getRegisteredName();
+                    .toString();
                 stackCommandContext.getSource().sendSuccess(() -> Component.translatable(
                     "commands.bygone.weather.query_property", property.getIdentifier(), weatherName, property.getValue().toString()
                 ), true);
@@ -97,7 +97,7 @@ public class BygoneWeatherCommand {
         String previousProperty = property.getValue().toString();
         String weatherName = ResourceArgument
             .getResource(stackCommandContext, "weather_type", BygoneWeather.WEATHER_TYPE_REGISTRY_KEY)
-            .getRegisteredName();
+            .toString();
 
         attemptSetValue(property, propertyValue);
 

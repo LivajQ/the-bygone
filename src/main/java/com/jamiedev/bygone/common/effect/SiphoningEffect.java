@@ -1,6 +1,5 @@
 package com.jamiedev.bygone.common.effect;
 
-
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +14,7 @@ public class SiphoningEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
+    public void applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
 
         if (!entity.level().isClientSide()) {
@@ -23,11 +22,10 @@ public class SiphoningEffect extends MobEffect {
             int newAir = currentAir + (amplifier + 1) * 3 + 3;
             entity.setAirSupply(Math.min(newAir, entity.getMaxAirSupply()));
         }
-        return true;
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 }

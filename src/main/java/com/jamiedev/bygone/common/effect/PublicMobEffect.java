@@ -11,6 +11,7 @@ public class PublicMobEffect extends MobEffect {
     }
 
     public PublicMobEffect(MobEffectCategory category, int color, ParticleOptions particle) {
-        super(category, color, particle);
+        //super(category, color, particle);
+        super(category, color);
     }
 }

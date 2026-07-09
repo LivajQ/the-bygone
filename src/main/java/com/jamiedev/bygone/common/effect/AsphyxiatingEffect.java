@@ -1,13 +1,11 @@
 package com.jamiedev.bygone.common.effect;
 
-
 import com.jamiedev.bygone.core.init.JamiesModTag;
-import net.minecraft.tags.EntityTypeTags;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import org.jetbrains.annotations.NotNull;
 
 public class AsphyxiatingEffect extends MobEffect {
@@ -19,20 +17,25 @@ public class AsphyxiatingEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
+    public void applyEffectTick(@NotNull LivingEntity entity, int amplifier) {
         super.applyEffectTick(entity, amplifier);
 
-        if (!entity.level().isClientSide() && !entity.getType().is(EntityTypeTags.CAN_BREATHE_UNDER_WATER)) {
+        if (!entity.level().isClientSide() && !entity.canBreatheUnderwater()) {
             float amountOfAirToTake = 2 * amplifier + 5.5f;
 
             for (MobEffectInstance effectInstance : entity.getActiveEffects()) {
-
-                if (effectInstance.getEffect().is(JamiesModTag.AIRLESS_BREATHING)) {
+                
+                boolean hasAirlessBreathing = BuiltInRegistries.MOB_EFFECT.getResourceKey(effectInstance.getEffect())
+                        .flatMap(BuiltInRegistries.MOB_EFFECT::getHolder)
+                        .map(holder -> holder.is(JamiesModTag.AIRLESS_BREATHING))
+                        .orElse(false);
+                
+                if (hasAirlessBreathing) {
                     amountOfAirToTake -= 2 * (1 + effectInstance.getAmplifier());
                 }
             }
 
-            amountOfAirToTake -= 0.5f * (float) entity.getAttributeValue(Attributes.OXYGEN_BONUS);
+            //amountOfAirToTake -= 0.5f * (float) entity.getAttributeValue(Attributes.OXYGEN_BONUS);
 
             int finalAmountOfAirToTake = (int) amountOfAirToTake;
             amountOfAirToTake -= finalAmountOfAirToTake;
@@ -51,12 +54,10 @@ public class AsphyxiatingEffect extends MobEffect {
             }
 
         }
-
-        return true;
     }
-
+    
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 }

@@ -11,16 +11,14 @@ public class SatietyEffect extends MobEffect {
         super(MobEffectCategory.BENEFICIAL, color);
     }
 
-    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
         if (!livingEntity.level().isClientSide && livingEntity instanceof Player player) {
             player.getFoodData().eat(1, 1F);
         }
-
-        return true;
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         int i = 40 >> amplifier;
         if (i > 0) {
             return duration % i == 0;

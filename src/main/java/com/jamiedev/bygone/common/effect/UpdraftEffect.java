@@ -1,6 +1,5 @@
 package com.jamiedev.bygone.common.effect;
 
-import com.jamiedev.bygone.core.network.PacketHandler;
 import com.jamiedev.bygone.core.network.UpdraftMovementS2C;
 import com.jamiedev.bygone.core.platform.Services;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,8 +20,8 @@ public class UpdraftEffect extends MobEffect {
     }
 
     @Override
-    public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        if (!entity.level().isClientSide && entity instanceof Player player && !player.isFallFlying() && !player.getAbilities().flying && !player.isInLiquid()) {
+    public void applyEffectTick(LivingEntity entity, int amplifier) {
+        if (!entity.level().isClientSide && entity instanceof Player player && !player.isFallFlying() && !player.getAbilities().flying && !player.isInWater() && !player.isInLava()) {
             double verticalVelocityFactor = 0.15;
             boolean isDescending = player.isShiftKeyDown();
 
@@ -74,11 +73,10 @@ public class UpdraftEffect extends MobEffect {
 
             entity.resetFallDistance();
         }
-        return true;
     }
 
     @Override
-    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+    public boolean isDurationEffectTick(int duration, int amplifier) {
         return true;
     }
 }
