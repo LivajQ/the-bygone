@@ -148,7 +148,7 @@ public class SunkenCityPiece
                 if (drowned != null) {
                     drowned.setPersistenceRequired();
                     drowned.moveTo(pos, 0.0F, 0.0F);
-                    drowned.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null);
+                    drowned.finalizeSpawn(level, level.getCurrentDifficultyAt(pos), MobSpawnType.STRUCTURE, null, null);
                     level.addFreshEntityWithPassengers(drowned);
                     level.setBlock(pos, Blocks.WATER.defaultBlockState(), 2);
                 }

@@ -18,12 +18,8 @@ import net.minecraft.world.level.levelgen.WorldgenRandom;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraft.world.level.levelgen.structure.pools.DimensionPadding;
 import net.minecraft.world.level.levelgen.structure.pools.JigsawPlacement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.pools.alias.PoolAliasLookup;
-import net.minecraft.world.level.levelgen.structure.structures.JigsawStructure;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 
 import java.util.Optional;
 
@@ -36,9 +32,7 @@ public class AncientRootStructure extends Structure {
                     Codec.intRange(0, 30).fieldOf("size").forGetter(structure -> structure.size),
                     HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
                     Heightmap.Types.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter),
-                    DimensionPadding.CODEC.optionalFieldOf("dimension_padding", JigsawStructure.DEFAULT_DIMENSION_PADDING).forGetter(structure -> structure.dimensionPadding),
-                    LiquidSettings.CODEC.optionalFieldOf("liquid_settings", JigsawStructure.DEFAULT_LIQUID_SETTINGS).forGetter(structure -> structure.liquidSettings)
+                    Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
             ).apply(instance, AncientRootStructure::new)
     );
 
@@ -48,8 +42,6 @@ public class AncientRootStructure extends Structure {
     private final HeightProvider startHeight;
     private final Optional<Heightmap.Types> projectStartToHeightmap;
     private final int maxDistanceFromCenter;
-    private final DimensionPadding dimensionPadding;
-    private final LiquidSettings liquidSettings;
 
     public AncientRootStructure(Structure.StructureSettings config,
                                 Holder<StructureTemplatePool> startPool,
@@ -57,9 +49,7 @@ public class AncientRootStructure extends Structure {
                                 int size,
                                 HeightProvider startHeight,
                                 Optional<Heightmap.Types> projectStartToHeightmap,
-                                int maxDistanceFromCenter,
-                                DimensionPadding dimensionPadding,
-                                LiquidSettings liquidSettings) {
+                                int maxDistanceFromCenter) {
         super(config);
         this.startPool = startPool;
         this.startJigsawName = startJigsawName;
@@ -67,8 +57,6 @@ public class AncientRootStructure extends Structure {
         this.startHeight = startHeight;
         this.projectStartToHeightmap = projectStartToHeightmap;
         this.maxDistanceFromCenter = maxDistanceFromCenter;
-        this.dimensionPadding = dimensionPadding;
-        this.liquidSettings = liquidSettings;
     }
 
     @Override
@@ -102,10 +90,7 @@ public class AncientRootStructure extends Structure {
                         new BlockPos(chunkPos.getMinBlockX(), y, chunkPos.getMinBlockZ()),
                         false,
                         projectStartToHeightmap,
-                        maxDistanceFromCenter,
-                        PoolAliasLookup.EMPTY, // Optional thing that allows swapping a template pool with another per structure json instance. We don't need this but see vanilla JigsawStructure class for how to wire it up if you want it.
-                        dimensionPadding,
-                        liquidSettings
+                        maxDistanceFromCenter
                 );
             }
             y--;
