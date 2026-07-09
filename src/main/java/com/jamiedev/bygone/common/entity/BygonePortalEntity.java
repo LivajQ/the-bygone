@@ -1,13 +1,10 @@
 package com.jamiedev.bygone.common.entity;
 
 import com.jamiedev.bygone.Bygone;
-import com.jamiedev.bygone.client.BygoneClient;
-import com.jamiedev.bygone.core.registry.BGEntityTypes;
+import com.jamiedev.bygone.common.worldgen.BygoneTeleporter;
 import com.jamiedev.bygone.core.registry.BGItems;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -17,37 +14,23 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.TicketType;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageSources;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.CollisionGetter;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Portal;
-import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.dimension.DimensionType;
-import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.level.portal.PortalShape;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec2;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
-import net.minecraft.world.phys.shapes.VoxelShape;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class BygonePortalEntity extends LivingEntity implements Portal {
+public class BygonePortalEntity extends LivingEntity {
     private static final EntityDataAccessor<Integer> DATA_LIFETIME = SynchedEntityData.defineId(BygonePortalEntity .class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DATA_RETURN = SynchedEntityData.defineId(BygonePortalEntity .class, EntityDataSerializers.BOOLEAN);
     private int triggerCooldown = 0;
@@ -70,10 +53,10 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
     }
 
     @Override
-    public void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_LIFETIME, 12000);
-        builder.define(DATA_RETURN, false);
+    public void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_LIFETIME, 12000);
+        this.entityData.define(DATA_RETURN, false);
     }
 
     @Override
@@ -133,7 +116,7 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
                 for (BygonePortalEntity portal : existingPortals) {
                     portal.addEffect(new MobEffectInstance(MobEffects.GLOWING, 20));
                 }
-                existingPortals.getFirst().setLifeTime(12000);
+                existingPortals.get(0).setLifeTime(12000);
                 this.discard();
             }
         }
@@ -149,12 +132,44 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
 
                     if (remaining > 0) {
                         teleportCountdown.put(player, remaining - 1);
-                        player.setAsInsidePortal(this, this.blockPosition());
+                        player.handleInsidePortal(this.blockPosition());
                         if (player instanceof LocalPlayer localPlayer) localPlayer.spinningEffectIntensity = 0.5f;
 
                     } else {
                         teleportCountdown.remove(player);
-                        teleportPlayer(player);
+                        ServerLevel currentLevel = (ServerLevel) this.level();
+                        if (!player.canChangeDimensions()) return;
+                        
+                        player.handleInsidePortal(this.blockPosition());
+                        if (player.isOnPortalCooldown()) return;
+                        
+                        ResourceKey<Level> bygone = ResourceKey.create(
+                                Registries.DIMENSION,
+                                new ResourceLocation(Bygone.MOD_ID, "bygone")
+                        );
+                        
+                        ResourceKey<Level> destinationKey =
+                                currentLevel.dimension() == bygone ? Level.OVERWORLD : bygone;
+                        
+                        ServerLevel destinationLevel = currentLevel.getServer().getLevel(destinationKey);
+                        if (destinationLevel == null) return;
+                        
+                        BygoneTeleporter teleporter = new BygoneTeleporter(player, this.blockPosition(), destinationLevel);
+                        if (!teleporter.isValid()) return;
+                        
+                        player.setPortalCooldown();
+                        
+                        Entity result = player.changeDimension(destinationLevel, teleporter);
+                        if (result != null) {
+                            result.setPortalCooldown();
+                            destinationLevel.getChunkSource().addRegionTicket(
+                                    TicketType.PORTAL,
+                                    new ChunkPos(teleporter.getTarget()),
+                                    3,
+                                    teleporter.getTarget()
+                            );
+                        }
+                        
                     }
                 } else {
                     teleportCountdown.put(player, 80);
@@ -165,7 +180,7 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
         if (!teleportCountdown.entrySet().isEmpty()) {
             teleportCountdown.forEach((player, integer) -> {
                 if (player.distanceTo(this) > 3 && player instanceof LocalPlayer localPlayer) {
-                    if (localPlayer.portalProcess!=null) localPlayer.portalProcess.setAsInsidePortalThisTick(false);
+                    localPlayer.isInsidePortal = false;
                 }
             });
 
@@ -258,10 +273,12 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
         }
     }
 
+    /*
     @Override
     protected double getDefaultGravity() {
         return 0;
     }
+     */
 
     private void resetPortal() {
         wasActivated = false;
@@ -297,11 +314,14 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
         return false;
     }
 
+    /*
     @Override
     public ProjectileDeflection deflection(Projectile projectile) {
         return ProjectileDeflection.REVERSE;
     }
+     */
 
+    /*
     public void teleportPlayer(Player player) {
         if (!this.isRemoved() && this.wasActivated && this.tickCount > 90) {
 
@@ -345,6 +365,7 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
             }
         }
     }
+    
 
     private static void teleport(Player player, ServerLevel serverlevel, BlockPos finalBlockpos) {
         player.teleportTo(serverlevel, finalBlockpos.getX() + 0.5, finalBlockpos.getY(), finalBlockpos.getZ() + 0.5, Set.of(), player.getYRot(), player.getXRot());
@@ -398,6 +419,7 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
 
         return true;
     }
+     */
 
     @Override
     public boolean isPushable() {
@@ -442,20 +464,5 @@ public class BygonePortalEntity extends LivingEntity implements Portal {
     @Override
     public void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 
-    }
-
-    @Override
-    public int getPortalTransitionTime(ServerLevel level, Entity entity) {
-        return 80;
-    }
-
-    @Override
-    public @Nullable DimensionTransition getPortalDestination(ServerLevel serverLevel, Entity player, BlockPos blockPos) {
-        return null;
-    }
-
-    @Override
-    public Transition getLocalTransition() {
-        return Transition.NONE;
     }
 }

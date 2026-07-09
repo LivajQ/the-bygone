@@ -3,6 +3,7 @@ package com.jamiedev.bygone.common.entity;
 import com.google.common.collect.ImmutableList;
 import com.jamiedev.bygone.common.entity.ai.HydropusBrain;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.*;
@@ -73,12 +74,12 @@ public class HydropusEntity extends Animal implements NeutralMob {
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, CompoundTag tag) {
         if (spawnType == MobSpawnType.STRUCTURE) {
             // Need to ask if they are immediately hostile
         }
 
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
     }
 
     @Override

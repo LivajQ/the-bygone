@@ -1,6 +1,5 @@
 package com.jamiedev.bygone.common.entity;
 
-import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -10,7 +9,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.DifficultyInstance;
@@ -20,28 +18,23 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
-import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.animal.Turtle;
-import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.animal.horse.Markings;
 import net.minecraft.world.entity.monster.*;
-import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -57,10 +50,11 @@ public class MurklingEntity extends Monster implements RangedAttackMob
     
     public MurklingEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
-        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
         this.moveControl = new MurklingEntityMoveControl(this);
         this.lookControl = new SmoothSwimmingLookControl(this, 10);
         this.waterNavigation = new WaterBoundPathNavigation(this, level);
+        this.setMaxUpStep(2.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -68,9 +62,9 @@ public class MurklingEntity extends Monster implements RangedAttackMob
                 .add(Attributes.MAX_HEALTH, 30.0)
                 .add(Attributes.FOLLOW_RANGE, 20.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.10)
-                .add(Attributes.WATER_MOVEMENT_EFFICIENCY, 0.33)
-                .add(Attributes.ATTACK_DAMAGE, 6.0)
-                .add(Attributes.STEP_HEIGHT, 2.0);
+                //.add(Attributes.WATER_MOVEMENT_EFFICIENCY, 0.33)
+                .add(ForgeMod.SWIM_SPEED.get(), 0.33) //TODO Forge ref here in common code because me lazy
+                .add(Attributes.ATTACK_DAMAGE, 6.0);
     }
 
 
@@ -86,9 +80,9 @@ public class MurklingEntity extends Monster implements RangedAttackMob
         this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PrimordialFishEntity.class, 10, true, false, this::okTarget));
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_ID_TYPE_VARIANT, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_TYPE_VARIANT, 0);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -172,7 +166,7 @@ public class MurklingEntity extends Monster implements RangedAttackMob
         return BGSoundEvents.MURKLING_AMBIENT_ADDITIONS_EVENT;
     }
 
-    @Override
+    //@Override
     public void playAttackSound() {
         this.playSound(BGSoundEvents.MURKLING_ATTACK_ADDITIONS_EVENT, 1.0F, 1.0F);
     }
@@ -196,7 +190,7 @@ public class MurklingEntity extends Monster implements RangedAttackMob
             );
             this.setOnGround(false);
             this.hasImpulse = true;
-            this.makeSound(this.getFlopSound());
+            this.playSound(this.getFlopSound());
         }
 
         super.aiStep();
@@ -404,7 +398,7 @@ public class MurklingEntity extends Monster implements RangedAttackMob
 
     @javax.annotation.Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @javax.annotation.Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @javax.annotation.Nullable SpawnGroupData spawnGroupData, CompoundTag tag) {
         RandomSource randomsource = level.getRandom();
         MurklingVariants murkling$variant = getRandomVariant(level, this.blockPosition());
         MurklingVariants variant;
@@ -416,7 +410,7 @@ public class MurklingEntity extends Monster implements RangedAttackMob
         }
 
         this.setVariantAndMarkings(murkling$variant, Util.getRandom(Markings.values(), randomsource));
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
     }
     
     static {

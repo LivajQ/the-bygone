@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -23,6 +22,8 @@ import net.minecraft.world.entity.animal.AbstractSchoolingFish;
 import net.minecraft.world.entity.animal.Salmon;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -53,9 +54,13 @@ public class CoelacanthEntity extends AbstractSchoolingFish {
     protected void registerGoals() {
         super.registerGoals();
         this.goalSelector.addGoal(0, new AvoidEntityGoal<>(this, Player.class, 6.0F, 1.0, 1.2));
-        this.goalSelector.addGoal(1, new TemptGoal(this, 3.0, (stack) -> {
-            return stack.is(ItemTags.ARMADILLO_FOOD);
-        }, false));
+        this.goalSelector.addGoal(1,
+                new TemptGoal(this, 3.0,
+                        Ingredient.of(Items.SPIDER_EYE),
+                        false
+                )
+        );
+        
     }
 
     @Override

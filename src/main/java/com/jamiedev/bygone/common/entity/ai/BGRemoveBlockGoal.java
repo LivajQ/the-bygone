@@ -22,7 +22,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
@@ -177,7 +177,7 @@ public class BGRemoveBlockGoal extends MoveToBlockGoal {
                         double d3 = randomsource.nextGaussian() * 0.02;
                         double d1 = randomsource.nextGaussian() * 0.02;
                         double d2 = randomsource.nextGaussian() * 0.02;
-                        ((ServerLevel) level).sendParticles(ParticleTypes.SMALL_GUST, placeVec3.x, placeVec3.y, placeVec3.z, 1, d3, d1, d2, 0.15);
+                        ((ServerLevel) level).sendParticles(ParticleTypes.SNEEZE, placeVec3.x, placeVec3.y, placeVec3.z, 1, d3, d1, d2, 0.15);
                     }
                 }
             }

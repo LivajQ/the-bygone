@@ -12,6 +12,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -59,7 +60,7 @@ public class MoobooEntity extends Cow {
     public static boolean checkAnimalSpawnRules(
             EntityType<? extends Animal> animal, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random
     ) {
-        boolean flag = MobSpawnType.ignoresLightRequirements(spawnType) || isBrightEnoughToSpawn(level, pos);
+        boolean flag = spawnType == MobSpawnType.NATURAL || isBrightEnoughToSpawn(level, pos);
         return level.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) && flag;
     }
 
@@ -67,11 +68,17 @@ public class MoobooEntity extends Cow {
         return level.getBlockState(pos.below()).is(BGBlocks.SABLE_MOSS_BLOCK.get()) ? 10.0F
                 : level.getPathfindingCostFromLightLevels(pos);
     }
-
+    
     @Override
     public boolean canBeAffected(MobEffectInstance potioneffect) {
-        return !(potioneffect.is(MobEffects.POISON) || potioneffect.is(MobEffects.HARM)|| potioneffect.is(MobEffects.WITHER)) && super.canBeAffected(potioneffect);
+        MobEffect effect = potioneffect.getEffect();
+        
+        return !(effect == MobEffects.POISON
+                || effect == MobEffects.HARM
+                || effect == MobEffects.WITHER)
+                && super.canBeAffected(potioneffect);
     }
+
 
     protected SoundEvent getAmbientSound() {
         return BGSoundEvents.MOOBOO_AMBIENT_ADDITIONS_EVENT;
@@ -170,11 +177,16 @@ public class MoobooEntity extends Cow {
         return true;
     }
 
-    public EntityDimensions getDefaultDimensions(Pose pose) {
-        return this.isBaby() ? BABY_DIMENSIONS : super.getDefaultDimensions(pose);
+    public EntityDimensions getDimensions(Pose pose) {
+        return this.isBaby() ? BABY_DIMENSIONS : super.getDimensions(pose);
+    }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pPose, EntityDimensions pDimensions) {
+        return 0.665F;
     }
 
     static {
-        BABY_DIMENSIONS = BGEntityTypes.MOOBOO.get().getDimensions().scale(0.5F).withEyeHeight(0.665F);
+        BABY_DIMENSIONS = BGEntityTypes.MOOBOO.get().getDimensions().scale(0.5F);
     }
 }

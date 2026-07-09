@@ -87,13 +87,12 @@ public class NectaurStalk {
     private static void signalNearbyAllies(ServerLevel level, Mob leader, MemoryModuleType<Boolean> flag, boolean value, int radius) {
         level.getEntitiesOfClass(leader.getClass(), leader.getBoundingBox().inflate(radius), e -> e != leader)
                 .forEach(entity -> {
-                    if (entity instanceof Mob mob) {
-                        mob.getBrain().setMemory(flag, value);
-                        mob.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
-                        lookAtTarget(mob, Objects.requireNonNull(leader.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null)));
-
-                        mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(Objects.requireNonNull(leader.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null)), true));
-                    }
+                    Mob mob = entity;
+                    mob.getBrain().setMemory(flag, value);
+                    mob.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
+                    lookAtTarget(mob, Objects.requireNonNull(leader.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null)));
+                    mob.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new EntityTracker(Objects.requireNonNull(leader.getBrain().getMemory(MemoryModuleType.ATTACK_TARGET).orElse(null)), true));
+                    
                 });
     }
 
@@ -101,10 +100,10 @@ public class NectaurStalk {
         setCooldown(leader, 2400);
         level.getEntitiesOfClass(leader.getClass(), leader.getBoundingBox().inflate(radius), e -> e != leader)
                 .forEach(entity -> {
-                    if (entity instanceof Mob mob) {
-                        mob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
-                        mob.getBrain().setMemory(BGMemoryModuleTypes.IS_STALKING, false);
-                    }
+                    Mob mob = entity;
+                    mob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
+                    mob.getBrain().setMemory(BGMemoryModuleTypes.IS_STALKING, false);
+                    
                 });
 
         leader.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);

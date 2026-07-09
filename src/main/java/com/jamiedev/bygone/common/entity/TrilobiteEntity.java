@@ -43,9 +43,9 @@ public class TrilobiteEntity extends AbstractFish {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DARK_TICKS_REMAINING1, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DARK_TICKS_REMAINING1, 0);
     }
 
     @Override

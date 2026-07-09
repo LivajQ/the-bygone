@@ -14,7 +14,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -38,6 +37,7 @@ import net.minecraft.world.entity.animal.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,7 +49,6 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteerable, PlayerRideableJumping, Saddleable {
@@ -102,8 +101,8 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
         this.goalSelector.addGoal(2, new AquifawnAvoidGoal(this, 8.0F, 1.0, 1.0));
         this.goalSelector.addGoal(3, new FollowAquifawnLeaderGoal(this));
         this.goalSelector.addGoal(4, new FollowBoatGoal(this));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, (p_336182_) -> p_336182_.is(BGItems.AMOEBA_GEL_ON_A_STICK.get()), false));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, (p_335406_) -> p_335406_.is(JamiesModTag.AQUIFAWN_FOOD), false));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, Ingredient.of(BGItems.AMOEBA_GEL_ON_A_STICK.get()), false));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, Ingredient.of(JamiesModTag.AQUIFAWN_FOOD), false));
         this.goalSelector.addGoal(5, new RandomSwimmingGoal(this, 1.0, 10));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
@@ -120,10 +119,10 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
     }
 
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_BOOST_TIME, 0);
-        builder.define(DATA_SADDLE_ID, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_BOOST_TIME, 0);
+        this.entityData.define(DATA_SADDLE_ID, false);
     }
 
     protected PathNavigation createNavigation(Level level) {
@@ -155,7 +154,7 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
         return BGSoundEvents.AQUIFAWN_DEATH_ADDITIONS_EVENT;
     }
 
-    @Override
+    //@Override
     public void playAttackSound() {
         this.playSound(BGSoundEvents.AQUIFAWN_ATTACK_ADDITIONS_EVENT, 1.0F, 1.0F);
     }
@@ -444,7 +443,7 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
 
     @Nullable
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
         if (spawnGroupData == null) {
             spawnGroupData = new AquifawnSpawnGroupData(this);
         } else {
@@ -477,7 +476,7 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
     public boolean isSaddleable() {
         return this.isAlive() && !this.isBaby();
     }
-
+    
     protected void dropEquipment() {
         super.dropEquipment();
         if (this.isSaddled()) {
@@ -494,7 +493,7 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
         return this.steering.hasSaddle();
     }
 
-    public void equipSaddle(ItemStack stack, @Nullable SoundSource soundSource) {
+    public void equipSaddle(@Nullable SoundSource soundSource) {
         this.steering.setSaddle(true);
         if (soundSource != null) {
             this.level().playSound((Player)null, this, SoundEvents.PIG_SADDLE, soundSource, 0.5F, 1.0F);

@@ -7,14 +7,16 @@ import com.jamiedev.bygone.core.registry.BGMemoryModuleTypes;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -29,7 +31,8 @@ import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.ZombifiedPiglin;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -129,7 +132,7 @@ public class NectaurEntity extends Animal implements NeutralMob, RangedAttackMob
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        if (source.getEntity() instanceof LivingEntity entity && source.isDirect() && entity.getMainHandItem().isEmpty()) {
+        if (source.getEntity() instanceof LivingEntity entity && source.getDirectEntity() != null && entity.getMainHandItem().isEmpty()) {
             entity.hurt(damageSources().generic(), 1.0F);
         } else if (source.getEntity() instanceof NectaurEntity) {
             return false;
@@ -139,7 +142,7 @@ public class NectaurEntity extends Animal implements NeutralMob, RangedAttackMob
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, CompoundTag tag) {
         if (spawnType == MobSpawnType.NATURAL) {
             Level world = level.getLevel();
             float randomSpawns = this.random.nextFloat();
@@ -163,13 +166,19 @@ public class NectaurEntity extends Animal implements NeutralMob, RangedAttackMob
             }
         }
 
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
     }
-
+    
+    @Override
     public boolean canBeAffected(MobEffectInstance potioneffect) {
-        return (!potioneffect.is(MobEffects.MOVEMENT_SLOWDOWN) && !potioneffect.is(MobEffects.POISON)) && super.canBeAffected(potioneffect);
+        MobEffect effect = potioneffect.getEffect();
+        
+        return !(effect == MobEffects.MOVEMENT_SLOWDOWN
+                || effect == MobEffects.POISON)
+                && super.canBeAffected(potioneffect);
     }
-
+    
+    
     @Override
     public boolean isFood(ItemStack stack) {
         return false;
@@ -253,66 +262,50 @@ public class NectaurEntity extends Animal implements NeutralMob, RangedAttackMob
         }
 
     }
-
+    
     @Override
     public void performRangedAttack(LivingEntity target, float velocity) {
-
-
-        if (target.getRandom().nextInt(3) == 1) {
-            ItemStack itemstack1 = new ItemStack(Items.ARROW);
-            itemstack1.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.SLOWNESS));
-            this.lookAt(this, 100, 100);
-            this.yBodyRot = yBodyRotO;
-            NectaurPetalEntity glass = new NectaurPetalEntity(this.level(), this, itemstack1);
-            double xDistance = target.getX() - this.getX();
-            double yDistance = target.getY(0.3333333333333333D) - glass.getY();
-            double zDistance = target.getZ() - this.getZ();
-            double yMath = Math.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
-            glass.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
-            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level().addFreshEntity(glass);
+        
+        RandomSource r = target.getRandom();
+        
+        if (r.nextInt(3) == 1) {
+            firePetalArrow(target, Potions.SLOWNESS);
+            return;
         }
-        if (target.getRandom().nextInt(10) == 1) {
-            ItemStack itemstack1 = new ItemStack(Items.ARROW);
-            itemstack1.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRONG_SLOWNESS));
-            this.lookAt(this, 100, 100);
-            this.yBodyRot = yBodyRotO;
-            NectaurPetalEntity glass = new NectaurPetalEntity(this.level(), this, itemstack1);
-            double xDistance = target.getX() - this.getX();
-            double yDistance = target.getY(0.3333333333333333D) - glass.getY();
-            double zDistance = target.getZ() - this.getZ();
-            double yMath = Math.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
-            glass.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
-            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level().addFreshEntity(glass);
+        
+        if (r.nextInt(10) == 1) {
+            firePetalArrow(target, Potions.STRONG_SLOWNESS);
+            return;
         }
-        if (target.getRandom().nextInt(25) == 1) {
-            ItemStack itemstack1 = new ItemStack(Items.ARROW);
-            itemstack1.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.STRONG_POISON));
-            this.lookAt(this, 100, 100);
-            this.yBodyRot = yBodyRotO;
-            NectaurPetalEntity glass = new NectaurPetalEntity(this.level(), this, itemstack1);
-            double xDistance = target.getX() - this.getX();
-            double yDistance = target.getY(0.3333333333333333D) - glass.getY();
-            double zDistance = target.getZ() - this.getZ();
-            double yMath = Math.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
-            glass.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
-            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level().addFreshEntity(glass);
-        } else {
-            ItemStack itemstack1 = new ItemStack(Items.ARROW);
-            itemstack1.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.POISON));
-            this.lookAt(this, 100, 100);
-            this.yBodyRot = yBodyRotO;
-            NectaurPetalEntity glass = new NectaurPetalEntity(this.level(), this, itemstack1);
-            double xDistance = target.getX() - this.getX();
-            double yDistance = target.getY(0.3333333333333333D) - glass.getY();
-            double zDistance = target.getZ() - this.getZ();
-            double yMath = Math.sqrt((float) ((xDistance * xDistance) + (zDistance * zDistance)));
-            glass.shoot(xDistance, yDistance + yMath * 0.10000000298023224D, zDistance, 1.6F, 11.0F);
-            this.playSound(SoundEvents.FOX_SPIT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-            this.level().addFreshEntity(glass);
+        
+        if (r.nextInt(25) == 1) {
+            firePetalArrow(target, Potions.STRONG_POISON);
+            return;
         }
 
+        firePetalArrow(target, Potions.POISON);
     }
+    
+    private void firePetalArrow(LivingEntity target, Potion potion) {
+        ItemStack arrow = new ItemStack(Items.TIPPED_ARROW);
+        PotionUtils.setPotion(arrow, potion);
+        
+        this.lookAt(this, 100, 100);
+        this.yBodyRot = this.yBodyRotO;
+        
+        NectaurPetalEntity glass = new NectaurPetalEntity(this.level(), this, arrow);
+        
+        double x = target.getX() - this.getX();
+        double y = target.getY(0.3333333333333333D) - glass.getY();
+        double z = target.getZ() - this.getZ();
+        double horiz = Math.sqrt(x * x + z * z);
+        
+        glass.shoot(x, y + horiz * 0.1D, z, 1.6F, 11.0F);
+        
+        this.playSound(SoundEvents.FOX_SPIT, 1.0F,
+                1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
+        
+        this.level().addFreshEntity(glass);
+    }
+    
 }

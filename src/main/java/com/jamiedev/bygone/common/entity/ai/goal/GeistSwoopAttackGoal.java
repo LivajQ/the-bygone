@@ -56,7 +56,7 @@ public class GeistSwoopAttackGoal extends MeleeAttackGoal {
 		}
 
 		this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-		this.checkAndPerformAttack(target);
+		this.checkAndPerformAttack(target, this.getAttackReachSqr(target));
 		this.geist.getLookControl().setLookAt(target, 30, 30);
 	}
 
@@ -101,16 +101,18 @@ public class GeistSwoopAttackGoal extends MeleeAttackGoal {
 	protected void moveTo(Vec3 pos, double speedModifier) {
 		this.geist.getMoveControl().setWantedPosition(pos.x, pos.y, pos.z, speedModifier);
 	}
-
-	@Override
-	protected void checkAndPerformAttack(LivingEntity target) {
-		if (this.canPerformAttack(target)) {
-			this.resetAttackCooldown();
-			this.mob.swing(InteractionHand.MAIN_HAND);
-			boolean damage = this.mob.doHurtTarget(target);
-			if (!damage) this.hoverTimer -= 20;
-		}
-	}
+    
+    @Override
+    protected void checkAndPerformAttack(LivingEntity target, double distToEnemySqr) {
+        double reachSq = this.getAttackReachSqr(target);
+        
+        if (distToEnemySqr <= reachSq && this.cooldownTimer <= 0) {
+            this.resetAttackCooldown();
+            this.mob.swing(InteractionHand.MAIN_HAND);
+            boolean damage = this.mob.doHurtTarget(target);
+            if (!damage) this.hoverTimer -= 20;
+        }
+    }
 
 	protected enum Phase {
 		HOVER,

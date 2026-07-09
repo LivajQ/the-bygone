@@ -4,40 +4,25 @@ import com.jamiedev.bygone.common.entity.ai.AvoidBlockGoal;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGDamageTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.EntityTypeTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.control.FlyingMoveControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.ResetUniversalAngerTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.LargeFireball;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -328,14 +313,14 @@ public class WallowEntity extends PathfinderMob
 
         public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.mob.getPathfindingMalus(PathType.WATER);
-            this.mob.setPathfindingMalus(PathType.WATER, 0.0F);
+            this.oldWaterCost = this.mob.getPathfindingMalus(BlockPathTypes.WATER);
+            this.mob.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
         }
 
         public void stop() {
             this.followingMob = null;
             this.navigation.stop();
-            this.mob.setPathfindingMalus(PathType.WATER, this.oldWaterCost);
+            this.mob.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
         }
 
         public void tick() {

@@ -25,13 +25,14 @@ public class PeskyEntity extends Monster {
     public PeskyEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
         this.setSpeedModifier(0.1F);
+        this.setMaxUpStep(3.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 6.0F)
                 .add(Attributes.MOVEMENT_SPEED, 0.3F)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F).add(Attributes.ATTACK_DAMAGE, 5.0F).add(Attributes.STEP_HEIGHT, 3.0F);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F).add(Attributes.ATTACK_DAMAGE, 5.0F);
     }
 
     public void setSpeedModifier(double speedModifier) {

@@ -133,7 +133,7 @@ public class SabeastAI {
     }
 
     public static Predicate<ItemStack> getTemptations() {
-        return p_335657_ -> p_335657_.is(ItemTags.AXOLOTL_FOOD);
+        return p_335657_ -> p_335657_.is(ItemTags.AXOLOTL_TEMPT_ITEMS);
     }
 
 }

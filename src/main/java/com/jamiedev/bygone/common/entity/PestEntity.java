@@ -5,6 +5,7 @@ import com.jamiedev.bygone.common.block.AmaranthCropBlock;
 import com.jamiedev.bygone.common.block.PlagaCropBlock;
 import com.jamiedev.bygone.common.entity.ai.AvoidBlockGoal;
 import com.jamiedev.bygone.common.entity.ai.EatCropGoal;
+import com.jamiedev.bygone.common.entity.ai.goal.PredicateTemptGoal;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGEntityTypes;
@@ -27,6 +28,7 @@ import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Spider;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -60,13 +62,14 @@ public class PestEntity extends Animal {
     public PestEntity(EntityType<? extends PestEntity> entityType, Level level) {
         super(BGEntityTypes.PEST.get(), level);
         this.setSpeedModifier(0.1F);
+        this.setMaxUpStep(3.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 6.0F)
                 .add(Attributes.MOVEMENT_SPEED, 0.3F)
-                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F).add(Attributes.ATTACK_DAMAGE, 5.0F).add(Attributes.STEP_HEIGHT, 3.0F);
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F).add(Attributes.ATTACK_DAMAGE, 5.0F);
     }
 
     public void setSpeedModifier(double speedModifier) {
@@ -108,7 +111,11 @@ public class PestEntity extends Animal {
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Wolf.class, 6.0F, 1.0F, 1.2));
 
         this.goalSelector.addGoal(2, new BreedGoal(this, 0.8));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.0F, (p_335873_) -> p_335873_.is(ItemTags.ARMOR_ENCHANTABLE), false));
+        this.goalSelector.addGoal(3, new PredicateTemptGoal(this, 1.0D,
+                stack -> stack.getItem() instanceof ArmorItem,
+                false
+        ));
+        
         this.goalSelector.addGoal(4, new PestEntity.PestAvoidEntityGoal<>(this, NectaurEntity.class, 4.0F, 1.1, 1.5));
         this.goalSelector.addGoal(4, new PestEntity.PestAvoidEntityGoal<>(this, Player.class, 8.0F, 1.2, 2.3));
         this.goalSelector.addGoal(4, new PestEntity.PestAvoidEntityGoal<>(this, BigBeakEntity.class, 16.0F, 0.8, 1.12));

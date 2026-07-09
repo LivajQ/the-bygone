@@ -17,10 +17,11 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ public class DuckEntity extends Animal {
     private static final EntityDimensions BABY_BASE_DIMENSIONS;
 
     static {
-        BABY_BASE_DIMENSIONS = EntityType.CHICKEN.getDimensions().scale(0.5F).withEyeHeight(0.2975F);
+        BABY_BASE_DIMENSIONS = EntityType.CHICKEN.getDimensions().scale(0.5F);
     }
 
     public float flapProgress;
@@ -43,7 +44,7 @@ public class DuckEntity extends Animal {
     public DuckEntity(EntityType<? extends DuckEntity> entityType, Level world) {
         super(entityType, world);
         this.eggLayTime = this.random.nextInt(6000) + 6000;
-        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
     }
 
     public static AttributeSupplier.Builder createDuckAttributes() {
@@ -55,9 +56,13 @@ public class DuckEntity extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.4));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.0, (stack) -> {
-            return stack.is(ItemTags.CHICKEN_FOOD);
-        }, false));
+        this.goalSelector.addGoal(3,
+                new TemptGoal(this, 1.0,
+                        Ingredient.of(Items.WHEAT_SEEDS),
+                        false
+                )
+        );
+        
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 6.0F));
@@ -65,8 +70,8 @@ public class DuckEntity extends Animal {
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
-        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDefaultDimensions(pose);
+    public EntityDimensions getDimensions(Pose pose) {
+        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDimensions(pose);
     }
 
     @Override
@@ -134,12 +139,20 @@ public class DuckEntity extends Animal {
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return stack.is(ItemTags.CHICKEN_FOOD);
+        return stack.is(ItemTags.VILLAGER_PLANTABLE_SEEDS);
     }
-
+    
     @Override
-    protected int getBaseExperienceReward() {
-        return this.hasJockey() ? 10 : super.getBaseExperienceReward();
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions size) {
+        if (this.isBaby()) {
+            return 0.2975F;
+        }
+        return super.getStandingEyeHeight(pose, size);
+    }
+    
+    @Override
+    public int getExperienceReward() {
+        return this.hasJockey() ? 10 : super.getExperienceReward();
     }
 
     @Override

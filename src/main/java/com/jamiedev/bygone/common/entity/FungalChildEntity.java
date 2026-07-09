@@ -12,7 +12,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
@@ -99,9 +98,7 @@ public class FungalChildEntity extends FungalParentEntity {
         super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FungalChildEntity.AttackGoal());
-        this.goalSelector.addGoal(1, new PanicGoal(this, 4.0, (polarBear) -> {
-            return polarBear.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES;
-        }));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 4.0));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.25));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.5));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 63.0F));
@@ -174,16 +171,16 @@ public class FungalChildEntity extends FungalParentEntity {
     @Override
     protected void playWarningSound() {
         if (this.warningSoundCooldown <= 0) {
-            this.makeSound(SoundEvents.POLAR_BEAR_WARNING);
+            this.playSound(SoundEvents.POLAR_BEAR_WARNING);
             this.warningSoundCooldown = 40;
         }
 
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(WARNING, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(WARNING, false);
     }
 
     @Override
@@ -256,30 +253,40 @@ public class FungalChildEntity extends FungalParentEntity {
         public AttackGoal() {
             super(FungalChildEntity.this, 1.25, true);
         }
-
+        
         @Override
-        protected void checkAndPerformAttack(LivingEntity target) {
-            if (this.canPerformAttack(target)) {
-                this.resetAttackCooldown();
-                this.mob.doHurtTarget(target);
-                FungalChildEntity.this.setWarning(false);
-            } else if (this.mob.distanceToSqr(target) < (double) ((target.getBbWidth() + 3.0F) * (target.getBbWidth() + 3.0F))) {
+        protected void checkAndPerformAttack(LivingEntity target, double distanceToTarget) {
+            double attackReach = this.getAttackReachSqr(target);
+            
+            if (distanceToTarget <= attackReach) {
+                if (this.isTimeToAttack()) {
+                    this.resetAttackCooldown();
+                    this.mob.doHurtTarget(target);
+                    FungalChildEntity.this.setWarning(false);
+                }
+                return;
+            }
+
+            double warnRange = (target.getBbWidth() + 3.0F) * (target.getBbWidth() + 3.0F);
+            if (distanceToTarget < warnRange) {
+                
                 if (this.isTimeToAttack()) {
                     FungalChildEntity.this.setWarning(false);
                     this.resetAttackCooldown();
                 }
-
+                
                 if (this.getTicksUntilNextAttack() <= 10) {
                     FungalChildEntity.this.setWarning(true);
                     FungalChildEntity.this.playWarningSound();
                 }
+                
             } else {
+                // Too far → reset
                 this.resetAttackCooldown();
                 FungalChildEntity.this.setWarning(false);
             }
-
         }
-
+        
         @Override
         public void stop() {
             FungalChildEntity.this.setWarning(false);

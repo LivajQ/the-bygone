@@ -14,7 +14,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -89,13 +88,13 @@ public class SabeastEntity extends Monster  {
 
     public SabeastEntity(EntityType<? extends Monster> entityType, Level level) {
         super(entityType, level);
+        this.setMaxUpStep(1.6F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 50.0F)
                 .add(Attributes.MOVEMENT_SPEED, 0.22F)
-                .add(Attributes.ATTACK_DAMAGE, 8.0F)
-                .add(Attributes.STEP_HEIGHT, 1.6F);
+                .add(Attributes.ATTACK_DAMAGE, 8.0F);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class SabeastEntity extends Monster  {
         super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new SabeastFreezeWhenLookedAt(this));
-        this.goalSelector.addGoal(1, new PanicGoal(this, 2.0F, (p_350292_) -> p_350292_.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 2.0F));
 
         this.goalSelector.addGoal(3, new AvoidBlockGoal(this, 16, 1.4, 1.6, (pos) -> {
             BlockState state = this.level().getBlockState(pos);
@@ -127,11 +126,11 @@ public class SabeastEntity extends Monster  {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_STANDING_ID, false);
-        builder.define(DATA_IS_ATTACKING, false);
-        builder.define(DATA_REPEL_RUN, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_STANDING_ID, false);
+        this.entityData.define(DATA_IS_ATTACKING, false);
+        this.entityData.define(DATA_REPEL_RUN, false);
     }
 
     @Override
@@ -149,7 +148,7 @@ public class SabeastEntity extends Monster  {
         return BGSoundEvents.SABEAST_DEATH_ADDITIONS_EVENT;
     }
 
-    @Override
+    //@Override
     public void playAttackSound() {
         this.playSound(BGSoundEvents.SABEAST_ATTACK_ADDITIONS_EVENT, 1.0F, 1.0F);
     }
@@ -303,7 +302,7 @@ public class SabeastEntity extends Monster  {
 
     protected void playWarningSound() {
         if (this.warningSoundTicks <= 0) {
-            this.makeSound(SoundEvents.POLAR_BEAR_WARNING);
+            this.playSound(SoundEvents.POLAR_BEAR_WARNING);
             this.warningSoundTicks = 40;
         }
 
@@ -371,11 +370,11 @@ public class SabeastEntity extends Monster  {
         public boolean canUse() {
             long i = this.mob.level().getGameTime();
 
-            if (this.mob instanceof SabeastEntity sabeast) {
-                if (sabeast.getDataRepelRun()) {
-                    return false;
-                }
+           
+            if (mob.getDataRepelRun()) {
+                return false;
             }
+            
 
             if (i - this.lastCanUseCheck < 20L) {
                 return false;
@@ -396,11 +395,11 @@ public class SabeastEntity extends Monster  {
         @Override
         public boolean canContinueToUse() {
             LivingEntity livingentity = this.mob.getTarget();
-            if (this.mob instanceof SabeastEntity sabeast) {
-                if (sabeast.getDataRepelRun()) {
-                    return false;
-                }
+            
+            if (mob.getDataRepelRun()) {
+                return false;
             }
+            
             if (livingentity == null) {
                 return false;
             } else if (!livingentity.isAlive()) {

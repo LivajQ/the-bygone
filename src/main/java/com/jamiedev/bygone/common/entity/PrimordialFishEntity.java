@@ -6,7 +6,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -22,10 +21,8 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.AbstractSchoolingFish;
-import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -159,9 +156,9 @@ public class PrimordialFishEntity extends AbstractSchoolingFish implements Varia
         ));
     }
 
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_ID_TYPE_VARIANT, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_TYPE_VARIANT, 0);
     }
 
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
@@ -173,16 +170,15 @@ public class PrimordialFishEntity extends AbstractSchoolingFish implements Varia
         super.readAdditionalSaveData(compound);
         this.setPackedVariant(compound.getInt(VARIANT_TAG));
     }
-
+    
+    @Override
     public void saveToBucketTag(@NotNull ItemStack stack) {
         super.saveToBucketTag(stack);
-        CustomData.update(
-                DataComponents.BUCKET_ENTITY_DATA,
-                stack,
-                (tag) -> tag.putInt(BUCKET_VARIANT_TAG, this.getPackedVariant())
-        );
+        
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putInt(BUCKET_VARIANT_TAG, this.getPackedVariant());
     }
-
+    
     public void loadFromBucketTag(@NotNull CompoundTag tag) {
         super.loadFromBucketTag(tag);
         if (tag.contains(BUCKET_VARIANT_TAG, CompoundTag.TAG_INT)) {
@@ -232,8 +228,8 @@ public class PrimordialFishEntity extends AbstractSchoolingFish implements Varia
     }
 
     @Nullable
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData) {
-        spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, @NotNull DifficultyInstance difficulty, @NotNull MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData, CompoundTag tag) {
+        spawnGroupData = super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
         RandomSource random = level.getRandom();
         PrimordialFishEntity.Variant variant;
         if (spawnGroupData instanceof PrimordialFishGroupData primordialFishGroupData) {

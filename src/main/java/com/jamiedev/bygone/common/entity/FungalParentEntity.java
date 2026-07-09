@@ -11,7 +11,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
@@ -108,9 +107,7 @@ public class FungalParentEntity extends Animal implements NeutralMob {
         super.registerGoals();
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new FungalParentEntity.AttackGoal());
-        this.goalSelector.addGoal(1, new PanicGoal(this, 4.0, (polarBear) -> {
-            return polarBear.isBaby() ? DamageTypeTags.PANIC_CAUSES : DamageTypeTags.PANIC_ENVIRONMENTAL_CAUSES;
-        }));
+        this.goalSelector.addGoal(1, new PanicGoal(this, 4.0));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.25));
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.8));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 63.0F));
@@ -182,16 +179,16 @@ public class FungalParentEntity extends Animal implements NeutralMob {
 
     protected void playWarningSound() {
         if (this.warningSoundCooldown <= 0) {
-            this.makeSound(SoundEvents.CAMPFIRE_CRACKLE);
+            this.playSound(SoundEvents.CAMPFIRE_CRACKLE);
             this.warningSoundCooldown = 40;
         }
 
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(WARNING, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(WARNING, false);
     }
 
     @Override
@@ -221,13 +218,13 @@ public class FungalParentEntity extends Animal implements NeutralMob {
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         if (this.warningAnimationProgress > 0.0F) {
             float f = this.warningAnimationProgress / 6.0F;
             float g = 1.0F + f;
-            return super.getDefaultDimensions(pose).scale(1.0F, g);
+            return super.getDimensions(pose).scale(1.0F, g);
         } else {
-            return super.getDefaultDimensions(pose);
+            return super.getDimensions(pose);
         }
     }
 
@@ -249,12 +246,12 @@ public class FungalParentEntity extends Animal implements NeutralMob {
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData, CompoundTag tag) {
         if (entityData == null) {
             entityData = new AgeableMob.AgeableMobGroupData(1.0F);
         }
 
-        return super.finalizeSpawn(world, difficulty, spawnReason, entityData);
+        return super.finalizeSpawn(world, difficulty, spawnReason, entityData, null);
     }
 
     @Override
@@ -272,30 +269,39 @@ public class FungalParentEntity extends Animal implements NeutralMob {
         public AttackGoal() {
             super(FungalParentEntity.this, 1.25, true);
         }
-
+        
         @Override
-        protected void checkAndPerformAttack(LivingEntity target) {
-            if (this.canPerformAttack(target)) {
-                this.resetAttackCooldown();
-                this.mob.doHurtTarget(target);
-                FungalParentEntity.this.setWarning(false);
-            } else if (this.mob.distanceToSqr(target) < (double) ((target.getBbWidth() + 3.0F) * (target.getBbWidth() + 3.0F))) {
+        protected void checkAndPerformAttack(LivingEntity target, double distanceToTarget) {
+            double attackReach = this.getAttackReachSqr(target);
+            
+            if (distanceToTarget <= attackReach) {
+                if (this.isTimeToAttack()) {
+                    this.resetAttackCooldown();
+                    this.mob.doHurtTarget(target);
+                    FungalParentEntity.this.setWarning(false);
+                }
+                return;
+            }
+
+            double warnRange = (target.getBbWidth() + 3.0F) * (target.getBbWidth() + 3.0F);
+            if (distanceToTarget < warnRange) {
+                
                 if (this.isTimeToAttack()) {
                     FungalParentEntity.this.setWarning(false);
                     this.resetAttackCooldown();
                 }
-
+                
                 if (this.getTicksUntilNextAttack() <= 10) {
                     FungalParentEntity.this.setWarning(true);
                     FungalParentEntity.this.playWarningSound();
                 }
+                
             } else {
                 this.resetAttackCooldown();
                 FungalParentEntity.this.setWarning(false);
             }
-
         }
-
+        
         @Override
         public void stop() {
             FungalParentEntity.this.setWarning(false);

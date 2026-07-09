@@ -39,11 +39,12 @@ import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -75,12 +76,12 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     public GlareEntity(EntityType<? extends GlareEntity> entityType, Level world) {
         super(BGEntityTypes.GLARE.get(), world);
         this.moveControl = new GlareMoveControl(this, 20, true);
-        this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(PathType.WATER, -1.0F);
-        this.setPathfindingMalus(PathType.LAVA, -1.0F);
-        this.setPathfindingMalus(PathType.WATER_BORDER, 16.0F);
-        this.setPathfindingMalus(PathType.COCOA, -1.0F);
-        this.setPathfindingMalus(PathType.FENCE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.LAVA, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 16.0F);
+        this.setPathfindingMalus(BlockPathTypes.COCOA, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.FENCE, -1.0F);
         this.setCanPickUpLoot(true);
 
         this.targetEyesPositionOffset = new Vec2(0.0F, 0.0F);
@@ -95,7 +96,7 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     }
 
     public static boolean checkAnimalSpawnRules(EntityType<? extends Animal> type, LevelAccessor serverWorldAccess, MobSpawnType spawnReason, BlockPos blockPos, @NotNull RandomSource random) {
-        boolean bl = MobSpawnType.ignoresLightRequirements(spawnReason) || isBrightEnoughToSpawn(serverWorldAccess, blockPos);
+        boolean bl = spawnReason != MobSpawnType.NATURAL || isBrightEnoughToSpawn(serverWorldAccess, blockPos);
         return serverWorldAccess.getBlockState(blockPos.below()).is(Blocks.MOSS_BLOCK)
                 || serverWorldAccess.getBlockState(blockPos.below()).is(BGBlocks.MOSSY_CLAYSTONE.get())
                 && bl;
@@ -108,7 +109,7 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     public static boolean canSpawn(EntityType<? extends Mob> glareEntityEntityType, ServerLevelAccessor serverWorldAccess, MobSpawnType spawnReason, BlockPos blockPos, @NotNull RandomSource random) {
         return serverWorldAccess.getBlockState(blockPos.below()).is(Blocks.MOSS_BLOCK)
                 || serverWorldAccess.getBlockState(blockPos).is(Blocks.MOSS_CARPET)
-                || serverWorldAccess.getBlockState(blockPos).is(Blocks.SHORT_GRASS)
+                || serverWorldAccess.getBlockState(blockPos).is(Blocks.GRASS)
                 || serverWorldAccess.getBlockState(blockPos).is(Blocks.TALL_GRASS)
                 || serverWorldAccess.getBlockState(blockPos.below()).is(BGBlocks.MOSSY_CLAYSTONE.get());
     }
@@ -130,9 +131,9 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(GLARE_SIZE, 1);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(GLARE_SIZE, 1);
     }
 
     @Override
@@ -151,9 +152,12 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     protected void registerGoals() {
 
         this.goalSelector.addGoal(1, new BreedGoal(this, 1.0));
-        this.goalSelector.addGoal(2, new TemptGoal(this, 1.2, (stack) -> {
-            return stack.is(Items.DIRT);
-        }, false));
+        this.goalSelector.addGoal(2,
+                new TemptGoal(this, 1.2,
+                        Ingredient.of(Items.DIRT),
+                        false
+                )
+        );
         this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.1));
 
     }
@@ -194,9 +198,9 @@ public class GlareEntity extends Animal implements FlyingAnimal {
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         int i = this.getSize();
-        EntityDimensions entityDimensions = super.getDefaultDimensions(pose);
+        EntityDimensions entityDimensions = super.getDimensions(pose);
         return entityDimensions.scale(1.0F + 0.15F * (float) i);
     }
 
@@ -236,27 +240,27 @@ public class GlareEntity extends Animal implements FlyingAnimal {
 
         super.customServerAiStep();
     }
-
+    
     @Override
     public void travel(@NotNull Vec3 movementInput) {
         if (this.isControlledByLocalInstance()) {
             if (!this.navigation.isInProgress()) {
                 double hoverY = Math.sin(this.tickCount * 0.1) * 0.02;
-                this.push(new Vec3(0, hoverY, 0));
+                this.push(0.0D, hoverY, 0.0D);
             } else {
                 super.travel(movementInput);
             }
         }
-
+        
         this.calculateEntityAnimation(false);
     }
-
+    
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.AZALEA_LEAVES_BREAK;
     }
 
-    @Override
+    //@Override
     public void stopInPlace() {
         this.getBrain().eraseMemory(MemoryModuleType.AVOID_TARGET);
         this.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -337,7 +341,7 @@ public class GlareEntity extends Animal implements FlyingAnimal {
 
     @Override
     @Nullable
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData, CompoundTag tag) {
         RandomSource random = this.random;
         int i = random.nextInt(8);
         if (i < 2 && random.nextFloat() < 0.5F * difficulty.getSpecialMultiplier()) {
@@ -346,7 +350,7 @@ public class GlareEntity extends Animal implements FlyingAnimal {
 
         int j = 1 << i;
         this.setSize(j);
-        return super.finalizeSpawn(world, difficulty, spawnReason, entityData);
+        return super.finalizeSpawn(world, difficulty, spawnReason, entityData, null);
     }
 
     @Override

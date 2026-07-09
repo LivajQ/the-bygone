@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -27,7 +26,6 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.animal.WaterAnimal;
-import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
@@ -104,9 +102,9 @@ public class ScuttleEntity extends WaterAnimal implements RangedAttackMob {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(TARGET_ID, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(TARGET_ID, 0);
     }
 
     @Override
@@ -142,11 +140,8 @@ public class ScuttleEntity extends WaterAnimal implements RangedAttackMob {
 
         if (flag) {
             Level var7 = this.level();
-            ServerLevel serverWorld2 = (ServerLevel) var7;
             target.setDeltaMovement(target.getDeltaMovement().add(0.0D, 0.4F, 0.0D));
-            DamageSource damageSource = this.damageSources().mobAttack(this);
-            EnchantmentHelper.doPostAttackEffects(serverWorld2, target, damageSource);
-
+            EnchantmentHelper.doPostDamageEffects(this, target);
         }
 
         return flag;

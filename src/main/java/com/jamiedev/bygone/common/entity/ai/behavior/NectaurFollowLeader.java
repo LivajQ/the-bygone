@@ -24,7 +24,7 @@ public class NectaurFollowLeader extends Behavior<NectaurEntity> {
             double distSq = entity.distanceTo(leader);
 
             if (distSq > 10.0D) {
-                entity.getNavigation().moveTo(leader.getX(), leader.getY(), leader.getZ(), 8, 1.25D);
+                entity.getNavigation().moveTo(leader.getX(), leader.getY(), leader.getZ(), 1.25D);
             }
         }
     }

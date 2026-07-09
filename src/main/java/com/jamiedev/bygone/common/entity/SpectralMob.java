@@ -33,9 +33,9 @@ public abstract class SpectralMob extends LivingEntity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_REPEL_RUN, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_REPEL_RUN, false);
     }
 
     private boolean collidingHurtSpectralBlocks() {

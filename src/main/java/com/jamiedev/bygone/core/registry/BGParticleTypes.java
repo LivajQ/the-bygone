@@ -1,6 +1,8 @@
 package com.jamiedev.bygone.core.registry;
 
 import com.jamiedev.bygone.Bygone;
+import com.jamiedev.bygone.common.particle.BygoneColorParticleOption;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -19,9 +21,16 @@ public class BGParticleTypes {
     public static final ParticleType<SimpleParticleType> UPSIDEDOWN = simple();
 
     public static final ParticleType<SimpleParticleType> WORM = simple();
-
+    
     public static final ParticleType<SimpleParticleType> SABLOSSOM = simple();
-
+    
+    public static final ParticleType<BygoneColorParticleOption> COLOR_PARTICLE =
+            new ParticleType<>(false, BygoneColorParticleOption.DESERIALIZER) {
+                @Override
+                public Codec<BygoneColorParticleOption> codec() {
+                    return BygoneColorParticleOption.codec(BGParticleTypes.COLOR_PARTICLE).codec();
+                }
+            };
 
     public static void init() {
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("rafflesia_spores"), RAFFLESIA_SPORES);
@@ -36,7 +45,8 @@ public class BGParticleTypes {
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("worm"), WORM);
 
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("sablossom"), SABLOSSOM);
-
+        
+        Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("color_particle"), COLOR_PARTICLE);
     }
 
     public static SimpleParticleType simple() {

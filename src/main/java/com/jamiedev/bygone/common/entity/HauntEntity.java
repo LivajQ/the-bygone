@@ -5,26 +5,21 @@ import com.jamiedev.bygone.common.entity.ai.AvoidBlockGoal;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGDamageTypes;
-import com.jamiedev.bygone.core.registry.BGParticleTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.monster.Vex;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -110,12 +105,17 @@ public class HauntEntity extends Allay {
         noPhysics = !collidingSpectralBlocks();
 
     }
-
+    
     @Override
     public boolean canBeAffected(MobEffectInstance potioneffect) {
-        return !(potioneffect.is(MobEffects.POISON) || potioneffect.is(MobEffects.HARM)|| potioneffect.is(MobEffects.WITHER)) && super.canBeAffected(potioneffect);
+        MobEffect effect = potioneffect.getEffect();
+        
+        return !(effect == MobEffects.POISON
+                || effect == MobEffects.HARM
+                || effect == MobEffects.WITHER)
+                && super.canBeAffected(potioneffect);
     }
-
+    
     public void aiStep()
     {
         super.aiStep();
@@ -160,9 +160,9 @@ public class HauntEntity extends Allay {
         return level.getBlockState(blockPos.below()).is(JamiesModTag.HAUNT_SPAWNABLE_ON);
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_ID_ATTACK_TARGET, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_ATTACK_TARGET, 0);
     }
 
     public int getAttackDuration() {

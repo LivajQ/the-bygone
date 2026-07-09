@@ -8,36 +8,33 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
-import net.minecraft.world.entity.projectile.SpectralArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public class LithoArrowEntity extends AbstractArrow
-{
+public class LithoArrowEntity extends AbstractArrow {
 
     private int duration = 200;
-
+    private ItemStack pickupItem = new ItemStack(BGItems.LITHOPLASM_ARROW.get());
+    
+    
     public LithoArrowEntity(EntityType<? extends LithoArrowEntity> entityType, Level world) {
         super(entityType, world);
     }
 
     public LithoArrowEntity(Level world, double x, double y, double z, ItemStack stack, @Nullable ItemStack shotFrom) {
-        super((EntityType<? extends AbstractArrow>) BGEntityTypes.LITHOPLASM_ARROW.get(), x, y, z, world, stack, shotFrom);
+        super((EntityType<? extends AbstractArrow>) BGEntityTypes.LITHOPLASM_ARROW.get(), x, y, z, world);
     }
 
     public LithoArrowEntity(Level world, LivingEntity owner, ItemStack stack, @Nullable ItemStack shotFrom) {
-        super(BGEntityTypes.LITHOPLASM_ARROW.get(), owner, world, stack, shotFrom);
+        super(BGEntityTypes.LITHOPLASM_ARROW.get(), owner, world);
     }
 
     public static void dropArrow(Level world, BlockPos pos) {
@@ -67,7 +64,7 @@ public class LithoArrowEntity extends AbstractArrow
 
     protected void doPostHurtEffects(LivingEntity living) {
         super.doPostHurtEffects(living);
-        MobEffectInstance mobeffectinstance = new MobEffectInstance(BGMobEffects.HAUNTED.get(), this.duration, 0);
+        MobEffectInstance mobeffectinstance = new MobEffectInstance(BGMobEffects.HAUNTED.get().get(), this.duration, 0);
         living.hurt(BGDamageTypes.source(living.level(), BGDamageTypes.HAUNTED, living, living.getLastAttacker()), 1);
         living.addEffect(mobeffectinstance, this.getEffectSource());
     }
@@ -81,9 +78,9 @@ public class LithoArrowEntity extends AbstractArrow
             return new ItemEntity(world, e, f, g, stack);
         }, stack);
     }
-
+    
     @Override
-    protected @NotNull ItemStack getDefaultPickupItem() {
-        return new ItemStack(BGItems.LITHOPLASM_ARROW.get());
+    protected ItemStack getPickupItem() {
+        return this.pickupItem.copy();
     }
 }

@@ -2,7 +2,6 @@ package com.jamiedev.bygone.common.entity;
 
 import com.jamiedev.bygone.core.init.JamiesModLootTables;
 import com.jamiedev.bygone.core.init.JamiesModTag;
-import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -38,8 +37,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TripWireBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Path;
-import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -78,23 +77,22 @@ public class LithyEntity extends PathfinderMob {
 
     public LithyEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
+        this.setMaxUpStep(1.0F);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 5.0F)
                 .add(Attributes.MOVEMENT_SPEED, 0.25F)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0F)
-                .add(Attributes.ATTACK_DAMAGE, 15.0F)
-                .add(Attributes.STEP_HEIGHT, 1.0F);
+                .add(Attributes.ATTACK_DAMAGE, 15.0F);
     }
-
 
     protected static boolean isBrightEnoughToSpawn(BlockAndTintGetter level, BlockPos pos) {
         return level.getRawBrightness(pos, 0) > 3;
     }
 
     public static boolean checkAnimalSpawnRules(EntityType<? extends Animal> animal, LevelAccessor level, MobSpawnType spawnType, BlockPos pos, RandomSource random) {
-        boolean flag = MobSpawnType.ignoresLightRequirements(spawnType) || isBrightEnoughToSpawn(level, pos);
+        boolean flag = spawnType == MobSpawnType.NATURAL || isBrightEnoughToSpawn(level, pos);
         return level.getBlockState(pos.below()).is(BlockTags.ANIMALS_SPAWNABLE_ON) && flag;
     }
 
@@ -102,14 +100,14 @@ public class LithyEntity extends PathfinderMob {
         return level.getBlockState(blockPos.below()).is(JamiesModTag.LITHY_SPAWNABLE_ON);
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_FLAGS_ID, (byte) 0);
-        builder.define(DATA_TRIPPED, false);
-        builder.define(DATA_JUMP_UP, false);
-        builder.define(DATA_TRIPPED_TICK, 0);
-        builder.define(DATA_TRIP_COOLDOWN, 1200 + this.random.nextInt(0, 200));
-        builder.define(DATA_TRIPWIRE_TRIP_COOLDOWN, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
+        this.entityData.define(DATA_TRIPPED, false);
+        this.entityData.define(DATA_JUMP_UP, false);
+        this.entityData.define(DATA_TRIPPED_TICK, 0);
+        this.entityData.define(DATA_TRIP_COOLDOWN, 1200 + this.random.nextInt(0, 200));
+        this.entityData.define(DATA_TRIPWIRE_TRIP_COOLDOWN, 0);
     }
 
     @Override
@@ -209,7 +207,7 @@ public class LithyEntity extends PathfinderMob {
 
             if (this.entityData.get(DATA_JUMP_UP)) {
                 this.entityData.set(DATA_JUMP_UP, false);
-                this.push(new Vec3(0.0, 0.4, 0.0));
+                this.push(0.0, 0.4, 0.0);
             }
             if (!this.entityData.get(DATA_TRIPPED)) {
                 this.entityData.set(DATA_TRIPWIRE_TRIP_COOLDOWN, this.entityData.get(DATA_TRIPWIRE_TRIP_COOLDOWN) - 1);
@@ -220,27 +218,33 @@ public class LithyEntity extends PathfinderMob {
                     BlockState state = this.level().getBlockState(onPos);
 
                     if (state.is(Blocks.TRIPWIRE) && state.getValue(TripWireBlock.ATTACHED) && this.entityData.get(DATA_TRIPWIRE_TRIP_COOLDOWN) <= 0) {
-                        this.push(this.getDeltaMovement().add(0.0, 0.2, 0.0));
+                        Vec3 dm = this.getDeltaMovement().add(0.0, 0.2, 0.0);
+                        this.push(dm.x, dm.y, dm.z);
                         this.entityData.set(DATA_TRIPPED, true);
                         this.entityData.set(DATA_TRIP_COOLDOWN, 1200 + this.random.nextInt(0, 200));
                         this.tripwireTrip = true;
                         this.playTripEffects();
                     } else if (this.entityData.get(DATA_TRIP_COOLDOWN) <= 0 && this.random.nextFloat() < 0.1) {
-                        this.push(this.getDeltaMovement().add(0.0, 0.2, 0.0));
+                        Vec3 dm = this.getDeltaMovement().add(0.0, 0.2, 0.0);
+                        this.push(dm.x, dm.y, dm.z);
                         this.entityData.set(DATA_TRIPPED, true);
                         this.entityData.set(DATA_TRIP_COOLDOWN, 1200 + this.random.nextInt(0, 200));
                         this.playTripEffects();
                         if (this.level().getServer() != null) {
-                            LootTable loottable = this.level().getServer().reloadableRegistries().getLootTable(JamiesModLootTables.LITHY_TRIP_LOOT_TABLE);
+                            LootTable loottable = this.level().getServer()
+                                    .getLootData()
+                                    .getLootTable(JamiesModLootTables.LITHY_TRIP_LOOT_TABLE.location());
+                            
                             List<ItemStack> list = loottable.getRandomItems(
                                     new LootParams.Builder((ServerLevel) this.level())
                                             .create(LootContextParamSets.EMPTY)
                             );
-
+                            
                             for (ItemStack stack : list) {
                                 this.spawnAtLocation(stack);
                             }
                         }
+                        
                     }
                 }
             } else {
@@ -334,11 +338,12 @@ public class LithyEntity extends PathfinderMob {
     public boolean canSpawnSprintParticle() {
         return this.getDeltaMovement().horizontalDistanceSqr() > (double) 2.5000003E-7F && this.random.nextInt(5) == 0;
     }
-
-    public Crackiness.Level getCrackiness() {
-        return Crackiness.GOLEM.byFraction(this.getHealth() / this.getMaxHealth());
+    
+    public IronGolem.Crackiness getCrackiness() {
+        float fraction = this.getHealth() / this.getMaxHealth();
+        return IronGolem.Crackiness.byFraction(fraction);
     }
-
+    
     private void playTripEffects() {
         this.playSound(BGSoundEvents.LITHY_TRIP_ADDITIONS_EVENT, 0.7F, 1.2F + this.random.nextFloat() * 0.2F);
 
@@ -376,13 +381,15 @@ public class LithyEntity extends PathfinderMob {
     }
 
     public boolean hurt(DamageSource source, float amount) {
-        Crackiness.Level crackiness$level = this.getCrackiness();
+        IronGolem.Crackiness crackinessLevel = this.getCrackiness();
         boolean flag = super.hurt(source, amount);
-        if (flag && this.getCrackiness() != crackiness$level) {
+        
+        if (flag && this.getCrackiness() != crackinessLevel) {
             this.playSound(SoundEvents.DEEPSLATE_BRICKS_BREAK, 1.0F, 1.0F);
         }
-
+        
         return flag;
+        
     }
 
     static class LithyMeleeAttackGoal extends Goal {
@@ -590,15 +597,15 @@ public class LithyEntity extends PathfinderMob {
         @Override
         public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.lithy.getPathfindingMalus(PathType.WATER);
-            this.lithy.setPathfindingMalus(PathType.WATER, 0.0F);
+            this.oldWaterCost = this.lithy.getPathfindingMalus(BlockPathTypes.WATER);
+            this.lithy.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
         }
 
         @Override
         public void stop() {
             this.followingMob = null;
             this.navigation.stop();
-            this.lithy.setPathfindingMalus(PathType.WATER, this.oldWaterCost);
+            this.lithy.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
         }
 
         @Override
@@ -677,14 +684,14 @@ public class LithyEntity extends PathfinderMob {
 
         public void start() {
             this.timeToRecalcPath = 0;
-            this.oldWaterCost = this.mob.getPathfindingMalus(PathType.WATER);
-            this.mob.setPathfindingMalus(PathType.WATER, 0.0F);
+            this.oldWaterCost = this.mob.getPathfindingMalus(BlockPathTypes.WATER);
+            this.mob.setPathfindingMalus(BlockPathTypes.WATER, 0.0F);
         }
 
         public void stop() {
             this.followingMob = null;
             this.navigation.stop();
-            this.mob.setPathfindingMalus(PathType.WATER, this.oldWaterCost);
+            this.mob.setPathfindingMalus(BlockPathTypes.WATER, this.oldWaterCost);
         }
 
         public void tick() {

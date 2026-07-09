@@ -29,7 +29,9 @@ public class HookEntity extends AbstractArrow {
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> DATA_CHAIN_PROGRESS =
             SynchedEntityData.defineId(HookEntity.class, EntityDataSerializers.FLOAT);
-
+    
+    private ItemStack pickupItem = BGItems.ANCIENT_HOOK.get().getDefaultInstance();
+    
     private static final float CHAIN_SPEED = 0.1F;
     public float prevChainProgress = 0F;
 
@@ -53,10 +55,10 @@ public class HookEntity extends AbstractArrow {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_RETRACTING, false);
-        builder.define(DATA_CHAIN_PROGRESS, 0F);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_RETRACTING, false);
+        this.entityData.define(DATA_CHAIN_PROGRESS, 0F);
     }
 
     public boolean isRetracting() {
@@ -82,8 +84,16 @@ public class HookEntity extends AbstractArrow {
     public void bygone$syncOldPos() {
         this.setOldPosAndRot();
     }
-
+    
     @Override
+    protected ItemStack getPickupItem() {
+        return this.pickupItem.copy();
+    }
+    
+    public void setPickupItem(ItemStack stack) {
+        this.pickupItem = stack;
+    }
+    
     protected ItemStack getDefaultPickupItem() {
         return BGItems.ANCIENT_HOOK.get().getDefaultInstance();
     }
@@ -134,10 +144,10 @@ public class HookEntity extends AbstractArrow {
     private boolean shouldRetract(Player player) {
         return player.isRemoved() || !player.isAlive() || !player.isHolding(BGItems.ANCIENT_HOOK.get()) || this.distanceTo(player) > 64F;
     }
-
+    
     @Override
-    public boolean canUsePortal(boolean allowVehicles) {
-        return false;
+    public void handleInsidePortal(BlockPos pos) {
+        //cancel teleportation
     }
 
     @Override
@@ -150,7 +160,7 @@ public class HookEntity extends AbstractArrow {
         if (this.noPhysics) {
             return false;
         } else {
-            float f = this.getDimensions(this.getPose()).width() * 0.8F;
+            float f = this.getDimensions(this.getPose()).width * 0.8F;
             AABB box = AABB.ofSize(this.getEyePosition(), f, 1.0E-6, f);
             // this.playSound(BGSoundEvents.HOOK_HIT_ADDITIONS_EVENT, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
             return BlockPos.betweenClosedStream(box).anyMatch((pos) -> {

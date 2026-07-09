@@ -22,7 +22,7 @@ public class NearbyNectaurAlliesSensor extends Sensor<NectaurEntity> {
 
         if (!allies.isEmpty()) {
             Brain<?> brain = entity.getBrain();
-            brain.setMemory(BGMemoryModuleTypes.NEAREST_NECTAUR_ALLY, allies.getFirst());
+            brain.setMemory(BGMemoryModuleTypes.NEAREST_NECTAUR_ALLY, allies.get(0));
         }
     }
 

@@ -98,7 +98,7 @@ public class GlareBrain {
                 Activity.IDLE,
                 ImmutableList.of(
                         Pair.of(0, new FollowTemptation(glare -> 1.25f)),
-                        Pair.of(1, new AnimalMakeLove(BGEntityTypes.GLARE.get())),
+                        Pair.of(1, new AnimalMakeLove(BGEntityTypes.GLARE.get(), 1)),
                         Pair.of(2, BabyFollowAdult.create(UniformInt.of(5, 16), 1.25f)),
                         Pair.of(3, StayCloseToTarget.create(glare -> getOwner((GlareEntity) glare), (glare) -> true, 3, 8, 2.0f)),
                         Pair.of(4, SetEntityLookTargetSometimes.create(6.0f, UniformInt.of(30, 60))),

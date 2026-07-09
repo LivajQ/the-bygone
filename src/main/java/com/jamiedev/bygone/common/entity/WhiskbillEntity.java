@@ -13,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -24,25 +23,22 @@ import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
 public class WhiskbillEntity extends Animal {
-
-    private static final EntityDimensions BABY_BASE_DIMENSIONS;
+    
+    public static final EntityDimensions BABY_BASE_DIMENSIONS = BGEntityTypes.WHISKBILL.get().getDimensions().scale(0.45F);
     private static final Predicate<Entity> AVOID_PLAYERS;
     private static final EntityDataAccessor<Byte> DATA_FLAGS_ID;
 
     static {
-        BABY_BASE_DIMENSIONS = BGEntityTypes.WHISKBILL.get().getDimensions().withAttachments(EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F,
-                BGEntityTypes.WHISKBILL.get().getHeight() + 0.125F, 0.0F)).scale(0.45F);
         DATA_FLAGS_ID = SynchedEntityData.defineId(WhiskbillEntity.class, EntityDataSerializers.BYTE);
         AVOID_PLAYERS = (p_28463_) -> !p_28463_.isDiscrete() && EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(p_28463_);
     }
@@ -63,9 +59,9 @@ public class WhiskbillEntity extends Animal {
         return Mob.createMobAttributes().add(Attributes.MOVEMENT_SPEED, 0.20F).add(Attributes.MAX_HEALTH, 10.0F);
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_FLAGS_ID, (byte) 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_FLAGS_ID, (byte) 0);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -137,8 +133,11 @@ public class WhiskbillEntity extends Animal {
         if (this.level().isClientSide) {
             return false;
         } else {
-            if (source.is(DamageTypeTags.IS_PLAYER_ATTACK)) {
-                Entity var4 = source.getDirectEntity();
+            Entity attacker = source.getEntity();
+            Entity direct = source.getDirectEntity();
+            
+            if (attacker instanceof Player || direct instanceof Player) {
+            Entity var4 = source.getDirectEntity();
                 if (var4 instanceof LivingEntity livingentity) {
                     livingentity.hurt(this.damageSources().thorns(this), 2.0F);
                     livingentity.addEffect(new MobEffectInstance(MobEffects.POISON, 60, 0), this);
@@ -167,7 +166,9 @@ public class WhiskbillEntity extends Animal {
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(1, new ClimbOnTopOfPowderSnowGoal(this, this.level()));
         this.goalSelector.addGoal(2, new BreedGoal(this, 0.8));
-        this.goalSelector.addGoal(3, new TemptGoal(this, 1.0F, (p_335873_) -> p_335873_.is(JamiesModTag.WHISKBILL_FOOD), false));
+        this.goalSelector.addGoal(3,
+                new TemptGoal(this, 1.0D, Ingredient.of(JamiesModTag.WHISKBILL_FOOD), false)
+        );
         this.goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 16.0F, 1.3, 1.4, (p_352798_) -> AVOID_PLAYERS.test(p_352798_) && !this.isBaby()));
         this.goalSelector.addGoal(4, new WhiskbillEntity.EatGourdGoal(this, 1.5, 11, 9));
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.6));
@@ -193,8 +194,8 @@ public class WhiskbillEntity extends Animal {
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
-        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDefaultDimensions(pose);
+    public EntityDimensions getDimensions(Pose pose) {
+        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDimensions(pose);
     }
 
     @Override

@@ -4,8 +4,6 @@ import com.google.common.base.MoreObjects;
 import com.jamiedev.bygone.core.registry.BGEntityTypes;
 import com.jamiedev.bygone.core.registry.BGItems;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
@@ -28,22 +26,23 @@ import java.util.Objects;
 
 public class ScuttleSpikeEntity extends AbstractArrow {
     private boolean dealtDamage;
-
+    private ItemStack pickupItem = new ItemStack(BGItems.SCUTTLE_SPIKE.get());
+    
     public ScuttleSpikeEntity(EntityType<? extends ScuttleSpikeEntity> entityType, Level world) {
         super(entityType, world);
     }
 
     public ScuttleSpikeEntity(Level world, LivingEntity owner, ItemStack stack) {
-        super(BGEntityTypes.SCUTTLE_SPIKE.get(), owner, world, stack, null);
+        super(BGEntityTypes.SCUTTLE_SPIKE.get(), owner, world);
     }
 
     public ScuttleSpikeEntity(Level world, double x, double y, double z, ItemStack stack) {
-        super(BGEntityTypes.SCUTTLE_SPIKE.get(), x, y, z, world, stack, stack);
+        super(BGEntityTypes.SCUTTLE_SPIKE.get(), x, y, z, world);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
     }
 
     @Override
@@ -64,59 +63,71 @@ public class ScuttleSpikeEntity extends AbstractArrow {
     protected EntityHitResult findHitEntity(Vec3 currentPosition, Vec3 nextPosition) {
         return this.dealtDamage ? null : super.findHitEntity(currentPosition, nextPosition);
     }
-
+    
     @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity entity = entityHitResult.getEntity();
         float f = 8.0F;
         Entity entity2 = this.getOwner();
         DamageSource damageSource = this.damageSources().trident(this, entity2 == null ? this : entity2);
-        Level var7 = this.level();
-        if (var7 instanceof ServerLevel serverWorld) {
-            f = EnchantmentHelper.modifyDamage(serverWorld, Objects.requireNonNull(this.getWeaponItem()), entity, damageSource, f);
+        
+        if (entity instanceof LivingEntity livingEntity) {
+            f += EnchantmentHelper.getDamageBonus(this.pickupItem, livingEntity.getMobType());
         }
-
+        
         this.dealtDamage = true;
         if (entity.hurt(damageSource, f)) {
             if (entity.getType() == EntityType.ENDERMAN) {
                 return;
             }
-
-            var7 = this.level();
-            if (var7 instanceof ServerLevel serverWorld) {
-                serverWorld = (ServerLevel) var7;
-                EnchantmentHelper.doPostAttackEffectsWithItemSource(serverWorld, entity, damageSource, this.getWeaponItem());
-            }
-
+            
             if (entity instanceof LivingEntity livingEntity) {
+                if (entity2 instanceof LivingEntity attackerLiving) {
+                    EnchantmentHelper.doPostHurtEffects(attackerLiving, entity);
+                }
                 this.doKnockback(livingEntity, damageSource);
                 this.doPostHurtEffects(livingEntity);
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200), MoreObjects.firstNonNull(entity2, this));
             }
         }
-
+        
         this.setDeltaMovement(this.getDeltaMovement().multiply(-0.01, -0.1, -0.01));
         this.playSound(SoundEvents.GLOW_INK_SAC_USE, 1.0F, 1.0F);
     }
-
+    
+    private void doKnockback(LivingEntity target, DamageSource damageSource) {
+        Vec3 knockbackVec = damageSource.getSourcePosition();
+        Vec3 pushDirection = (knockbackVec != null
+                ? target.position().subtract(knockbackVec)
+                : target.position().subtract(this.position())
+        ).normalize();
+        
+        target.push(pushDirection.x * 1.0D, 0.1D, pushDirection.z * 1.0D);
+    }
+    
     @Override
-    protected void hitBlockEnchantmentEffects(ServerLevel world, BlockHitResult blockHitResult, ItemStack weaponStack) {
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        super.onHitBlock(blockHitResult);
         this.kill();
     }
-
-    @Override
+    
+    //@Override
     public ItemStack getWeaponItem() {
-        return this.getPickupItemStackOrigin();
+        return this.pickupItem;
     }
 
     @Override
     protected boolean tryPickup(Player player) {
         return super.tryPickup(player) || this.isNoPhysics() && this.ownedBy(player) && player.getInventory().add(this.getPickupItem());
     }
-
+    
     @Override
-    protected ItemStack getDefaultPickupItem() {
-        return new ItemStack(BGItems.SCUTTLE_SPIKE.get());
+    protected ItemStack getPickupItem() {
+        return this.pickupItem.copy();
+    }
+    
+    public void setPickupItem(ItemStack stack) {
+        this.pickupItem = stack;
     }
 
     @Override

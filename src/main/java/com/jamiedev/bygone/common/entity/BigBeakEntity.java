@@ -36,6 +36,7 @@ import net.minecraft.world.entity.animal.horse.Markings;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.*;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Blocks;
@@ -57,8 +58,8 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
 
     static {
         DATA_ID_TYPE_VARIANT = SynchedEntityData.defineId(BigBeakEntity.class, EntityDataSerializers.INT);
-        BABY_BASE_DIMENSIONS = BGEntityTypes.BIG_BEAK.get().getDimensions().withAttachments(EntityAttachments.builder().attach(EntityAttachment.PASSENGER, 0.0F,
-                BGEntityTypes.BIG_BEAK.get().getHeight() + 0.125F, 0.0F)).scale(0.5F);
+        BABY_BASE_DIMENSIONS = BGEntityTypes.BIG_BEAK.get().getDimensions().scale(0.5F);
+        
     }
 
     public final AnimationState idleAnimationState = new AnimationState();
@@ -66,23 +67,32 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
     public final AnimationState flappingAnimationState = new AnimationState();
     private final Container inventory = new ContainerSingleItem() {
         @Override
-        public ItemStack getTheItem() {
-            return BigBeakEntity.this.getBodyArmorItem();
+        public ItemStack getItem(int slot) {
+            return BigBeakEntity.this.getItemBySlot(EquipmentSlot.CHEST);
         }
-
+        
         @Override
-        public void setTheItem(ItemStack stack) {
-            BigBeakEntity.this.setBodyArmorItem(stack);
+        public void setItem(int slot, ItemStack stack) {
+            BigBeakEntity.this.inventory.setItem(1, stack);
         }
-
+        
+        @Override
+        public ItemStack removeItem(int slot, int amount) {
+            ItemStack stack = this.getItem(slot);
+            ItemStack split = stack.split(amount);
+            if (!stack.isEmpty()) {
+                this.setItem(slot, stack);
+            }
+            return split;
+        }
+        
         @Override
         public void setChanged() {
         }
-
+        
         @Override
         public boolean stillValid(Player player) {
-            return player.getVehicle() == BigBeakEntity.this || player.canInteractWithEntity(
-                    BigBeakEntity.this, 4.0);
+            return player.getVehicle() == BigBeakEntity.this || BigBeakEntity.this.distanceToSqr(player) < 64.0D;
         }
     };
     public int walkingAnimationTimeout = 0;
@@ -98,15 +108,13 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
 
     public BigBeakEntity(EntityType<? extends BigBeakEntity> entityType, Level world) {
         super(entityType, world);
+        this.setMaxUpStep(2.0F);
     }
 
     public static AttributeSupplier.Builder createBigBeakAttributes() {
         return Mob.createMobAttributes().add(Attributes.JUMP_STRENGTH, 2.0)
                 .add(Attributes.MAX_HEALTH, 10.0)
-                .add(Attributes.MOVEMENT_SPEED, 0.4)
-                .add(Attributes.STEP_HEIGHT, 2.0)
-                .add(Attributes.SAFE_FALL_DISTANCE, 100.0)
-                .add(Attributes.FALL_DAMAGE_MULTIPLIER, 0.5);
+                .add(Attributes.MOVEMENT_SPEED, 0.4);
     }
 
     protected static float generateMaxHealth(IntUnaryOperator randomIntGetter) {
@@ -179,9 +187,9 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
                 || serverWorldAccess.getBlockState(blockPos.below()).is(BGBlocks.MOSSY_CLAYSTONE.get());
     }
 
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_ID_TYPE_VARIANT, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_ID_TYPE_VARIANT, 0);
     }
 
     public void addAdditionalSaveData(CompoundTag compound) {
@@ -224,9 +232,7 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
         this.goalSelector.addGoal(1, new RunAroundLikeCrazyGoal(this, 1.2));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0, BigBeakEntity.class));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.0));
-        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, stack -> {
-            return stack.is(JamiesModTag.BIGBEAK_FOOD);
-        }, false));
+        this.goalSelector.addGoal(4, new TemptGoal(this, 1.2, Ingredient.of(JamiesModTag.BIGBEAK_FOOD), false));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 0.7));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 6.0F));
         this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
@@ -291,16 +297,15 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
     protected void onFlap() {
         this.field_28639 = this.flyDist + this.maxWingDeviation / 2.0F;
     }
-
+    
     @Override
     public void containerChanged(Container sender) {
-        ItemStack itemStack = this.getBodyArmorItem();
+        ItemStack itemStack = this.getItemBySlot(EquipmentSlot.CHEST);
         super.containerChanged(sender);
-        ItemStack itemStack2 = this.getBodyArmorItem();
-        if (this.tickCount > 20 && this.isBodyArmorItem(itemStack2) && itemStack != itemStack2) {
+        ItemStack itemStack2 = this.getItemBySlot(EquipmentSlot.CHEST);
+        if (this.tickCount > 20 && this.isArmor(itemStack2) && itemStack != itemStack2) {
             this.playSound(SoundEvents.HORSE_ARMOR, 0.5F, 1.0F);
         }
-
     }
 
     @Override
@@ -379,7 +384,7 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
     public InteractionResult interactBigBeak(Player player, ItemStack stack) {
         boolean bl = this.handleEating(player, stack);
         if (bl) {
-            stack.consume(1, player);
+            stack.shrink(1);
         }
 
         if (this.level().isClientSide) {
@@ -391,9 +396,9 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
 
     @Override
     public boolean isFood(ItemStack stack) {
-        return stack.is(ItemTags.CHICKEN_FOOD);
+        return stack.is(ItemTags.VILLAGER_PLANTABLE_SEEDS);
     }
-
+    
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         boolean bl = !this.isBaby() && this.isTamed() && player.isSecondaryUseActive();
@@ -403,31 +408,33 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
                 if (this.isFood(itemStack)) {
                     return this.interactBigBeak(player, itemStack);
                 }
-
+                
                 if (!this.isTamed()) {
                     this.makeMad();
                     return InteractionResult.sidedSuccess(this.level().isClientSide);
                 }
-
-                if (this.canUseSlot(EquipmentSlot.BODY) && this.isBodyArmorItem(itemStack) && !this.isWearingBodyArmor()) {
-                    this.equipBigBeakArmor(player, itemStack);
+                
+                if (this.isArmor(itemStack) && !this.isWearingArmor()) {
+                    this.equipArmor(player, itemStack);
                     return InteractionResult.sidedSuccess(this.level().isClientSide);
                 }
             }
-
+            
             return super.mobInteract(player, hand);
         } else {
             return super.mobInteract(player, hand);
         }
     }
 
+    /*
     public void equipBigBeakArmor(Player player, ItemStack stack) {
         if (this.isBodyArmorItem(stack)) {
             this.setBodyArmorItem(stack.copyWithCount(1));
-            stack.consume(1, player);
+            stack.shrink(1);
         }
 
     }
+     */
 
     @Override
     public boolean canMate(Animal other) {
@@ -468,19 +475,13 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
         return horse1;
 
     }
-
+    
     @Override
-    public boolean canUseSlot(EquipmentSlot slot) {
-        return true;
-    }
-
-    @Override
-    public boolean isBodyArmorItem(ItemStack stack) {
-        Item var3 = stack.getItem();
-        if (var3 instanceof CustomAnimalArmorItem animalArmorItem) {
+    public boolean isArmor(ItemStack stack) {
+        Item item = stack.getItem();
+        if (item instanceof CustomAnimalArmorItem animalArmorItem) {
             return animalArmorItem.getBodyType() == CustomAnimalArmorItem.BodyType.BIG_BEAK;
         }
-
         return false;
     }
 
@@ -489,14 +490,14 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
         this.setOffspringAttribute(other, child, Attributes.MAX_HEALTH, MIN_HEALTH_BONUS, MAX_HEALTH_BONUS);
     }
 
-    private void setOffspringAttribute(AgeableMob other, AbstractHorse child, Holder<Attribute> attribute, double min, double max) {
+    private void setOffspringAttribute(AgeableMob other, AbstractHorse child, Attribute attribute, double min, double max) {
         double d = createOffspringAttribute(this.getAttributeBaseValue(attribute), other.getAttributeBaseValue(attribute), min, max, this.random);
         Objects.requireNonNull(child.getAttribute(attribute)).setBaseValue(d);
     }
 
     @javax.annotation.Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @javax.annotation.Nullable SpawnGroupData spawnGroupData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @javax.annotation.Nullable SpawnGroupData spawnGroupData, CompoundTag tag) {
         RandomSource randomsource = level.getRandom();
         BigBeakVariants bigbeak$variant = getRandomBigBeakVariant(level, this.blockPosition());
         BigBeakVariants variant;
@@ -508,12 +509,12 @@ public class BigBeakEntity extends AbstractHorse implements VariantHolder<BigBea
         }
 
         this.setVariantAndMarkings(bigbeak$variant, Util.getRandom(Markings.values(), randomsource));
-        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData, null);
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
-        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDefaultDimensions(pose);
+    public EntityDimensions getDimensions(Pose pose) {
+        return this.isBaby() ? BABY_BASE_DIMENSIONS : super.getDimensions(pose);
     }
 
     @Override

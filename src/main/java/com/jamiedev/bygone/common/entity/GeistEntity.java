@@ -10,13 +10,10 @@ import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGDamageTypes;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -101,10 +98,10 @@ public class GeistEntity extends Monster implements FlyingAnimal {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(LIGHT_THRESHOLD, DEFAULT_LIGHT_THRESHOLD);
-        builder.define(DATA_REPEL_RUN, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(LIGHT_THRESHOLD, DEFAULT_LIGHT_THRESHOLD);
+        this.entityData.define(DATA_REPEL_RUN, false);
     }
 
     @Override
@@ -148,10 +145,12 @@ public class GeistEntity extends Monster implements FlyingAnimal {
         return BGSoundEvents.GEIST_DEATH_EVENT;
     }
 
+    /*
     @Override
     public void playAttackSound() {
         this.playSound(BGSoundEvents.GEIST_ATTACK_EVENT, 1, 1);
     }
+     */
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {}

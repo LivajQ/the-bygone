@@ -4,13 +4,13 @@ import com.google.common.collect.ImmutableRangeSet;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.jamiedev.bygone.common.entity.ai.AvoidBlockGoal;
+import com.jamiedev.bygone.common.particle.BygoneColorParticleOption;
 import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
+import com.jamiedev.bygone.core.registry.BGParticleTypes;
 import com.jamiedev.bygone.core.registry.BGSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
@@ -39,19 +40,12 @@ import net.minecraft.world.entity.animal.FlyingAnimal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.BooleanOp;
-import net.minecraft.world.phys.shapes.Shapes;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -86,12 +80,13 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
         this.xpReward = 15;
         this.moveControl = new FlyingMoveControl(this, 35, false);
         this.setNoGravity(true);
-        this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
-        this.setPathfindingMalus(PathType.WATER, -1.0F);
-        this.setPathfindingMalus(PathType.WATER, -1.0F);
-        this.setPathfindingMalus(PathType.FENCE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DANGER_FIRE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.WATER, -1.0F);
+        this.setPathfindingMalus(BlockPathTypes.FENCE, -1.0F);
         this.currentSpell = WraithSpell.NONE;
+        this.setNoGravity(true);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -173,9 +168,9 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
         return level.getBlockState(blockPos.below()).is(JamiesModTag.WRAITH_SPAWNABLE_ON);
     }
 
-    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA_SPELL_CASTING_ID, (byte) 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_SPELL_CASTING_ID, (byte) 0);
     }
 
     public void tick() {
@@ -202,7 +197,7 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
 
             for (int i = 0; i < SPELL_PARTICLES_PER_HAND_PER_TICK; i++) {
                 this.level().addParticle(
-                        ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
+                        BygoneColorParticleOption.create(BGParticleTypes.COLOR_PARTICLE, r, g, b),
                         this.getX() + (double) swayX * radius,
                         this.getY() + height,
                         this.getZ() + (double) swayZ * radius,
@@ -213,7 +208,7 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
             }
             for (int i = 0; i < SPELL_PARTICLES_PER_HAND_PER_TICK; i++) {
                 this.level().addParticle(
-                        ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, r, g, b),
+                        BygoneColorParticleOption.create(BGParticleTypes.COLOR_PARTICLE, r, g, b),
                         this.getX() - (double) swayX * radius,
                         this.getY() + height,
                         this.getZ() - (double) swayZ * radius,
@@ -225,12 +220,17 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
 
         }
     }
-
+    
     @Override
     public boolean canBeAffected(MobEffectInstance potioneffect) {
-        return !(potioneffect.is(MobEffects.POISON) || potioneffect.is(MobEffects.HARM)|| potioneffect.is(MobEffects.WITHER)) && super.canBeAffected(potioneffect);
+        MobEffect effect = potioneffect.getEffect();
+        
+        return !(effect == MobEffects.POISON
+                || effect == MobEffects.HARM
+                || effect == MobEffects.WITHER)
+                && super.canBeAffected(potioneffect);
     }
-
+    
     public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("SpellTicks", this.spellCastingTickCount);
@@ -275,7 +275,7 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
         return BGSoundEvents.WRAITH_AMBIENT_ADDITIONS_EVENT;
     }
 
-    @Override
+    //@Override
     public void playAttackSound() {
         this.playSound(BGSoundEvents.WRAITH_ATTACK_ADDITIONS_EVENT, 1.0F, 1.0F);
     }
@@ -391,11 +391,6 @@ public class WraithEntity extends Monster implements RangedAttackMob, FlyingAnim
     @Override
     public void knockback(double strength, double x, double z) {
         super.knockback(strength, x, z);
-    }
-
-    @Override
-    protected double getDefaultGravity() {
-        return 0.0;
     }
 
     @Override
