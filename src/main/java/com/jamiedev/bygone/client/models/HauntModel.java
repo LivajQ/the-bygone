@@ -72,9 +72,8 @@ public class HauntModel<T extends Entity> extends HierarchicalModel<T> {
 			this.animate(haunt.floatAnimationState, HauntAnimations.MOVING, ageInTicks, 1.0f);
 		}
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		haunt.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-	}
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        haunt.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
 }

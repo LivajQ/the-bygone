@@ -120,14 +120,14 @@ public class NectaurModel<T extends NectaurEntity> extends HierarchicalModel<T> 
     protected Iterable<ModelPart> getBodyParts() {
         return ImmutableList.of(this.tail, this.leg1, this.leg2);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        
+        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        
     }
-
+    
     @Override
     public ModelPart root() {
         return root;

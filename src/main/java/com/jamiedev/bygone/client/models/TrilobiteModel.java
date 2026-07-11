@@ -58,11 +58,11 @@ public class TrilobiteModel<E extends Entity> extends EntityModel<E> {
 
         this.Tail.yRot = -f * 0.25F * Mth.sin(g * 1.9F * animationProgress);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        Head.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        Midbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        Tail.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        Head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        Midbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        Tail.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

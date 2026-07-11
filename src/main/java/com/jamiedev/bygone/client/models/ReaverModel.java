@@ -78,10 +78,10 @@ public class ReaverModel<T extends Entity> extends HierarchicalModel<T> {
 			this.animate(wraith.meleeAnimationState, ReaverAnimations.ATTACK, ageInTicks, 1.0f);
 		}
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, int color)
-	{
-		Body.render(poseStack, vertexConsumer, light, overlay, color);
-	}
+    
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha)
+    {
+        Body.render(poseStack, vertexConsumer, light, overlay, red, green, blue, alpha);
+    }
 }

@@ -133,17 +133,17 @@ public class CoelacanthModel<E extends Entity> extends HierarchicalModel<E> {
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
-
+    
+    
     @Override
-    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        fish.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        midbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        // tail.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        lowerbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        fish.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        midbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        // tail.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        lowerbody.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
-
+    
     @Override
     public @NotNull ModelPart root() {
         return this.fish;

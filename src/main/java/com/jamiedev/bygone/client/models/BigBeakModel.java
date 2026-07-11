@@ -78,10 +78,10 @@ public class BigBeakModel<T extends BigBeakEntity> extends HierarchicalModel<T> 
 
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         //Do not render children of "root", root.render() already does that.
     }
 

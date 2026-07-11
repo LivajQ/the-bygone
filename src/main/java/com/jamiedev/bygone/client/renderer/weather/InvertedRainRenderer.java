@@ -155,83 +155,84 @@ public class InvertedRainRenderer extends WeatherRenderer<InvertedRain> {
         RenderSystem.disableBlend();
         lightTexture.turnOffLightLayer();
     }
-
+    
     public static void debugLineRender(Vec3 start, Vec3 end) {
         Minecraft mc = Minecraft.getInstance();
         Camera camera = mc.gameRenderer.getMainCamera();
-
+        
         PoseStack pose = new PoseStack();
         Vec3 cam = camera.getPosition();
-
+        
         pose.pushPose();
         pose.translate(-cam.x, -cam.y, -cam.z);
-
+        
         Matrix4f tempPose = pose.last().pose();
-
+        
         VertexConsumer vertexConsumer = mc.renderBuffers().bufferSource()
-            .getBuffer(RenderType.lines());
-
-        vertexConsumer.addVertex(tempPose,
-                (float)(start.x),
-                (float)(start.y),
-                (float)(start.z))
-            .setColor(255, 0, 0, 255)
-            .setNormal(0, 1, 0);
-
-        vertexConsumer.addVertex(tempPose,
-                (float)(end.x),
-                (float)(end.y),
-                (float)(end.z))
-            .setColor(255, 0, 0, 255)
-            .setNormal(0, 1, 0);
-
+                .getBuffer(RenderType.lines());
+        
+        vertexConsumer.vertex(tempPose,
+                        (float)(start.x),
+                        (float)(start.y),
+                        (float)(start.z))
+                .color(255, 0, 0, 255)
+                .normal(0, 1, 0)
+                .endVertex();
+        
+        vertexConsumer.vertex(tempPose,
+                        (float)(end.x),
+                        (float)(end.y),
+                        (float)(end.z))
+                .color(255, 0, 0, 255)
+                .normal(0, 1, 0)
+                .endVertex();
+        
         pose.popPose();
     }
-
+    
     private void iterateAndRender(
-        Level level, int i, int j, int k,
-        double camX, double camY, double camZ,
-        float partialTick
+            Level level, int i, int j, int k,
+            double camX, double camY, double camZ,
+            float partialTick
     ) {
         float rainLevel = getRainLevel();
         if (rainLevel <= .0f) return;
-
+        
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = null;
-
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        
         int rainDensity = 5;
         if (Minecraft.useFancyGraphics()) rainDensity = 10;
-
+        
         boolean render = false;
         BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
-
+        
         for(int j1 = k - rainDensity; j1 <= k + rainDensity; ++j1) {
             for (int k1 = i - rainDensity; k1 <= i + rainDensity; ++k1) {
                 int l1 = (j1 - k + 16) * 32 + k1 - i + 16;
                 double d0 = this.rainSizeX[l1] * 0.5D;
                 double d1 = this.rainSizeZ[l1] * 0.5D;
                 mutableBlockPos.set(k1, camY, j1);
-
+                
                 LevelChunk levelChunk = level.getChunkAt(mutableBlockPos);
                 InvertedHeightmap invertedHeightMap = ((LevelChunkExtension) levelChunk).bygone$getInvertedHeightmap();
-
-//                debugLineRender(new Vec3(k1, -64, j1), new Vec3(k1, invertedHeightMap.getHeight(k1, j1), j1));
+                
                 if (invertedHeightMap.dirty) invertedHeightMap.primeSelf();
                 int i2 = invertedHeightMap.getHeight(k1, j1) + 1;
-
+                
                 int j2 = j - rainDensity;
                 int k2 = j + rainDensity;
                 if (j2 > i2) j2 = i2;
-
+                
                 if (k2 > i2) k2 = i2;
-
+                
                 int l2 = i2;
                 if (i2 > j) l2 = j;
-
+                
                 if (j2 != k2) {
                     RandomSource randomsource = RandomSource.create((k1 * k1 * 3121L + k1 * 45238971L ^ j1 * j1 * 418711L + j1 * 13761L));
                     mutableBlockPos.set(k1, j2, j1);
-
+                    
                     int i3 = (time & 131071);
                     int j3 = k1 * k1 * 3121 + k1 * 45238971 + j1 * j1 * 418711 + j1 * 13761 & 255;
                     float f2 = 3.0F + randomsource.nextFloat();
@@ -243,25 +244,25 @@ public class InvertedRainRenderer extends WeatherRenderer<InvertedRain> {
                     float f7 = ((1.0F - f6 * f6) * 0.5F + 0.5F) * rainLevel;
                     mutableBlockPos.set(k1, l2, j1);
                     int k3 = getLightColor(level, mutableBlockPos);
-
+                    
                     if (!render) {
                         RenderSystem.setShaderTexture(0, RAIN_LOCATION);
-                        bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
+                        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.PARTICLE);
                     }
-
-                    bufferBuilder.addVertex((float)(k1 - camX - d0 + 0.5D), (float)(k2 - camY), (float)(j1 - camZ - d1 + 0.5D))
-                        .setUv(0.0F, j2 * 0.25F + f4).setColor(1.0F, 1.0F, 1.0F, f7).setLight(k3);
-                    bufferBuilder.addVertex((float)(k1 - camX + d0 + 0.5D), (float)(k2 - camY), (float)(j1 - camZ + d1 + 0.5D))
-                        .setUv(1.0F, j2 * 0.25F + f4).setColor(1.0F, 1.0F, 1.0F, f7).setLight(k3);
-                    bufferBuilder.addVertex((float)(k1 - camX + d0 + 0.5D), (float)(j2 - camY), (float)(j1 - camZ + d1 + 0.5D))
-                        .setUv(1.0F, k2 * 0.25F + f4).setColor(1.0F, 1.0F, 1.0F, f7).setLight(k3);
-                    bufferBuilder.addVertex((float)(k1 - camX - d0 + 0.5D), (float)(j2 - camY), (float)(j1 - camZ - d1 + 0.5D))
-                        .setUv(0.0F, k2 * 0.25F + f4).setColor(1.0F, 1.0F, 1.0F, f7).setLight(k3);
+                    
+                    bufferBuilder.vertex((float)(k1 - camX - d0 + 0.5D), (float)(k2 - camY), (float)(j1 - camZ - d1 + 0.5D))
+                            .uv(0.0F, j2 * 0.25F + f4).color(1.0F, 1.0F, 1.0F, f7).uv2(k3).endVertex();
+                    bufferBuilder.vertex((float)(k1 - camX + d0 + 0.5D), (float)(k2 - camY), (float)(j1 - camZ + d1 + 0.5D))
+                            .uv(1.0F, j2 * 0.25F + f4).color(1.0F, 1.0F, 1.0F, f7).uv2(k3).endVertex();
+                    bufferBuilder.vertex((float)(k1 - camX + d0 + 0.5D), (float)(j2 - camY), (float)(j1 - camZ + d1 + 0.5D))
+                            .uv(1.0F, k2 * 0.25F + f4).color(1.0F, 1.0F, 1.0F, f7).uv2(k3).endVertex();
+                    bufferBuilder.vertex((float)(k1 - camX - d0 + 0.5D), (float)(j2 - camY), (float)(j1 - camZ - d1 + 0.5D))
+                            .uv(0.0F, k2 * 0.25F + f4).color(1.0F, 1.0F, 1.0F, f7).uv2(k3).endVertex();
                     render = true;
                 }
             }
         }
-
-        if (render) BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        
+        if (render) tesselator.end();
     }
 }

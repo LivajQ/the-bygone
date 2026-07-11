@@ -72,10 +72,10 @@ public class GeistModel<T extends Entity> extends HierarchicalModel<T> {
 			this.animate(wraith.meleeAnimationState, GeistAnimations.ATTACK, ageInTicks, 1.0f);
 		}
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, int color)
-	{
-		all.render(poseStack, vertexConsumer, light, overlay, color);
-	}
+    
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha)
+    {
+        all.render(poseStack, vertexConsumer, light, overlay, red, green, blue, alpha);
+    }
 }

@@ -71,19 +71,19 @@ public class PestModel<T extends Entity> extends EntityModel<T> {
 
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        leftFrontLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        leftMiddleHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        leftHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        rightFrontLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        rightMiddleHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-        rightHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        head.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        leftFrontLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        leftMiddleHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        leftHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        rightFrontLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        rightMiddleHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        rightHindLeg.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
     }
-
+    
     @Override
     public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.tube.yRot = netHeadYaw * ((float) Math.PI / 180F);

@@ -112,14 +112,15 @@ public class HauntRenderer extends MobRenderer<HauntEntity, HauntModel<HauntEnti
 		double z = Mth.lerp(partialTick, livingEntity.zOld, livingEntity.getZ());
 		return new Vec3(x, y, z);
 	}
-
-	protected static void renderVortex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int packedLight) {
-		consumer.addVertex(pose, x, y, z)
-				.setColor(-1)
-				.setUv(u, v)
-				.setOverlay(OverlayTexture.NO_OVERLAY)
-				.setLight(packedLight)
-				.setNormal(pose, 0, 1, 0);
-	}
+    
+    protected static void renderVortex(VertexConsumer consumer, PoseStack.Pose pose, float x, float y, float z, float u, float v, int packedLight) {
+        consumer.vertex(pose.pose(), x, y, z)
+                .color(255, 255, 255, 255)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(pose.normal(), 0, 1, 0)
+                .endVertex();
+    }
 
 }

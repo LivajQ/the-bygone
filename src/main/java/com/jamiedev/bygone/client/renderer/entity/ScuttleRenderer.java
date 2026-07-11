@@ -32,9 +32,15 @@ public class ScuttleRenderer extends MobRenderer<ScuttleEntity, ScuttleModel> {
     public ScuttleRenderer(EntityRendererProvider.Context context) {
         super(context, new ScuttleModel(context.bakeLayer(JamiesModModelLayers.SCUTTLE)), 0.5F);
     }
-
+    
     private static void vertex(VertexConsumer vertexConsumer, PoseStack.Pose matrix, float x, float y, float z, int red, int green, int blue, float u, float v) {
-        vertexConsumer.addVertex(matrix, x, y, z).setColor(red, green, blue, 255).setUv(u, v).setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(matrix, 0.0F, 1.0F, 0.0F);
+        vertexConsumer.vertex(matrix.pose(), x, y, z)
+                .color(red, green, blue, 255)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(15728880)
+                .normal(matrix.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
     }
 
     @Override

@@ -38,29 +38,30 @@ public class PrimordialFishRenderer extends MobRenderer<PrimordialFishEntity, Co
             case LARGE, LARGE_GLOW -> MODEL_B_TEXTURE;
         };
     }
-
+    
     @Override
     public void render(PrimordialFishEntity entity, float entityYaw, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight) {
         ColorableHierarchicalModel<PrimordialFishEntity> model = switch (entity.getVariant().base()) {
             case SMALL, SMALL_GLOW -> this.modelA;
             case LARGE, LARGE_GLOW -> this.modelB;
         };
-
+        
         this.model = model;
-        model.setColor(entity.getBaseColor().getTextureDiffuseColor());
+        float[] baseColor = entity.getBaseColor().getTextureDiffuseColors();
+        model.setColor(baseColor[0], baseColor[1], baseColor[2]);
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
-        model.setColor(-1);
+        model.setColor(1.0F, 1.0F, 1.0F);
     }
-
+    
     @Override
-    protected void setupRotations(@NotNull PrimordialFishEntity entity, @NotNull PoseStack poseStack, float bob, float yBodyRot, float partialTick, float scale) {
-        super.setupRotations(entity, poseStack, bob, yBodyRot, partialTick, scale);
+    protected void setupRotations(@NotNull PrimordialFishEntity entity, @NotNull PoseStack poseStack, float bob, float yBodyRot, float partialTick) {
+        super.setupRotations(entity, poseStack, bob, yBodyRot, partialTick);
         float f = 4.3F * Mth.sin(0.6F * bob);
         poseStack.mulPose(Axis.YP.rotationDegrees(f));
         if (!entity.isInWater()) {
             poseStack.translate(0.2F, 0.1F, 0.0F);
             poseStack.mulPose(Axis.ZP.rotationDegrees(90.0F));
         }
-
+        
     }
 }

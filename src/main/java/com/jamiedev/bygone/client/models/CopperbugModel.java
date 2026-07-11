@@ -71,14 +71,14 @@ public class CopperbugModel<C extends Animal> extends EntityModel<CopperbugEntit
             this.body4.x = Mth.sin(animationProgress * 0.9F + (float) i * 0.15F * 3.1415927F) * 3.1415927F * 0.2F * (float) Math.abs(i - 2);
         }
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        body1.render(matrices, vertexConsumer, light, overlay, color);
-        body2.render(matrices, vertexConsumer, light, overlay, color);
-        body3.render(matrices, vertexConsumer, light, overlay, color);
-        body4.render(matrices, vertexConsumer, light, overlay, color);
-        pincerRight.render(matrices, vertexConsumer, light, overlay, color);
-        pincerLeft.render(matrices, vertexConsumer, light, overlay, color);
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        body1.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        body2.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        body3.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        body4.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        pincerRight.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        pincerLeft.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }

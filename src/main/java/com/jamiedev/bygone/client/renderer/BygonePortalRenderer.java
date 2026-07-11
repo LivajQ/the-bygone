@@ -30,15 +30,14 @@ public class BygonePortalRenderer<T extends BygonePortalBlockEntity> implements 
         this.renderFace(blockEntity, pose, consumer, 0.0F, 1.0F, f, f, 0.0F, 0.0F, 1.0F, 1.0F, Direction.DOWN);
         this.renderFace(blockEntity, pose, consumer, 0.0F, 1.0F, f1, f1, 1.0F, 1.0F, 0.0F, 0.0F, Direction.UP);
     }
-
+    
     private void renderFace(T blockEntity, Matrix4f pose, VertexConsumer consumer, float x0, float x1, float y0, float y1, float z0, float z1, float z2, float z3, Direction direction) {
         if (blockEntity.shouldRenderFace(direction)) {
-            consumer.addVertex(pose, x0, y0, z0);
-            consumer.addVertex(pose, x1, y0, z1);
-            consumer.addVertex(pose, x1, y1, z2);
-            consumer.addVertex(pose, x0, y1, z3);
+            consumer.vertex(pose, x0, y0, z0).endVertex();
+            consumer.vertex(pose, x1, y0, z1).endVertex();
+            consumer.vertex(pose, x1, y1, z2).endVertex();
+            consumer.vertex(pose, x0, y1, z3).endVertex();
         }
-
     }
 
     protected float getOffsetUp() {

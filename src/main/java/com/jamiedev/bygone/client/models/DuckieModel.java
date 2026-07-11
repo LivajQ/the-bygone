@@ -42,14 +42,14 @@ public class DuckieModel<T extends Entity> extends AgeableListModel<T> {
         PartDefinition tail_r1 = tail.addOrReplaceChild("tail_r1", CubeListBuilder.create().texOffs(32, 0).addBox(-9.0F, -9.0F, -1.0F, 10.0F, 9.0F, 2.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(4.0F, -4.0F, 9.0F, -0.3491F, 0.0F, 0.0F));
         return LayerDefinition.create(modelData, 64, 64);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        head.render(matrices, vertexConsumer, light, overlay, color);
-        body.render(matrices, vertexConsumer, light, overlay, color);
-        wing_left.render(matrices, vertexConsumer, light, overlay, color);
-        wing_right.render(matrices, vertexConsumer, light, overlay, color);
-        tail.render(matrices, vertexConsumer, light, overlay, color);
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        wing_left.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        wing_right.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        tail.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 
     @Override

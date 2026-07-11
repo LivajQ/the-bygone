@@ -51,14 +51,14 @@ public class AmmoniteModel<E extends Entity> extends EntityModel<E> {
     @Override
     public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        shell.render(matrices, vertexConsumer, light, overlay, color);
-        head.render(matrices, vertexConsumer, light, overlay, color);
-        bone.render(matrices, vertexConsumer, light, overlay, color);
-        bone2.render(matrices, vertexConsumer, light, overlay, color);
-        bone3.render(matrices, vertexConsumer, light, overlay, color);
-        bone4.render(matrices, vertexConsumer, light, overlay, color);
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        shell.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        bone.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        bone2.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        bone3.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        bone4.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }

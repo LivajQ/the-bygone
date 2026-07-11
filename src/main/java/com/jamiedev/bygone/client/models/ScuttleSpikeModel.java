@@ -28,9 +28,9 @@ public class ScuttleSpikeModel extends Model {
         PartDefinition body = modelPartData.addOrReplaceChild("body", CubeListBuilder.create().texOffs(0, 0).addBox(-0.5F, 19.0F, -0.5F, 1.0F, 8.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, -3.0F, 0.0F));
         return LayerDefinition.create(modelData, 16, 16);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        this.body.render(matrices, vertices, light, overlay, color);
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+        this.body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 }

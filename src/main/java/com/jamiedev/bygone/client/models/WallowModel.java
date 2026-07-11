@@ -59,11 +59,11 @@ public class WallowModel<T extends Entity> extends HierarchicalModel<T> {
 
 		return LayerDefinition.create(meshdefinition, 64, 64);
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		all.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-	}
+    
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        all.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
 
 	@Override
 	public ModelPart root() {

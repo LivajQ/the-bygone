@@ -86,16 +86,16 @@ public class MoobooModel<T extends Entity> extends HierarchicalModel<T> {
 		this.leg2.xRot = Mth.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
 		this.leg1.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		if(this.young)
-		{
-			this.head.xScale = 2.0F;
-			this.head.yScale = 2.0F;
-			this.head.zScale = 2.0F;
-		}
-
-		body.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-	}
+    
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        if(this.young)
+        {
+            this.head.xScale = 2.0F;
+            this.head.yScale = 2.0F;
+            this.head.zScale = 2.0F;
+        }
+        
+        body.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
 }

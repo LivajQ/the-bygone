@@ -41,7 +41,7 @@ public class PrimordialFishPatternLayer extends RenderLayer<PrimordialFishEntity
     private static @NotNull ResourceLocation getCachedTextureLocation(PrimordialFishEntity.Pattern fishPattern) {
         return TEXTURE_LOOKUP.computeIfAbsent(fishPattern, PrimordialFishPatternLayer::computeTexture);
     }
-
+    
     @Override
     public void render(@NotNull PoseStack poseStack, @NotNull MultiBufferSource buffer, int packedLight, PrimordialFishEntity livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
         PrimordialFishEntity.Pattern fishPattern = livingEntity.getVariant();
@@ -51,7 +51,7 @@ public class PrimordialFishPatternLayer extends RenderLayer<PrimordialFishEntity
         };
         boolean shouldGlow = fishPattern.base().glows();
         ResourceLocation texture = getCachedTextureLocation(fishPattern);
-        int patternColor = livingEntity.getPatternColor().getTextureDiffuseColor();
+        float[] patternColor = livingEntity.getPatternColor().getTextureDiffuseColors();
         coloredCutoutModelCopyLayerRender(
                 this.getParentModel(),
                 model,
@@ -66,7 +66,9 @@ public class PrimordialFishPatternLayer extends RenderLayer<PrimordialFishEntity
                 netHeadYaw,
                 headPitch,
                 partialTicks,
-                patternColor
+                patternColor[0],
+                patternColor[1],
+                patternColor[2]
         );
     }
 }

@@ -6,6 +6,7 @@ import com.jamiedev.bygone.core.init.JamiesModTag;
 import com.jamiedev.bygone.core.registry.BGBlocks;
 import com.jamiedev.bygone.core.registry.BGDamageTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -24,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -32,6 +34,7 @@ import java.util.function.Predicate;
 public class HauntEntity extends Allay {
     protected static final int ATTACK_TIME = 80;
     private static final EntityDataAccessor<Integer> DATA_ID_ATTACK_TARGET;
+    private static final DustParticleOptions PLASM_DUST = new DustParticleOptions(Vec3.fromRGB24(14151396).toVector3f(), 1.0F);
     public AnimationState idleAnimationState = new AnimationState();
     public AnimationState floatAnimationState = new AnimationState();
 
@@ -149,7 +152,7 @@ public class HauntEntity extends Allay {
 
                         while(d4 < d3) {
                             d4 += 1.8 - d5 + this.random.nextDouble() * (1.7 - d5);
-                            this.level().addParticle(LithoParticleOptions.REDSTONE, this.getX() + d0 * d4, this.getEyeY() + d1 * d4, this.getZ() + d2 * d4, (double)0.0F, (double)0.0F, (double)0.0F);
+                            this.level().addParticle(PLASM_DUST, this.getX() + d0 * d4, this.getEyeY() + d1 * d4, this.getZ() + d2 * d4, (double)0.0F, (double)0.0F, (double)0.0F);
                         }
                     }
                 }

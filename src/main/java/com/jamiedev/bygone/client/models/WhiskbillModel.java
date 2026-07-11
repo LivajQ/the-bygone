@@ -75,10 +75,10 @@ public class WhiskbillModel<T extends WhiskbillEntity> extends HierarchicalModel
 
         return LayerDefinition.create(meshdefinition, 256, 256);
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
         //Do not render children of "root", root.render() already does that.
     }
 

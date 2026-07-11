@@ -123,16 +123,16 @@ public class FungalParentModel<T extends LivingEntity> extends HumanoidModel<Fun
         this.right_leg.xRot = Mth.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
         this.left_leg.xRot = Mth.cos(limbSwing * 0.6662F + 3.1415927F) * 1.4F * limbSwingAmount;
     }
-
+    
     @Override
-    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        right_leg.render(matrices, vertexConsumer, light, overlay, color);
-        right_arm.render(matrices, vertexConsumer, light, overlay, color);
-        left_leg.render(matrices, vertexConsumer, light, overlay, color);
-        left_arm.render(matrices, vertexConsumer, light, overlay, color);
-        hat.render(matrices, vertexConsumer, light, overlay, color);
-        body.render(matrices, vertexConsumer, light, overlay, color);
-        head.render(matrices, vertexConsumer, light, overlay, color);
-        head_child.render(matrices, vertexConsumer, light, overlay, color);
+    public void renderToBuffer(PoseStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        right_leg.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        right_arm.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        left_leg.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        left_arm.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        hat.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        head.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        head_child.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
     }
 }

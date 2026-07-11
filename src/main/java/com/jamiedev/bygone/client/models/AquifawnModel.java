@@ -115,12 +115,12 @@ public class AquifawnModel<T extends AquifawnEntity> extends HierarchicalModel<T
 		this.tail1.yRot = Mth.sin(f2) * (float)Math.PI * 0.1F;
 		this.tail2.yRot = Mth.sin(f2) * (float)Math.PI * 0.15F;
 	}
-
-	@Override
-	public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, int color) {
-		root.render(poseStack, vertexConsumer, packedLight, packedOverlay, color);
-		//Do not render children of "root", root.render() already does that.
-	}
+    
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        root.render(poseStack, vertexConsumer, packedLight, packedOverlay, red, green, blue, alpha);
+        //Do not render children of "root", root.render() already does that.
+    }
 
 	@Override
 	public ModelPart root() {

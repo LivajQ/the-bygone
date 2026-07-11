@@ -13,11 +13,9 @@ import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.HorseArmorLayer;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.FastColor;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.DyedItemColor;
 
 public class BigBeakArmorFeatureRenderer extends RenderLayer<BigBeakEntity, BigBeakModel<BigBeakEntity>> {
     private final BigBeakModel<BigBeakEntity> model;
@@ -29,27 +27,20 @@ public class BigBeakArmorFeatureRenderer extends RenderLayer<BigBeakEntity, BigB
         super(context);
         this.model = new BigBeakModel<>(loader.bakeLayer(JamiesModModelLayers.BIG_BEAK_ARMOR));
     }
-
+    
     @Override
-    public void render(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, BigBeakEntity BigBeakEntity, float f, float g, float h, float j, float k, float l) {
-        ItemStack itemStack = BigBeakEntity.getBodyArmorItem();
-        Item var13 = itemStack.getItem();
-        if (var13 instanceof CustomAnimalArmorItem animalArmorItem) {
+    public void render(PoseStack matrixStack, MultiBufferSource vertexConsumerProvider, int i, BigBeakEntity bigBeakEntity, float f, float g, float h, float j, float k, float l) {
+        ItemStack itemStack = bigBeakEntity.getItemBySlot(EquipmentSlot.CHEST);
+        Item item = itemStack.getItem();
+        if (item instanceof CustomAnimalArmorItem animalArmorItem) {
             if (animalArmorItem.getBodyType() == CustomAnimalArmorItem.BodyType.BIG_BEAK) {
                 this.getParentModel().copyPropertiesTo(this.model);
-                this.model.prepareMobModel(BigBeakEntity, f, g, h);
-                this.model.setupAnim(BigBeakEntity, f, g, j, k, l);
-                int m;
-                if (itemStack.is(ItemTags.DYEABLE)) {
-                    m = FastColor.ARGB32.opaque(DyedItemColor.getOrDefault(itemStack, -6265536));
-                } else {
-                    m = -1;
-                }
-
+                this.model.prepareMobModel(bigBeakEntity, f, g, h);
+                this.model.setupAnim(bigBeakEntity, f, g, j, k, l);
+                
                 VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderType.entityCutoutNoCull(animalArmorItem.getTexture()));
-                this.model.renderToBuffer(matrixStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, m);
+                this.model.renderToBuffer(matrixStack, vertexConsumer, i, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
             }
         }
-
     }
 }
