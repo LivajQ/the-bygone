@@ -5,6 +5,7 @@ import com.jamiedev.bygone.core.registry.BGFishingTables;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -48,30 +49,29 @@ public abstract class FishingHookMixin extends Projectile {
             }
         }
     }
-
+    
     @ModifyArg(
             method = "retrieve",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/ReloadableServerRegistries$Holder;getLootTable(Lnet/minecraft/resources/ResourceKey;)Lnet/minecraft/world/level/storage/loot/LootTable;"
-            ),
-            index = 0
+                    target = "Lnet/minecraft/world/level/storage/loot/LootDataManager;getLootTable(Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/world/level/storage/loot/LootTable;"
+            )
     )
-    private ResourceKey<LootTable> modifyFishingLootTable(ResourceKey<LootTable> original) {
+    private ResourceLocation modifyFishingLootTable(ResourceLocation original) {
         if (this.level() instanceof ServerLevel serverLevel) {
             BlockPos pos = this.blockPosition();
             Holder<Biome> biomeHolder = serverLevel.getBiome(pos);
-
+            
             boolean isInBaitwormWater = BaitwormWaterEffect.isInBaitwormWater(serverLevel, pos);
             boolean useRareTable = isInBaitwormWater && serverLevel.random.nextFloat() < 0.5F;
-
-            ResourceKey<LootTable> customTable = BGFishingTables.getFishingTableForBiome(biomeHolder, useRareTable);
-            System.out.println("Fishing at " + pos + " in biome " + biomeHolder.unwrapKey().orElse(null) + (isInBaitwormWater ? " with Baitworm effect" : "") + ", using table: " + (customTable != null ? customTable.location() : "default"));
+            
+            ResourceLocation customTable = BGFishingTables.getFishingTableForBiome(biomeHolder, useRareTable);
+            System.out.println("Fishing at " + pos + " in biome " + biomeHolder.unwrapKey().orElse(null) + (isInBaitwormWater ? " with Baitworm effect" : "") + ", using table: " + (customTable != null ? customTable : "default"));
             if (customTable != null) {
                 return customTable;
             }
         }
-
+        
         return original;
     }
 }

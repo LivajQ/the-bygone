@@ -621,11 +621,11 @@ public class BGItems {
             new AttributeModifier(Bygone.id("wallow_shawl.phase_duration"), 8, AttributeModifier.Operation.ADD_VALUE),
             EquipmentSlotGroup.CHEST
     ).build();
-
-    public static final Supplier<Item> WALLOW_SHAWL = registerItem("wallow_shawl",
-            () -> new WallowShawlItem(new Item.Properties().attributes(WALLOW_SHAWL_ATTRIBUTES))
-    );
      */
+    
+    public static final Supplier<Item> WALLOW_SHAWL = registerItem("wallow_shawl",
+            () -> new WallowShawlItem(new Item.Properties())
+    );
 
     Items item;
     ParticleTypes ref;

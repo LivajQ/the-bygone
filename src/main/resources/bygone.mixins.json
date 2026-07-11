@@ -23,7 +23,6 @@
     "MobMixin",
     "PhasingCollisionContextMixin",
     "PlayerMixin",
-    "PortalProcessorAccessor",
     "ServerLevelMixin",
     "VexMixin"
   ],

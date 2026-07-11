@@ -54,7 +54,7 @@ public abstract class BlockPhasingPlayerMixin extends LivingEntity implements Bl
 
 	@WrapMethod(method = "createAttributes")
 	private static AttributeSupplier.Builder addPhasingAttribute(Operation<AttributeSupplier.Builder> original) {
-		return original.call().add(BGAttributes.PHASING_DURATION.get(), 0);
+		return original.call().add(BGAttributes.PHASING_DURATION.get().get(), 0);
 	}
 
 	@WrapMethod(method = "readAdditionalSaveData")
@@ -107,10 +107,9 @@ public abstract class BlockPhasingPlayerMixin extends LivingEntity implements Bl
 	public int getPhasingTicks() {
 		return this.phasingTicks;
 	}
-
-	@Override
-	public int getMaxPhasingTicks() {
-		return (int) (this.level().tickRateManager().tickrate() * this.getAttributeValue(BGAttributes.PHASING_DURATION.get()));
-	}
-
+    
+    @Override
+    public int getMaxPhasingTicks() {
+        return (int) this.getAttributeValue(BGAttributes.PHASING_DURATION.get());
+    }
 }

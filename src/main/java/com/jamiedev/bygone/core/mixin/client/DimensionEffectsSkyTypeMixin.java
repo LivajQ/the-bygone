@@ -40,7 +40,7 @@ public class DimensionEffectsSkyTypeMixin {
     @Unique
     private static DimensionSpecialEffects.SkyType bygone$addVariant(String internalName, final Function<ResourceLocation, ResourceLocation> textureIdFunction, final SoundEvent breakSound) {
         var variants = new ArrayList<>(Arrays.asList(DimensionEffectsSkyTypeMixin.bygone$values));
-        var beakArmor = bygone$invokeInit(internalName, variants.getLast().ordinal() + 1, textureIdFunction, breakSound);
+        var beakArmor = bygone$invokeInit(internalName, variants.get(variants.size() - 1).ordinal() + 1, textureIdFunction, breakSound);
         variants.add(beakArmor);
         DimensionEffectsSkyTypeMixin.bygone$values = variants.toArray(new DimensionSpecialEffects.SkyType[0]);
 

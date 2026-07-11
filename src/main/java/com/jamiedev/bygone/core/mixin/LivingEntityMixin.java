@@ -10,6 +10,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -51,7 +52,7 @@ public abstract class LivingEntityMixin extends Entity {
 
 	@WrapOperation(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"))
     public void scaleWaterTravelSpeed(LivingEntity instance, float distance, Vec3 direction, Operation<Void> original) {
-        MobEffectInstance carapaceEffect = instance.getEffect(BGMobEffects.CARAPACE.get());
+        MobEffectInstance carapaceEffect = instance.getEffect(BGMobEffects.CARAPACE.get().get());
         float modifiedDistance = distance;
         if (carapaceEffect != null && (instance.isInWater() && instance.getFluidHeight(FluidTags.WATER) > 0.1F)) {
             modifiedDistance = distance * (1 + 0.2f * (carapaceEffect.getAmplifier() + 1));
@@ -68,8 +69,7 @@ public abstract class LivingEntityMixin extends Entity {
 
                 boolean canItemBlock = item.getUseAnimation(this.useItem) == UseAnim.BLOCK;
                 boolean isUsingItemForLongEnough = (item.getUseDuration(
-                        this.useItem,
-                        (LivingEntity) (Object) this
+                        this.useItem
                 ) - this.useItemRemaining) >= ShieldItem.EFFECTIVE_BLOCK_DELAY;
                 cir.setReturnValue(canItemBlock && isUsingItemForLongEnough);
             } else {
@@ -77,29 +77,31 @@ public abstract class LivingEntityMixin extends Entity {
             }
         }
     }
-
-	@Inject(method = "canBeAffected", at = @At("HEAD"), cancellable = true)
-	private void beforeAddingEffect(MobEffectInstance instance, CallbackInfoReturnable<Boolean> cir) {
-		if (!this.hasEffect(BGMobEffects.PLASMILK.get())) return;
-		if (instance.getEffect().is(JamiesModTag.IGNORES_PLASMILK)) return;
-		cir.setReturnValue(false);
-	}
-
-	@WrapMethod(method = "isInvulnerableTo")
-	private boolean wrapIsInvulnerableTo(DamageSource source, Operation<Boolean> original) {
-
-		if (this.getType().is(JamiesModTag.SPECTRAL)) {
-			if (source.getDirectEntity() != null && source.getDirectEntity().getType().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ENTITY)) {
-				return false;
-			} else if (source.is(JamiesModTag.SPECTRAL_VULNERABLE_TO_DAMAGE)) {
-				return false;
-			} else if (source.getWeaponItem() != null && source.getWeaponItem().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ITEM)) {
-				return false;
-			}
-			return true;
-		}
-		return original.call(source);
-	}
+    
+    @Inject(method = "canBeAffected", at = @At("HEAD"), cancellable = true)
+    private void beforeAddingEffect(MobEffectInstance instance, CallbackInfoReturnable<Boolean> cir) {
+        if (!this.hasEffect(BGMobEffects.PLASMILK.get())) return;
+        if (BuiltInRegistries.MOB_EFFECT.wrapAsHolder(instance.getEffect()).is(JamiesModTag.IGNORES_PLASMILK)) return;
+        cir.setReturnValue(false);
+    }
+    
+    @WrapMethod(method = "isInvulnerableTo")
+    private boolean wrapIsInvulnerableTo(DamageSource source, Operation<Boolean> original) {
+        
+        if (this.getType().is(JamiesModTag.SPECTRAL)) {
+            if (source.getDirectEntity() != null && source.getDirectEntity().getType().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ENTITY)) {
+                return false;
+            } else if (source.is(JamiesModTag.SPECTRAL_VULNERABLE_TO_DAMAGE)) {
+                return false;
+            } else if (source.getDirectEntity() instanceof LivingEntity livingAttacker
+                    && !livingAttacker.getMainHandItem().isEmpty()
+                    && livingAttacker.getMainHandItem().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ITEM)) {
+                return false;
+            }
+            return true;
+        }
+        return original.call(source);
+    }
 
 	@WrapMethod(method = "die")
 	private void spawnHauntedGround(DamageSource source, Operation<Void> original) {
