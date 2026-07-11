@@ -1,7 +1,6 @@
 package com.jamiedev.bygone.common.item;
 
 import com.jamiedev.bygone.core.registry.BGItems;
-import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -30,7 +29,7 @@ public class WallowShawlItem extends Item implements Equipable {
 	}
 
 	@Override
-	public Holder<SoundEvent> getEquipSound() {
+	public SoundEvent getEquipSound() {
 		return SoundEvents.ARMOR_EQUIP_ELYTRA;
 	}
 

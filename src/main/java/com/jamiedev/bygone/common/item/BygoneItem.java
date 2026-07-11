@@ -9,7 +9,6 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.EnderEyeItem;
 import net.minecraft.world.item.Item;
@@ -26,7 +25,7 @@ public class BygoneItem extends Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity user) {
+    public int getUseDuration(ItemStack stack) {
         return 0;
     }
 
@@ -50,7 +49,7 @@ public class BygoneItem extends Item {
 
                 float f = Mth.lerp(world.random.nextFloat(), 0.33F, 0.5F);
                 world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENDER_EYE_LAUNCH, SoundSource.NEUTRAL, 1.0F, f);
-                itemStack.consume(1, user);
+                itemStack.shrink(1);
                 user.awardStat(Stats.ITEM_USED.get(this));
                 user.swing(hand, true);
                 return InteractionResultHolder.success(itemStack);

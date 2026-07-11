@@ -28,7 +28,7 @@ public class WhirliweedBundleItem extends Item {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (!level.isClientSide && (!player.isCreative() || player.tryToStartFallFlying())) {
-            player.addEffect(new MobEffectInstance(BGMobEffects.UPDRAFT.get(), WHIRLIWEED_BUNDLE_UPDRAFT_TIME, 0));
+            player.addEffect(new MobEffectInstance(BGMobEffects.UPDRAFT.get().get(), WHIRLIWEED_BUNDLE_UPDRAFT_TIME, 0));
 
             level.playSound(
                     null,

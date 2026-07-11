@@ -95,8 +95,9 @@ public class BGItems {
             "verdigris_blade",
             () -> new VerdigrisBladeItem(
                     JamiesModToolMaterials.VERDIGRIS,
+                    3,
+                    -2.4F,
                     new Item.Properties().stacksTo(1)
-                            .attributes(SwordItem.createAttributes(JamiesModToolMaterials.VERDIGRIS, 3, 3.0F))
             )
     );
     public static final Supplier<Item> VERDIGRIS_BOW = registerItem(
@@ -285,12 +286,10 @@ public class BGItems {
                     (new Item.Properties()).stacksTo(1)
             )
     );
-	public static final Supplier<Item> GEAR_BAG = registerItem(
-			"gear_bag",
-			() -> new SingleStackBundleItem(
-					new Item.Properties().stacksTo(1).component(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY)
-			)
-	);
+    public static final Supplier<Item> GEAR_BAG = registerItem(
+            "gear_bag",
+            () -> new SingleStackBundleItem(new Item.Properties().stacksTo(1))
+    );
     public static final Supplier<Item> AMOEBA_SPAWN_EGG = registerItem(
             "amoeba_spawn_egg",
             () -> new SpawnEggItem(BGEntityTypes.AMOEBA.get(), 0x6C9BB9, 0x8F8763, new Item.Properties())

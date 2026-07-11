@@ -26,13 +26,13 @@ public class EctoplasmBucketItem extends Item {
         }
 
         if (!level.isClientSide) {
-            entityLiving.addEffect(new MobEffectInstance(BGMobEffects.PLASMILK.get(), 1200, 0));
+            entityLiving.addEffect(new MobEffectInstance(BGMobEffects.PLASMILK.get().get(), 1200, 0));
         }
 
         if (entityLiving instanceof Player player) {
             return ItemUtils.createFilledResult(stack, player, new ItemStack(Items.BUCKET), false);
         } else {
-            stack.consume(1, entityLiving);
+            stack.shrink(1);
             return stack;
         }
     }

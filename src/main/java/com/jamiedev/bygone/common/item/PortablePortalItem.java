@@ -3,7 +3,6 @@ package com.jamiedev.bygone.common.item;
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.entity.BygonePortalEntity;
 import com.jamiedev.bygone.core.registry.BGEntityTypes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -15,15 +14,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.Optional;
 
@@ -74,7 +70,7 @@ public class PortablePortalItem extends Item {
 
             player.displayClientMessage(Component.literal("Valid!"), true);
             level.playSound(player, validPos, SoundEvents.CONDUIT_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
-            level.playSound(player, validPos, SoundEvents.VAULT_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.playSound(player, validPos, SoundEvents.LODESTONE_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
@@ -100,14 +96,13 @@ public class PortablePortalItem extends Item {
                     validPos.getY() + 0.5,
                     validPos.getZ() + 0.5,
                     0, 0.1, 0);
-
-            context.getItemInHand().hurtAndBreak(1, player, EquipmentSlot.MAINHAND);
-
+            
+            context.getItemInHand().hurtAndBreak(1, player, (p) -> p.broadcastBreakEvent(EquipmentSlot.MAINHAND));
             return InteractionResult.SUCCESS;
         } else if (player != null) {
             player.displayClientMessage(Component.literal("No space!!"), true);
             level.playSound(player, clickedPos, SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1.0F, 0.8F);
-            level.playSound(player, clickedPos, SoundEvents.VAULT_DEACTIVATE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            level.playSound(player, clickedPos, SoundEvents.LODESTONE_BREAK, SoundSource.BLOCKS, 1.0F, 1.0F);
 
             for (int i = 0; i < 8; i++) {
                 level.addParticle(ParticleTypes.SMOKE,

@@ -1,15 +1,12 @@
 package com.jamiedev.bygone.common.item;
 
-import com.google.gson.JsonSerializationContext;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
@@ -30,7 +27,7 @@ public class BreathPodItem extends Item
             CriteriaTriggers.CONSUME_ITEM.trigger(serverplayer, stack);
             serverplayer.awardStat(Stats.ITEM_USED.get(this));
             serverplayer.setAirSupply(serverplayer.getAirSupply() + 150);
-            stack.consume(1, serverplayer);
+            stack.shrink(1);
         }
 
         return stack;
