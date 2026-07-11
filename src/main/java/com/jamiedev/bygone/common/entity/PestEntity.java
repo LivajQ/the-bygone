@@ -158,6 +158,11 @@ public class PestEntity extends Animal {
 
         super.doPush(entity);
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.13F;
+    }
 
     @Override
     public boolean isFood(ItemStack stack) {

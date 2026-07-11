@@ -3,6 +3,7 @@ package com.jamiedev.bygone.core.registry;
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.block.entity.*;
 import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -27,9 +28,13 @@ public class BGBlockEntities {
 
     public static Supplier<BlockEntityType<GumboPotBlockEntity>> GUMBO_POT;
     public static Supplier<BlockEntityType<SeaglassBlockEntity>> SEAGLASS;
-
+    
+    @SuppressWarnings("unchecked")
     public static <T extends BlockEntity> Supplier<BlockEntityType<T>> register(String name, Supplier<BlockEntityType<T>> type) {
-        return JinxedRegistryHelper.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Bygone.MOD_ID, name, type);
+        return JinxedRegistryHelper.register(
+                (Registry<BlockEntityType<T>>) (Registry<?>) BuiltInRegistries.BLOCK_ENTITY_TYPE,
+                Bygone.MOD_ID, name, type
+        );
     }
 
     public static void init() {

@@ -150,6 +150,11 @@ public class CopperbugEntity extends Animal implements NeutralMob {
         this.targetSelector.addGoal(4, new NearestAttackableTargetGoal<>(this, Slime.class, 10, true, true, null));
         this.targetSelector.addGoal(5, new ResetUniversalAngerTargetGoal<>(this, false));
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.13F;
+    }
 
     @VisibleForDebug
     public GoalSelector getGoalSelector() {

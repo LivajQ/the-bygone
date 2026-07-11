@@ -13,7 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.vehicle.MinecartChest;
@@ -29,7 +29,6 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraft.world.level.storage.loot.LootTable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -425,7 +424,7 @@ public class BygoneMineshaftGenerator {
         }
 
         @Override
-        protected boolean createChest(WorldGenLevel world, BoundingBox boundingBox, @NotNull RandomSource random, int x, int y, int z, ResourceKey<LootTable> lootTable) {
+        protected boolean createChest(WorldGenLevel world, BoundingBox boundingBox, @NotNull RandomSource random, int x, int y, int z, ResourceLocation lootTable) {
             BlockPos blockPos = this.getWorldPos(x, y, z);
             if (boundingBox.isInside(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.below()).isAir()) {
                 BlockState blockState = Blocks.RAIL.defaultBlockState().setValue(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);

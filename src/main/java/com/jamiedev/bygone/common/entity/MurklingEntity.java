@@ -180,6 +180,11 @@ public class MurklingEntity extends Monster implements RangedAttackMob
     protected @NotNull SoundEvent getDeathSound() {
         return BGSoundEvents.MURKLING_DEATH_ADDITIONS_EVENT;
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.9F;
+    }
 
     @Override
     public void aiStep() {

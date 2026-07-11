@@ -7,7 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
 import net.minecraft.data.worldgen.placement.PlacementUtils;
 import net.minecraft.resources.ResourceKey;
@@ -56,7 +56,7 @@ public class BGConfiguredFeatures {
         return registryKey;
     }
 
-    public static void bootstrap(BootstrapContext<ConfiguredFeature<?, ?>> featureRegisterable) {
+    public static void bootstrap(BootstapContext<ConfiguredFeature<?, ?>> featureRegisterable) {
         TagMatchTest ruleTest = new TagMatchTest(BlockTags.BASE_STONE_OVERWORLD);
 
         HolderGetter<PlacedFeature> placedFeatures = featureRegisterable.lookup(Registries.PLACED_FEATURE);

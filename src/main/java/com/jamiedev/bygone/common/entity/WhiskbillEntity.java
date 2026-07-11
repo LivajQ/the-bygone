@@ -174,7 +174,23 @@ public class WhiskbillEntity extends Animal {
         this.goalSelector.addGoal(7, new WaterAvoidingRandomStrollGoal(this, 0.6));
         this.goalSelector.addGoal(11, new LookAtPlayerGoal(this, Player.class, 10.0F));
     }
-
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 1.04F;
+    }
+    
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 2.09, this.getZ());
+    }
+    
+    @Override
+    public float getNameTagOffsetY() {
+        return 2.04F;
+    }
+    
     @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(JamiesModTag.WHISKBILL_FOOD);

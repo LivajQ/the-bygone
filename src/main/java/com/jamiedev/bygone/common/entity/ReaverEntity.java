@@ -129,6 +129,17 @@ public class ReaverEntity extends Monster implements RangedAttackMob, FlyingAnim
                 new NearestAttackableTargetGoal<>(this, Player.class, true).setUnseenMemoryTicks(300)
         );
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.36F;
+    }
+    
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 0.04, this.getZ());
+    }
 
     @Override
     protected @NotNull PathNavigation createNavigation(@NotNull Level level) {

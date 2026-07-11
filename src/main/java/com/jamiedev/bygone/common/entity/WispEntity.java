@@ -4,9 +4,7 @@ import com.jamiedev.bygone.core.init.JamiesModTag;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.animal.allay.Allay;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -37,5 +35,16 @@ public class WispEntity extends Allay {
         }
 
         super.aiStep();
+    }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.36F;
+    }
+    
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 0.04, this.getZ());
     }
 }

@@ -106,6 +106,12 @@ public class WallowEntity extends PathfinderMob
             entity.hurt(this.damageSources().freeze(), i + random.nextInt(6));
         }
     }
+    
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 0.04, this.getZ());
+    }
 
     private boolean collidingSpectralBlocks() {
         AABB aabb = this.getBoundingBox().inflate(1.0F, 1.0F, 1.0F);
@@ -150,7 +156,11 @@ public class WallowEntity extends PathfinderMob
         noPhysics = !collidingSpectralBlocks();
 
     }
-
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.36F;
+    }
 
     static class WallowEntityLookGoal extends Goal {
         private final WallowEntity wallow;

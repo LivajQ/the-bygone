@@ -83,22 +83,21 @@ public class BGStructures
 
     public static void init()
     {
-        ABANDONED_FARM = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "abandoned_farm"),
-                () -> AncientRootStructure.CODEC);
-        ANCIENT_ROOTS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "ancient_roots"), () -> AncientRootStructure.CODEC);
-        BYGONE_FOSSIL = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID , "bygone_fossil"), () -> BygoneFossilStructure.CODEC);
-        BYGONE_PORTAL = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID , "bygone_portal"), () -> BygonePortalStructure.CODEC);
-        TEST_ROOTS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "test_roots"), () -> TestRootStructure.CODEC);
-        BLEMISH_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "ruin"), () -> RuinStructure.CODEC);
-        AMBER_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "amber_ruins"), () -> AmberRuinsStructure.CODEC);
-        AMBER_PYRAMID = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "amber_pyramid"), () -> AmberPyramidStructure.CODEC);
-        BYGONE_MINESHAFT = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "bygone_mineshaft"), () -> BygoneMineshaftStructure.CODEC);
+        ABANDONED_FARM = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "abandoned_farm"), AncientRootStructure.CODEC::codec);
+        ANCIENT_ROOTS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "ancient_roots"), AncientRootStructure.CODEC::codec);
+        BYGONE_FOSSIL = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID , "bygone_fossil"), BygoneFossilStructure.CODEC::codec);
+        BYGONE_PORTAL = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID , "bygone_portal"), BygonePortalStructure.CODEC::codec);
+        TEST_ROOTS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "test_roots"), TestRootStructure.CODEC::codec);
+        BLEMISH_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "ruin"), RuinStructure.CODEC::codec);
+        AMBER_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "amber_ruins"), AmberRuinsStructure.CODEC::codec);
+        AMBER_PYRAMID = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "amber_pyramid"), AmberPyramidStructure.CODEC::codec);
+        BYGONE_MINESHAFT = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "bygone_mineshaft"), BygoneMineshaftStructure.CODEC::codec);
 
-        MEGALITH_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "megalith_ruins"), () -> MegalithRuinsStructure.CODEC);
-        MINILITHS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "miniliths"), () -> MinilithStructure.CODEC);
-        MURKLING_NEST = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "murkling_nest"), () -> MurklingNestStructure.CODEC);
+        MEGALITH_RUINS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "megalith_ruins"), MegalithRuinsStructure.CODEC::codec);
+        MINILITHS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "miniliths"), MinilithStructure.CODEC::codec);
+        MURKLING_NEST = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "murkling_nest"), MurklingNestStructure.CODEC::codec);
 
-        SUNKEN_CITY = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "sunken_ruins"), () -> SunkenCityStructure.CODEC);
+        SUNKEN_CITY = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "sunken_ruins"), SunkenCityStructure.CODEC::codec);
 
     }
 }

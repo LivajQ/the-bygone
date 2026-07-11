@@ -1,16 +1,14 @@
 package com.jamiedev.bygone.core.registry;
 
-import com.google.common.base.Suppliers;
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.effect.*;
-import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.function.Supplier;
 
@@ -34,22 +32,22 @@ public class BGMobEffects {
 
     public static Supplier<Holder<MobEffect>> CARAPACE = register(
             "carapace", () -> new PublicMobEffect(MobEffectCategory.BENEFICIAL, 0x67CEEB).addAttributeModifier(
-                    Attributes.WATER_MOVEMENT_EFFICIENCY,
-                    Bygone.id("effect.carapace"),
+                    ForgeMod.SWIM_SPEED.get(), //TODO Forge because lazy again
+                    Bygone.id("effect.carapace").toString(),
                     1,
-                    AttributeModifier.Operation.ADD_VALUE
+                    AttributeModifier.Operation.ADDITION
             )
     );
-
+    
+    @SuppressWarnings("unchecked")
     private static <T extends MobEffect> Supplier<Holder<MobEffect>> register(String name, Supplier<T> supplier) {
-        JinxedRegistryHelper.register(BuiltInRegistries.MOB_EFFECT, Bygone.MOD_ID, name, supplier);
-        return Suppliers.memoize(() -> BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.fromNamespaceAndPath(
-                Bygone.MOD_ID,
-                name
-        )).orElseThrow());
+        Holder.Reference<MobEffect> holder = Registry.registerForHolder(
+                (Registry<MobEffect>) (Registry<?>) BuiltInRegistries.MOB_EFFECT,
+                Bygone.id(name),
+                supplier.get()
+        );
+        return () -> holder;
     }
-
-
 
     public static void init() {
     }

@@ -38,6 +38,7 @@ public class Bygone {
         BGFluids.init();
         BGBlocks.init();
         BGBlockEntities.init();
+        BGEnchantments.init();
         BGAttributes.init();
         BGItems.init();
         BGMobEffects.init();

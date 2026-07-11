@@ -1,23 +1,7 @@
 package com.jamiedev.bygone.core.registry;
 
-import com.jamiedev.bygone.Bygone;
-import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
-import net.minecraft.Util;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstrapContext;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.JukeboxSong;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-
-import java.util.function.Supplier;
-
 public class BGJukeboxSongs {
+    /*
     static ResourceKey<JukeboxSong> SHUFFLE = create("shuffle");
     static ResourceKey<JukeboxSong> UNDER = create("under");
     SoundEvents ref;
@@ -42,4 +26,5 @@ public class BGJukeboxSongs {
         register(context, SHUFFLE, BGSoundEvents.MUSIC_DISC_SHUFFLE, 178, 1);
         register(context, UNDER, BGSoundEvents.MUSIC_DISC_UNDER, 192, 2);
     }
+     */
 }

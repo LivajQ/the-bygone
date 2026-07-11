@@ -155,6 +155,11 @@ public class PrimordialFishEntity extends AbstractSchoolingFish implements Varia
                 random
         ));
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.26F;
+    }
 
     protected void defineSynchedData() {
         super.defineSynchedData();

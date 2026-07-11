@@ -4,10 +4,10 @@ import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.entity.*;
 import com.jamiedev.bygone.common.entity.projectile.*;
 import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.function.Supplier;
 
@@ -91,22 +91,19 @@ public class BGEntityTypes {
             "aquifawn", () ->
                     EntityType.Builder.of(AquifawnEntity::new, MobCategory.CREATURE)
                             .sized(1.3964844F, 1.6F)
-                            .eyeHeight(1.52F)
-                            .passengerAttachments(new Vec3(0.0, 1.0, -0.25))
                             .build("")
     );
 
     public static final Supplier<EntityType<MurklingEntity>> MURKLING = registerEntityType(
             "murkling", () ->
                     EntityType.Builder.of(MurklingEntity::new, MobCategory.MONSTER)
-                            .sized(0.85F, 1.0F).eyeHeight(0.9F).build("")
+                            .sized(0.85F, 1.0F).build("")
     );
 
     public static final Supplier<EntityType<MoobooEntity>> MOOBOO = registerEntityType(
             "mooboo", () ->
                     EntityType.Builder.of(MoobooEntity::new, MobCategory.CREATURE)
                             .sized(0.9F, 1.4F)
-                            .eyeHeight(1.3f)
                             .fireImmune()
                             .build("")
     );
@@ -120,7 +117,6 @@ public class BGEntityTypes {
             "scuttle_spike",
             () -> EntityType.Builder.<ScuttleSpikeEntity>of(ScuttleSpikeEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
-                    .eyeHeight(0.13F)
                     .clientTrackingRange(4)
                     .build("")
     );
@@ -142,7 +138,6 @@ public class BGEntityTypes {
             "copperbug",
             () -> EntityType.Builder.of(CopperbugEntity::new, MobCategory.CREATURE)
                     .sized(0.4F, 0.3F)
-                    .eyeHeight(.13f)
                     .clientTrackingRange(8)
                     .build("")
     );
@@ -151,7 +146,6 @@ public class BGEntityTypes {
             "pesky",
             () -> EntityType.Builder.of(PeskyEntity::new, MobCategory.CREATURE)
                     .sized(0.5F, 0.5F)
-                    .eyeHeight(.13f)
                     .clientTrackingRange(8)
                     .build("")
     );
@@ -160,10 +154,7 @@ public class BGEntityTypes {
             "whiskbill",
             () -> EntityType.Builder.of(WhiskbillEntity::new, MobCategory.CREATURE)
                     .sized(1.9F, 1.25F)
-                    .eyeHeight(1.04f)
                     .clientTrackingRange(10)
-                    .nameTagOffset(2.04F)
-                    .passengerAttachments(2.09F)
                     .build("")
     );
 
@@ -181,8 +172,6 @@ public class BGEntityTypes {
             "reaver",
             () -> EntityType.Builder.of(ReaverEntity::new, MobCategory.CREATURE)
                     .sized(1.0F, 0.85F)
-                    .eyeHeight(0.36F)
-                    .ridingOffset(0.04F)
                     .clientTrackingRange(8)
                     .updateInterval(2)
                     .build("")
@@ -192,8 +181,6 @@ public class BGEntityTypes {
             "wallow",
             () -> EntityType.Builder.of(WallowEntity::new, MobCategory.CREATURE)
                     .sized(0.35F, 0.35F)
-                    .eyeHeight(0.36F)
-                    .ridingOffset(0.04F)
                     .clientTrackingRange(8)
                     .updateInterval(2)
                     .build("")
@@ -203,8 +190,6 @@ public class BGEntityTypes {
             "wisp",
             () -> EntityType.Builder.of(WispEntity::new, MobCategory.CREATURE)
                     .sized(0.35F, 0.35F)
-                    .eyeHeight(0.36F)
-                    .ridingOffset(0.04F)
                     .clientTrackingRange(8)
                     .updateInterval(2)
                     .build("")
@@ -214,8 +199,6 @@ public class BGEntityTypes {
             "haunt",
             () -> EntityType.Builder.of(HauntEntity::new, MobCategory.CREATURE)
                     .sized(0.35F, 0.35F)
-                    .eyeHeight(0.36F)
-                    .ridingOffset(0.04F)
                     .fireImmune()
                     .clientTrackingRange(8)
                     .updateInterval(2)
@@ -249,7 +232,6 @@ public class BGEntityTypes {
             "primordial_fish",
             () -> EntityType.Builder.of(PrimordialFishEntity::new, MobCategory.WATER_AMBIENT)
                     .sized(0.5F, 0.4F)
-                    .eyeHeight(0.26F)
                     .clientTrackingRange(4)
                     .build("")
     );
@@ -260,9 +242,13 @@ public class BGEntityTypes {
 
     public static void initSpawnRestrictions() {
     }
-
+    
+    @SuppressWarnings("unchecked")
     private static <T extends EntityType<?>> Supplier<T> registerEntityType(String name, Supplier<T> entityTypeSupplier) {
-        return JinxedRegistryHelper.register(BuiltInRegistries.ENTITY_TYPE, Bygone.MOD_ID, name, entityTypeSupplier);
+        return JinxedRegistryHelper.register(
+                (Registry<T>) (Registry<?>) BuiltInRegistries.ENTITY_TYPE,
+                Bygone.MOD_ID, name, entityTypeSupplier
+        );
     }
 
     public static final Supplier<EntityType<GlareEntity>> GLARE = registerEntityType(
@@ -275,7 +261,6 @@ public class BGEntityTypes {
             "pest",
             () -> EntityType.Builder.of(PestEntity::new, MobCategory.CREATURE)
                     .sized(0.5F, 0.5F)
-                    .eyeHeight(.13f)
                     .clientTrackingRange(8)
 
                     .build("")

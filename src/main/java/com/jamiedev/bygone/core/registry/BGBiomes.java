@@ -3,7 +3,7 @@ package com.jamiedev.bygone.core.registry;
 import com.jamiedev.bygone.Bygone;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.BootstrapContext;
+import net.minecraft.data.worldgen.BootstapContext;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.levelgen.carver.ConfiguredWorldCarver;
@@ -39,7 +39,7 @@ public class BGBiomes {
         return registryKey;
     }
 
-    public static void bootstrap(BootstrapContext<Biome> bootstapContext) {
+    public static void bootstrap(BootstapContext<Biome> bootstapContext) {
         HolderGetter<PlacedFeature> placeddFeatureHolder = bootstapContext.lookup(Registries.PLACED_FEATURE);
         HolderGetter<ConfiguredWorldCarver<?>> configuredWorldCarverHolderGetter = bootstapContext.lookup(Registries.CONFIGURED_CARVER);
     }

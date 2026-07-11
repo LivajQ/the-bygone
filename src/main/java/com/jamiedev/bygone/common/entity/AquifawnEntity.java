@@ -141,6 +141,17 @@ public class AquifawnEntity extends WaterAnimal implements NeutralMob, ItemSteer
     @Override
     protected void playStepSound(BlockPos pos, BlockState block) {
     }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 1.52F;
+    }
+    
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 1.0, this.getZ() - 0.25);
+    }
 
     protected SoundEvent getAmbientSound() {
         return this.isAngry() ? BGSoundEvents.AQUIFAWN_ANGRY_ADDITIONS_EVENT : BGSoundEvents.AQUIFAWN_AMBIENT_ADDITIONS_EVENT;

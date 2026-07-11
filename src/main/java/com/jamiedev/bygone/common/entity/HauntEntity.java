@@ -116,6 +116,12 @@ public class HauntEntity extends Allay {
                 && super.canBeAffected(potioneffect);
     }
     
+    @Override
+    protected void positionRider(Entity passenger, Entity.MoveFunction callback) {
+        super.positionRider(passenger, callback);
+        callback.accept(passenger, this.getX(), this.getY() + 0.04, this.getZ());
+    }
+    
     public void aiStep()
     {
         super.aiStep();
@@ -149,6 +155,11 @@ public class HauntEntity extends Allay {
                 }
             }
         }
+    }
+    
+    @Override
+    protected float getStandingEyeHeight(Pose pose, EntityDimensions dimensions) {
+        return 0.36F;
     }
 
     @Override

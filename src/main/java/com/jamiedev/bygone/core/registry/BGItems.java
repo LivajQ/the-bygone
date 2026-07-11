@@ -5,19 +5,13 @@ import com.jamiedev.bygone.common.item.*;
 import com.jamiedev.bygone.core.init.JamiesModToolMaterials;
 import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.food.Foods;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.BundleContents;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.material.Fluids;
 
 import java.util.function.Supplier;
@@ -66,7 +60,7 @@ public class BGItems {
                     BGEntityTypes.PRIMORDIAL_FISH.get(),
                     Fluids.WATER,
                     SoundEvents.BUCKET_EMPTY_FISH,
-                    (new Item.Properties()).stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
+                    (new Item.Properties()).stacksTo(1)
             )
     );
 
@@ -373,7 +367,7 @@ public class BGItems {
                             Fluids.WATER,
                             SoundEvents.BUCKET_EMPTY_FISH,
                             (new Item.Properties())
-                                    .stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
+                                    .stacksTo(1)
                     )
     );
     public static final Supplier<Item> AMOEBA_GEL = registerItem(
@@ -395,7 +389,7 @@ public class BGItems {
                             Fluids.WATER,
                             SoundEvents.BUCKET_EMPTY_FISH,
                             (new Item.Properties())
-                                    .stacksTo(1).component(DataComponents.BUCKET_ENTITY_DATA, CustomData.EMPTY)
+                                    .stacksTo(1)
                     )
     );
     public static final Supplier<Item> ARCANE_CORE = registerItem(
@@ -496,19 +490,27 @@ public class BGItems {
             "breath_pod", () ->
                     new BreathPodItem(new Item.Properties().fireResistant())
     );
-
+    
     public static final Supplier<Item> MUSIC_DISC_UNDER = registerItem(
             "music_disc_under",
-            () -> new Item((new Item.Properties()).stacksTo(1)
-                    .rarity(Rarity.RARE)
-                    .jukeboxPlayable(BGJukeboxSongs.UNDER))
+            () -> new RecordItem(
+                    2,
+                    BGSoundEvents.MUSIC_DISC_UNDER,
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE),
+                    192
+            )
     );
+    
     public static final Supplier<Item> MUSIC_DISC_SHUFFLE = registerItem(
             "music_disc_shuffle",
-            () -> new Item((new Item.Properties()).stacksTo(1)
-                    .rarity(Rarity.RARE)
-                    .jukeboxPlayable(BGJukeboxSongs.SHUFFLE))
+            () -> new RecordItem(
+                    1,
+                    BGSoundEvents.MUSIC_DISC_SHUFFLE,
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE),
+                    178
+            )
     );
+    
     public static final Supplier<Item> DEAD_RUGOSA_CORAL_FAN = registerItem(
             "dead_rugosa_coral_fan", () -> new StandingAndWallBlockItem(
                     BGBlocks.DEAD_RUGOSA_CORAL_FAN.get(),
@@ -573,21 +575,21 @@ public class BGItems {
                     Direction.DOWN
             )
     );
-
+    
     public static final Supplier<Item> CARAPACE_GREAVES = registerItem(
-            "carapace_greaves", () ->
-                    new ArmorItem(
-                            BGArmorMaterials.CARAPACE, ArmorItem.Type.LEGGINGS,
-                            new Item.Properties().fireResistant().durability(ArmorItem.Type.LEGGINGS.getDurability(15)
-                            )
-                    )
+            "carapace_greaves",
+            () -> new ArmorItem(
+                    BGArmorMaterials.CARAPACE,
+                    ArmorItem.Type.LEGGINGS,
+                    new Item.Properties().fireResistant()
+            )
     );
-
-
+    
+    
     public static FoodProperties AMARANTH_LOAF_COMP = (new FoodProperties.Builder()).nutrition(0)
-            .saturationModifier(0F)
+            .saturationMod(0F)
             .effect(new MobEffectInstance(MobEffects.HEAL, 1, 0), 1.0F)
-            .alwaysEdible()
+            .alwaysEat()
             .build();
     public static final Supplier<Item> AMARANTH_LOAF = registerItem(
             "amaranth_loaf",
@@ -598,9 +600,9 @@ public class BGItems {
             () -> new Item(new Item.Properties().food(AMARANTH_LOAF_COMP))
     );
     public static FoodProperties SPEED_WHEAT_COMP = (new FoodProperties.Builder()).nutrition(0)
-            .saturationModifier(0F)
+            .saturationMod(0F)
             .effect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 70, 2), 1.0F)
-            .alwaysEdible()
+            .alwaysEat()
             .build();
     public static final Supplier<Item> SPEED_WHEAT = registerItem(
             "speed_wheat", () -> new BlockItem(
@@ -613,6 +615,7 @@ public class BGItems {
             () -> new Item(new Item.Properties())
     );
 
+    /*
     public static final ItemAttributeModifiers WALLOW_SHAWL_ATTRIBUTES = ItemAttributeModifiers.builder().add(
             BGAttributes.PHASING_DURATION.get(),
             new AttributeModifier(Bygone.id("wallow_shawl.phase_duration"), 8, AttributeModifier.Operation.ADD_VALUE),
@@ -622,6 +625,7 @@ public class BGItems {
     public static final Supplier<Item> WALLOW_SHAWL = registerItem("wallow_shawl",
             () -> new WallowShawlItem(new Item.Properties().attributes(WALLOW_SHAWL_ATTRIBUTES))
     );
+     */
 
     Items item;
     ParticleTypes ref;

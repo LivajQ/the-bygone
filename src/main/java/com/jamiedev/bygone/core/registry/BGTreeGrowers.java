@@ -1,35 +1,27 @@
 package com.jamiedev.bygone.core.registry;
 
-import com.jamiedev.bygone.Bygone;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.block.grower.TreeGrower;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 public class BGTreeGrowers {
-
-    public static final TreeGrower ANCIENT_TREE = register("ancient_tree", 0.0F,
-            Optional.of(BGConfiguredFeatures.ANCIENT_TREE_MEDIUM), Optional.empty(),
-            Optional.of(BGConfiguredFeatures.ANCIENT_TREE), Optional.empty(), Optional.empty(),
-            Optional.empty());
-
-    public static final TreeGrower SABLE_TREE = register("sable_tree", Optional.of(
-                    BGConfiguredFeatures.SABLE_TREE_MEDIUM),
-            Optional.of(BGConfiguredFeatures.SABLE_TREE));
-
-
-    private static TreeGrower register(String name, float secondaryChance,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> megaTree,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> secondaryMegaTree,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> tree,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> secondaryTree,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> flowers,
-                                       Optional<ResourceKey<ConfiguredFeature<?, ?>>> secondaryFlowers) {
-        return new TreeGrower(String.format("%s:%s", Bygone.MOD_ID, name), secondaryChance, megaTree, secondaryMegaTree, tree, secondaryTree, flowers, secondaryFlowers);
-    }
-
-    private static TreeGrower register(String name, Optional<ResourceKey<ConfiguredFeature<?, ?>>> mega, Optional<ResourceKey<ConfiguredFeature<?, ?>>> tree) {
-        return register(name, 0, mega, Optional.empty(), tree, Optional.empty(), Optional.empty(), Optional.empty());
-    }
+    
+    public static final AbstractTreeGrower SABLE_TREE = new AbstractTreeGrower() {
+        @Nullable
+        @Override
+        protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean hasFlowers) {
+            return hasFlowers ? BGConfiguredFeatures.SABLE_TREE_MEDIUM : BGConfiguredFeatures.SABLE_TREE;
+        }
+    };
+    
+    public static final AbstractTreeGrower ANCIENT_TREE = new AbstractTreeGrower() {
+        @Nullable
+        @Override
+        protected ResourceKey<ConfiguredFeature<?, ?>> getConfiguredFeature(RandomSource random, boolean hasFlowers) {
+            return BGConfiguredFeatures.ANCIENT_TREE;
+        }
+    };
 }
