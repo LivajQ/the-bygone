@@ -18,29 +18,25 @@
         {
           "height": {
             "type": "minecraft:biased_to_bottom",
-            "min_inclusive": 3,
-            "max_inclusive": 11
+            "value": {
+              "min_inclusive": 3,
+              "max_inclusive": 11
+            }
           },
           "provider": {
             "type": "minecraft:weighted_state_provider",
             "entries": [
               {
                 "weight": 8,
-                "data": {
-                  "Name": "bygone:lit_cracked_megalith_block"
-                }
+                "data": { "Name": "bygone:lit_cracked_megalith_block" }
               },
               {
                 "weight": 5,
-                "data": {
-                  "Name": "bygone:cracked_megalith_block"
-                }
+                "data": { "Name": "bygone:cracked_megalith_block" }
               },
               {
                 "weight": 4,
-                "data": {
-                  "Name": "bygone:megalith_block"
-                }
+                "data": { "Name": "bygone:megalith_block" }
               }
             ]
           }
@@ -50,153 +46,25 @@
           "provider": {
             "type": "minecraft:weighted_state_provider",
             "entries": [
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:angry_megalith_lantern",
-                  "Properties": {
-                    "facing": "north"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:angry_megalith_lantern",
-                  "Properties": {
-                    "facing": "south"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:angry_megalith_lantern",
-                  "Properties": {
-                    "facing": "east"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:angry_megalith_lantern",
-                  "Properties": {
-                    "facing": "west"
-                  }
-                }
-              },
+              { "weight": 3, "data": { "Name": "bygone:angry_megalith_lantern", "Properties": { "facing": "north" } } },
+              { "weight": 3, "data": { "Name": "bygone:angry_megalith_lantern", "Properties": { "facing": "south" } } },
+              { "weight": 3, "data": { "Name": "bygone:angry_megalith_lantern", "Properties": { "facing": "east" } } },
+              { "weight": 3, "data": { "Name": "bygone:angry_megalith_lantern", "Properties": { "facing": "west" } } },
 
-              {
-                "weight": 1,
-                "data": {
-                  "Name": "bygone:cryptic_megalith_lantern",
-                  "Properties": {
-                    "facing": "north"
-                  }
-                }
-              },
-              {
-                "weight": 1,
-                "data": {
-                  "Name": "bygone:cryptic_megalith_lantern",
-                  "Properties": {
-                    "facing": "south"
-                  }
-                }
-              },
-              {
-                "weight": 1,
-                "data": {
-                  "Name": "bygone:cryptic_megalith_lantern",
-                  "Properties": {
-                    "facing": "east"
-                  }
-                }
-              },
-              {
-                "weight": 1,
-                "data": {
-                  "Name": "bygone:cryptic_megalith_lantern",
-                  "Properties": {
-                    "facing": "west"
-                  }
-                }
-              },
+              { "weight": 1, "data": { "Name": "bygone:cryptic_megalith_lantern", "Properties": { "facing": "north" } } },
+              { "weight": 1, "data": { "Name": "bygone:cryptic_megalith_lantern", "Properties": { "facing": "south" } } },
+              { "weight": 1, "data": { "Name": "bygone:cryptic_megalith_lantern", "Properties": { "facing": "east" } } },
+              { "weight": 1, "data": { "Name": "bygone:cryptic_megalith_lantern", "Properties": { "facing": "west" } } },
 
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:hollow_megalith_lantern",
-                  "Properties": {
-                    "facing": "north"
-                  }
-                }
-              },
-              {
-                "weight": 2,
-                "data": {
-                  "Name": "bygone:hollow_megalith_lantern",
-                  "Properties": {
-                    "facing": "south"
-                  }
-                }
-              },
-              {
-                "weight": 2,
-                "data": {
-                  "Name": "bygone:hollow_megalith_lantern",
-                  "Properties": {
-                    "facing": "east"
-                  }
-                }
-              },
-              {
-                "weight": 2,
-                "data": {
-                  "Name": "bygone:hollow_megalith_lantern",
-                  "Properties": {
-                    "facing": "west"
-                  }
-                }
-              },
+              { "weight": 3, "data": { "Name": "bygone:hollow_megalith_lantern", "Properties": { "facing": "north" } } },
+              { "weight": 2, "data": { "Name": "bygone:hollow_megalith_lantern", "Properties": { "facing": "south" } } },
+              { "weight": 2, "data": { "Name": "bygone:hollow_megalith_lantern", "Properties": { "facing": "east" } } },
+              { "weight": 2, "data": { "Name": "bygone:hollow_megalith_lantern", "Properties": { "facing": "west" } } },
 
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:megalith_lantern",
-                  "Properties": {
-                    "facing": "north"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:megalith_lantern",
-                  "Properties": {
-                    "facing": "south"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:megalith_lantern",
-                  "Properties": {
-                    "facing": "east"
-                  }
-                }
-              },
-              {
-                "weight": 3,
-                "data": {
-                  "Name": "bygone:megalith_lantern",
-                  "Properties": {
-                    "facing": "west"
-                  }
-                }
-              }
+              { "weight": 3, "data": { "Name": "bygone:megalith_lantern", "Properties": { "facing": "north" } } },
+              { "weight": 3, "data": { "Name": "bygone:megalith_lantern", "Properties": { "facing": "south" } } },
+              { "weight": 3, "data": { "Name": "bygone:megalith_lantern", "Properties": { "facing": "east" } } },
+              { "weight": 3, "data": { "Name": "bygone:megalith_lantern", "Properties": { "facing": "west" } } }
             ]
           }
         }

@@ -22,32 +22,24 @@
               "type": "minecraft:weighted_state_provider",
               "entries": [
                 {
-                  "data": {
-                    "Name": "bygone:alpha_moss_carpet"
-                  },
+                  "data": { "Name": "bygone:alpha_moss_carpet" },
                   "weight": 25
                 },
                 {
-                  "data": {
-                    "Name": "minecraft:short_grass"
-                  },
+                  "data": { "Name": "minecraft:short_grass" },
                   "weight": 50
                 },
                 {
                   "data": {
                     "Name": "minecraft:tall_grass",
-                    "Properties": {
-                      "half": "lower"
-                    }
+                    "Properties": { "half": "lower" }
                   },
                   "weight": 10
                 },
                 {
                   "data": {
                     "Name": "bygone:speed_wheat",
-                    "Properties": {
-                      "half": "lower"
-                    }
+                    "Properties": { "half": "lower" }
                   },
                   "weight": 1
                 }
@@ -60,8 +52,10 @@
       "vertical_range": 5,
       "xz_radius": {
         "type": "minecraft:uniform",
-        "max_inclusive": 10,
-        "min_inclusive": 3
+        "value": {
+          "max_inclusive": 10,
+          "min_inclusive": 3
+        }
       }
     }
   },

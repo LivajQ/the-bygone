@@ -58,8 +58,10 @@ public class BGEvents {
             BygoneWeather.getOrDefault(serverPlayer.serverLevel()).informPlayerOfState(serverPlayer);
     }
 
+    
+    //TODO fix command registration
     @SubscribeEvent
     public static void addCommands(final RegisterCommandsEvent event) {
-        BygoneWeatherCommand.register(event.getDispatcher(), event.getBuildContext());
+        //BygoneWeatherCommand.register(event.getDispatcher(), event.getBuildContext());
     }
 }

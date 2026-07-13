@@ -12,8 +12,10 @@
         {
           "height": {
             "type": "minecraft:biased_to_bottom",
-            "min_inclusive": 0,
-            "max_inclusive": 3
+            "value": {
+              "min_inclusive": 0,
+              "max_inclusive": 3
+            }
           },
           "provider": {
             "type": "minecraft:simple_state_provider",
@@ -31,81 +33,65 @@
                 "weight": 4,
                 "data": {
                   "Name": "bygone:glow_gourd_beige",
-                  "Properties": {
-                    "age": "0"
-                  }
+                  "Properties": { "age": "0" }
                 }
               },
               {
                 "weight": 2,
                 "data": {
                   "Name": "bygone:glow_gourd_beige",
-                  "Properties": {
-                    "age": "1"
-                  }
+                  "Properties": { "age": "1" }
                 }
               },
               {
                 "weight": 1,
                 "data": {
                   "Name": "bygone:glow_gourd_beige",
-                  "Properties": {
-                    "age": "2"
-                  }
+                  "Properties": { "age": "2" }
                 }
               },
+
               {
                 "weight": 4,
                 "data": {
                   "Name": "bygone:glow_gourd_mauve",
-                  "Properties": {
-                    "age": "0"
-                  }
+                  "Properties": { "age": "0" }
                 }
               },
               {
                 "weight": 2,
                 "data": {
                   "Name": "bygone:glow_gourd_mauve",
-                  "Properties": {
-                    "age": "1"
-                  }
+                  "Properties": { "age": "1" }
                 }
               },
               {
                 "weight": 1,
                 "data": {
                   "Name": "bygone:glow_gourd_mauve",
-                  "Properties": {
-                    "age": "2"
-                  }
+                  "Properties": { "age": "2" }
                 }
               },
+
               {
                 "weight": 4,
                 "data": {
                   "Name": "bygone:glow_gourd_verdant",
-                  "Properties": {
-                    "age": "0"
-                  }
+                  "Properties": { "age": "0" }
                 }
               },
               {
                 "weight": 2,
                 "data": {
                   "Name": "bygone:glow_gourd_verdant",
-                  "Properties": {
-                    "age": "1"
-                  }
+                  "Properties": { "age": "1" }
                 }
               },
               {
                 "weight": 1,
                 "data": {
                   "Name": "bygone:glow_gourd_verdant",
-                  "Properties": {
-                    "age": "2"
-                  }
+                  "Properties": { "age": "2" }
                 }
               }
             ]

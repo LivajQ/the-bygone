@@ -5,23 +5,21 @@
       "size_x": 5,
       "size_y": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 9,
-        "max_inclusive": 12
+        "value": {
+          "min_inclusive": 9,
+          "max_inclusive": 12
+        }
       },
       "size_z": 5,
       "megalith_blocks": {
         "type": "minecraft:weighted_state_provider",
         "entries": [
           {
-            "data": {
-              "Name": "bygone:byslate"
-            },
+            "data": { "Name": "bygone:byslate" },
             "weight": 10
           },
           {
-            "data": {
-              "Name": "bygone:lithine_ore"
-            },
+            "data": { "Name": "bygone:lithine_ore" },
             "weight": 1
           }
         ]
@@ -30,13 +28,17 @@
       "max_erosion_depth": 4,
       "fallen_block_count": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 1,
-        "max_inclusive": 5
+        "value": {
+          "min_inclusive": 1,
+          "max_inclusive": 5
+        }
       },
       "floating_block_count": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 1,
-        "max_inclusive": 5
+        "value": {
+          "min_inclusive": 1,
+          "max_inclusive": 5
+        }
       },
       "fallen_block_search_range": 16,
       "can_replace_blocks": false

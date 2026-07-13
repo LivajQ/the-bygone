@@ -5,8 +5,10 @@
       "size_x": 7,
       "size_y": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 12,
-        "max_inclusive": 15
+        "value": {
+          "min_inclusive": 12,
+          "max_inclusive": 15
+        }
       },
       "size_z": 7,
       "megalith_blocks": {
@@ -30,13 +32,17 @@
       "max_erosion_depth": 6,
       "fallen_block_count": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 1,
-        "max_inclusive": 5
+        "value": {
+          "min_inclusive": 1,
+          "max_inclusive": 5
+        }
       },
       "floating_block_count": {
         "type": "minecraft:biased_to_bottom",
-        "min_inclusive": 1,
-        "max_inclusive": 5
+        "value": {
+          "min_inclusive": 1,
+          "max_inclusive": 5
+        }
       },
       "fallen_block_search_range": 16,
       "can_replace_blocks": false
