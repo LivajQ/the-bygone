@@ -2841,7 +2841,7 @@ public class BGBlocks {
     public static final Supplier<Block> SABLE_HANGING_SIGN = registerBlockWithoutBlockItem(
             "sable_hanging_sign", () ->
                     new CeilingHangingSignBlock(
-                            BlockBehaviour.Properties.copy(Blocks.OAK_HANGING_SIGN).strength(1.0f).forceSolidOn()
+                            BlockBehaviour.Properties.copy(Blocks.OAK_HANGING_SIGN).strength(1.0f).forceSolidOn(),
                             JamiesModWoodType.SABLE
                     )
     );

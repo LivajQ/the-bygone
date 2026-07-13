@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "bygone:ancient_planks"
+    }
+  ],
+  "result": {
+    "item": "bygone:ancient_button"
+  }
+}

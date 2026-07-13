@@ -73,6 +73,7 @@ dependencies {
     implementation fg.deobf("curse.maven:jinxedlib-1203401:6630668")
     //implementation fg.deobf("net.kyrptonaught.customportalapi:cpapireforged-neo-1.21.1:1.0.11")
     implementation fg.deobf("curse.maven:lithostitched-936015:6742615")
+    implementation fg.deobf("curse.maven:huge-structure-blocks-474114:4803547")
 
     //implementation "curse.maven:supermartijn642s-core-lib-454372:6076757" // Needed for formations, despite none of the documentation or pages saying so...
     //implementation "curse.maven:formations-915115:6789388"
@@ -107,7 +108,7 @@ repositories {
 
 mixin {
     add sourceSets.main, "bygone.refmap.json"
-    config 'mixins.bygone.json'
+    config 'bygone.mixins.json'
 }
 
 tasks.named('build').configure {

@@ -7,7 +7,7 @@
     "ground_state": {
       "type": "minecraft:simple_state_provider",
       "state": {
-        "Name": "bygone:alpha_moss_block"
+        "Name": "minecraft:moss_block"
       }
     },
     "replaceable": "#minecraft:moss_replaceable",
@@ -20,8 +20,10 @@
     "vertical_range": 5,
     "xz_radius": {
       "type": "minecraft:uniform",
-      "max_inclusive": 2,
-      "min_inclusive": 1
+      "value": {
+        "max_inclusive": 2,
+        "min_inclusive": 1
+      }
     }
   }
 }

@@ -10,15 +10,13 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
 public class BGEnchantments {
     
-    public static final Enchantment LEECHING = register("leeching",
-            new LeechingEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON,
-                    new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
+    public static Enchantment LEECHING;
     
     private static Enchantment register(String id, Enchantment enchantment) {
         return Registry.register(BuiltInRegistries.ENCHANTMENT, Bygone.id(id), enchantment);
     }
     
-    public static void init() {
-    
+    public static void registerAll() {
+        LEECHING = register("leeching", new LeechingEnchantment(Enchantment.Rarity.RARE, EnchantmentCategory.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND}));
     }
 }

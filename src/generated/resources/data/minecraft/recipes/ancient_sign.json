@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "ancient_sign",
+  "key": {
+    "W": {
+      "item": "bygone:ancient_planks"
+    },
+    "X": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "WWW",
+    "WWW",
+    " X "
+  ],
+  "result": {
+    "count": 3,
+    "item": "bygone:ancient_sign"
+  },
+  "show_notification": true
+}

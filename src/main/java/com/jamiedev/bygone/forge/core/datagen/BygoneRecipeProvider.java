@@ -91,7 +91,7 @@ public class BygoneRecipeProvider extends RecipeProvider {
 
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT,BGItems.ANCIENT_HOOK.get(),1)
                 .pattern(" X ")
-                .pattern(" I")
+                .pattern(" I ")
                 .define('X',BGItems.VERDIGRIS_INGOT.get())
                 .define('I', Items.BLAZE_POWDER)
                 .unlockedBy(getHasName(BGItems.VERDIGRIS_INGOT.get()), has(BGItems.VERDIGRIS_INGOT.get()))

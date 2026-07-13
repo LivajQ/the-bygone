@@ -32,7 +32,7 @@ public class BGParticleTypes {
                 }
             };
 
-    public static void init() {
+    public static void registerAll() {
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("rafflesia_spores"), RAFFLESIA_SPORES);
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("algae_bloom"), ALGAE_BLOOM);
         Registry.register(BuiltInRegistries.PARTICLE_TYPE, Bygone.id("blemish_bubble"), BLEMISH);

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "bygone:amber_sandstone"
+  },
+  "result": "bygone:amber_sandstone_stairs"
+}

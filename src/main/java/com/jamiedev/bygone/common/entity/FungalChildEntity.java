@@ -210,13 +210,13 @@ public class FungalChildEntity extends FungalParentEntity {
     }
 
     @Override
-    public EntityDimensions getDefaultDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         if (this.warningAnimationProgress > 0.0F) {
             float f = this.warningAnimationProgress / 6.0F;
             float g = 1.0F + f;
-            return super.getDefaultDimensions(pose).scale(1.0F, g);
+            return super.getDimensions(pose).scale(1.0F, g);
         } else {
-            return super.getDefaultDimensions(pose);
+            return super.getDimensions(pose);
         }
     }
 
@@ -241,12 +241,12 @@ public class FungalChildEntity extends FungalParentEntity {
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData entityData, CompoundTag tag) {
         if (entityData == null) {
             entityData = new AgeableMobGroupData(1.0F);
         }
 
-        return super.finalizeSpawn(world, difficulty, spawnReason, entityData);
+        return super.finalizeSpawn(world, difficulty, spawnReason, entityData, null);
     }
 
     private class AttackGoal extends MeleeAttackGoal {

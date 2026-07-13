@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "bark",
+  "key": {
+    "X": {
+      "item": "bygone:ancient_log"
+    }
+  },
+  "pattern": [
+    "XX",
+    "XX"
+  ],
+  "result": {
+    "count": 3,
+    "item": "bygone:ancient_wood"
+  },
+  "show_notification": true
+}

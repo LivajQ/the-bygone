@@ -95,6 +95,23 @@ public class BGConfiguredFeatures {
                         )
                 )
         );
+        
+        FeatureUtils.register(
+                featureRegisterable,
+                SABLE_MOSS_VEGETATION,
+                Feature.FLOWER,
+                new RandomPatchConfiguration(
+                        96,
+                        6,
+                        2,
+                        PlacementUtils.onlyWhenEmpty(
+                                Feature.SIMPLE_BLOCK,
+                                new SimpleBlockConfiguration(
+                                        BlockStateProvider.simple(BGBlocks.SABLE_MOSS_BLOCK.get())
+                                )
+                        )
+                )
+        );
 
         FeatureUtils.register(featureRegisterable, ALPHA_MOSS_PATCH_BONEMEAL, Feature.VEGETATION_PATCH, new VegetationPatchConfiguration(
                 BlockTags.MOSS_REPLACEABLE, BlockStateProvider.simple(Blocks.MOSS_BLOCK),

@@ -3,11 +3,17 @@ package com.jamiedev.bygone.core.platform.services;
 import com.jamiedev.bygone.client.renderer.weather.WeatherRenderer;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherType;
 import com.jamiedev.bygone.core.network.BygonePacket;
+import com.jamiedev.bygone.core.registry.BGItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.SpawnEggItem;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 
 public interface IPlatformHelper {
 
@@ -68,4 +74,8 @@ public interface IPlatformHelper {
     Collection<WeatherType> getInstancedWeatherTypes(ServerLevel level);
     
     Collection<WeatherRenderer> getInstancedWeatherRenderers();
+    
+    default Supplier<Item> registerSpawnEgg(String id, Supplier<? extends EntityType<? extends Mob>> type, int bgColor, int hlColor, Item.Properties properties) {
+        return BGItems.registerItem(id, () -> new SpawnEggItem(type.get(), bgColor, hlColor, properties));
+    }
 }

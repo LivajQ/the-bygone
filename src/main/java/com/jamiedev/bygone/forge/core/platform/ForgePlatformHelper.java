@@ -4,15 +4,21 @@ import com.jamiedev.bygone.client.renderer.weather.WeatherRenderer;
 import com.jamiedev.bygone.common.weather.weather_types.WeatherType;
 import com.jamiedev.bygone.core.network.BygonePacket;
 import com.jamiedev.bygone.core.platform.services.IPlatformHelper;
+import com.jamiedev.bygone.core.registry.BGItems;
 import com.jamiedev.bygone.forge.core.network.BygoneForgeNetworkHandler;
 import com.jamiedev.bygone.forge.core.registry.BGRegistriesForge;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 
 import java.util.Collection;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class ForgePlatformHelper implements IPlatformHelper {
@@ -73,5 +79,10 @@ public class ForgePlatformHelper implements IPlatformHelper {
         return BGRegistriesForge.WEATHER_TYPES_FORGE.get().getValues().stream()
                 .map(WeatherType.Factory::getRenderer)
                 .collect(Collectors.toSet());
+    }
+    
+    @Override
+    public Supplier<Item> registerSpawnEgg(String id, Supplier<? extends EntityType<? extends Mob>> type, int bgColor, int hlColor, Item.Properties properties) {
+        return BGItems.registerItem(id, () -> new ForgeSpawnEggItem(type, bgColor, hlColor, properties));
     }
 }

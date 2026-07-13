@@ -48,7 +48,7 @@ public abstract class LivingEntityMixin extends Entity {
     public abstract boolean isUsingItem();
 
 	@Shadow
-	public abstract boolean hasEffect(Holder<MobEffect> effect);
+	public abstract boolean hasEffect(MobEffect effect);
 
 	@WrapOperation(method = "travel", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;moveRelative(FLnet/minecraft/world/phys/Vec3;)V"))
     public void scaleWaterTravelSpeed(LivingEntity instance, float distance, Vec3 direction, Operation<Void> original) {
@@ -80,27 +80,9 @@ public abstract class LivingEntityMixin extends Entity {
     
     @Inject(method = "canBeAffected", at = @At("HEAD"), cancellable = true)
     private void beforeAddingEffect(MobEffectInstance instance, CallbackInfoReturnable<Boolean> cir) {
-        if (!this.hasEffect(BGMobEffects.PLASMILK.get())) return;
+        if (!this.hasEffect(BGMobEffects.PLASMILK.get().get())) return;
         if (BuiltInRegistries.MOB_EFFECT.wrapAsHolder(instance.getEffect()).is(JamiesModTag.IGNORES_PLASMILK)) return;
         cir.setReturnValue(false);
-    }
-    
-    @WrapMethod(method = "isInvulnerableTo")
-    private boolean wrapIsInvulnerableTo(DamageSource source, Operation<Boolean> original) {
-        
-        if (this.getType().is(JamiesModTag.SPECTRAL)) {
-            if (source.getDirectEntity() != null && source.getDirectEntity().getType().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ENTITY)) {
-                return false;
-            } else if (source.is(JamiesModTag.SPECTRAL_VULNERABLE_TO_DAMAGE)) {
-                return false;
-            } else if (source.getDirectEntity() instanceof LivingEntity livingAttacker
-                    && !livingAttacker.getMainHandItem().isEmpty()
-                    && livingAttacker.getMainHandItem().is(JamiesModTag.SPECTRAL_VULNERABLE_TO_ITEM)) {
-                return false;
-            }
-            return true;
-        }
-        return original.call(source);
     }
 
 	@WrapMethod(method = "die")

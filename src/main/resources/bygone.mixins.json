@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "com.jamiedev.bygone.core.mixin",
   "refmap": "${mod_id}.refmap.json",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AxeItemAccess",
     "BlockPhasingBehaviourMixin",
@@ -12,6 +12,7 @@
     "BundleItemMixin",
     "DoorBlockMixin",
     "EmptyMapMixin",
+    "EntityMixin",
     "FarmlandBlockMixin",
     "FishingHookMixin",
     "FlowingFluidMixin",

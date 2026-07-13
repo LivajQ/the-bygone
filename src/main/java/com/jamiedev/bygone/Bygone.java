@@ -38,10 +38,8 @@ public class Bygone {
         BGFluids.init();
         BGBlocks.init();
         BGBlockEntities.init();
-        BGEnchantments.init();
         BGAttributes.init();
         BGItems.init();
-        BGMobEffects.init();
         BGEntityTypes.postInit();
         BGBiomes.init();
         BGBlockProperties.init();
@@ -68,10 +66,7 @@ public class Bygone {
     }
 
     public static void registerBuiltIn() {
-        BGFeatures.init();
-        BGStructures.init();
-        BGParticleTypes.init();
-        BGSoundEvents.init();
+        //Forge was complaining so everything from here is in RegisterEvent now
     }
 
     public static void initAttributes(BiConsumer<EntityType<? extends LivingEntity>, AttributeSupplier> consumer) {

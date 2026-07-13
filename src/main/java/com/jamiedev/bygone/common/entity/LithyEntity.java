@@ -233,7 +233,7 @@ public class LithyEntity extends PathfinderMob {
                         if (this.level().getServer() != null) {
                             LootTable loottable = this.level().getServer()
                                     .getLootData()
-                                    .getLootTable(JamiesModLootTables.LITHY_TRIP_LOOT_TABLE.location());
+                                    .getLootTable(JamiesModLootTables.LITHY_TRIP_LOOT_TABLE);
                             
                             List<ItemStack> list = loottable.getRandomItems(
                                     new LootParams.Builder((ServerLevel) this.level())

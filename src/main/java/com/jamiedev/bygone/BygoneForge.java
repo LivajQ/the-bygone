@@ -6,6 +6,7 @@ import com.jamiedev.bygone.client.screen.PortalOverlay;
 import com.jamiedev.bygone.common.block.entity.GumboPotBlockEntity;
 import com.jamiedev.bygone.common.util.ServerTickHandler;
 import com.jamiedev.bygone.common.util.VexDeathTracker;
+import com.jamiedev.bygone.common.weather.BygoneWeather;
 import com.jamiedev.bygone.core.registry.*;
 import com.jamiedev.bygone.forge.client.BygoneClientForge;
 import com.jamiedev.bygone.forge.client.LithoClientExtensions;
@@ -205,11 +206,19 @@ public class BygoneForge {
         IForgeRegistry<?> forgeRegistry = event.getForgeRegistry();
         Registry<?> vanillaRegistry = event.getVanillaRegistry();
 
-        if (vanillaRegistry == BuiltInRegistries.BLOCK) {
-            //AttachmentTypesForge.init();
-            Bygone.registerBuiltIn();
+        if (vanillaRegistry == BuiltInRegistries.FEATURE) BGFeatures.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.PARTICLE_TYPE) BGParticleTypes.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.SOUND_EVENT) BGSoundEvents.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.ENCHANTMENT) BGEnchantments.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.MOB_EFFECT) BGMobEffects.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.STRUCTURE_TYPE) BGStructures.registerAll();
+        if (vanillaRegistry == BuiltInRegistries.MEMORY_MODULE_TYPE) BGMemoryModuleTypes.registerAll();
+        
+        if (forgeRegistry == BGRegistriesForge.WEATHER_TYPES_FORGE.get()) {
+            BygoneWeather.bootstrap(factory ->
+                    BGRegistriesForge.WEATHER_TYPES_FORGE.get().register(factory.getKey().location(), factory)
+            );
         }
-
         /*
         if (forgeRegistry != BGRegistriesForge.WEATHER_TYPES_FORGE.get()) return;
 
@@ -231,7 +240,7 @@ public class BygoneForge {
     @SubscribeEvent
     public void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll(
-                Bygone.id("portal_overlay").toString(),
+                "portal_overlay",
                 (gui, graphics, partialTicks, width, height) ->
                         overlay.render(graphics, partialTicks)
         );

@@ -233,7 +233,7 @@ public class BGSoundEvents {
     }
 
 
-    public static void init() {
+    public static void registerAll() {
 
         Registry.register(BuiltInRegistries.SOUND_EVENT, BGSoundEvents.ENTITY_ARCANE_MECHANISM_OPEN, BGSoundEvents.ENTITY_ARCANE_MECHANISM_OPEN_EVENT);
         Registry.register(BuiltInRegistries.SOUND_EVENT, BGSoundEvents.ENTITY_ARCANE_MECHANISM_CLOSE, BGSoundEvents.ENTITY_ARCANE_MECHANISM_CLOSE_EVENT);

@@ -20,6 +20,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 public class HookRenderer extends EntityRenderer<HookEntity> {
@@ -29,17 +31,19 @@ public class HookRenderer extends EntityRenderer<HookEntity> {
     public HookRenderer(EntityRendererProvider.Context ctx) {
         super(ctx);
     }
-
-    private static void vertex(VertexConsumer buffer, PoseStack.Pose matrix, int light, float x, int y, int u, int v) {
-        buffer.addVertex(matrix, x - 0.5F, (float) y - 0.5F, 0.0F)
-                .setColor(-1)
-                .setUv((float) u, (float) v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setLight(light)
-                .setNormal(matrix, 0.0F, 1.0F, 0.0F);
+    
+    private static void vertex(VertexConsumer buffer, PoseStack.Pose pose, int light, float x, int y, int u, int v) {
+        buffer.vertex(pose.pose(), x - 0.5F, (float) y - 0.5F, 0.0F)
+                .color(1.0F, 1.0F, 1.0F, 1.0F) // -1 = white
+                .uv((float) u, (float) v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(light)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
     }
-
-
+    
+    
+    
     private void renderChain(PoseStack poseStack, MultiBufferSource buffers, HookEntity hook, Vec3 start, Vec3 end, float partialTick) {
         Minecraft mc = Minecraft.getInstance();
 

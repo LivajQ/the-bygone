@@ -81,8 +81,7 @@ public class BGStructures
     }
 
 
-    public static void init()
-    {
+    public static void registerAll() {
         ABANDONED_FARM = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "abandoned_farm"), AncientRootStructure.CODEC::codec);
         ANCIENT_ROOTS = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID, "ancient_roots"), AncientRootStructure.CODEC::codec);
         BYGONE_FOSSIL = Registry.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath(Bygone.MOD_ID , "bygone_fossil"), BygoneFossilStructure.CODEC::codec);

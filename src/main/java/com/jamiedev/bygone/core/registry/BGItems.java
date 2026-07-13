@@ -3,6 +3,7 @@ package com.jamiedev.bygone.core.registry;
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.common.item.*;
 import com.jamiedev.bygone.core.init.JamiesModToolMaterials;
+import com.jamiedev.bygone.core.platform.Services;
 import com.kekecreations.jinxedlib.core.util.JinxedRegistryHelper;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -57,9 +58,9 @@ public class BGItems {
     public static final Supplier<Item> PRIMORDIAL_FISH_BUCKET = registerItem(
             "primordial_fish_bucket",
             () -> new MobBucketItem(
-                    BGEntityTypes.PRIMORDIAL_FISH.get(),
-                    Fluids.WATER,
-                    SoundEvents.BUCKET_EMPTY_FISH,
+                    BGEntityTypes.PRIMORDIAL_FISH,
+                    () -> Fluids.WATER,
+                    () -> SoundEvents.BUCKET_EMPTY_FISH,
                     (new Item.Properties()).stacksTo(1)
             )
     );
@@ -73,9 +74,9 @@ public class BGItems {
             () -> new Item(new Item.Properties().food(Foods.COOKED_SALMON))
     );
 
-    public static final Supplier<Item> PRIMORDIAL_FISH_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> PRIMORDIAL_FISH_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "primordial_fish_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.PRIMORDIAL_FISH.get(), 0x99c2fc, 0xa82c47, new Item.Properties())
+            BGEntityTypes.PRIMORDIAL_FISH, 0x99c2fc, 0xa82c47, new Item.Properties()
     );
     public static final Supplier<Item> GUMBO_BOWL = registerItem(
             "gumbo_bowl",
@@ -96,11 +97,11 @@ public class BGItems {
     );
     public static final Supplier<Item> VERDIGRIS_BOW = registerItem(
             "verdigris_bow",
-            () -> new VerdigrisBowItem(new Item.Properties().durability(100).stacksTo(1))
+            () -> new VerdigrisBowItem(new Item.Properties().durability(100))
     );
     public static final Supplier<Item> ANCIENT_HOOK = registerItem(
             "ancient_hook",
-            () -> new HookItem(new Item.Properties().stacksTo(1).durability(100))
+            () -> new HookItem(new Item.Properties().durability(100))
     );
     public static final Supplier<Item> WHIRLIWEED_BUNDLE = registerItem(
             "whirliweed_bundle",
@@ -108,7 +109,7 @@ public class BGItems {
     );
     public static final Supplier<Item> MALICIOUS_WAR_HORN = registerItem(
             "malicious_war_horn",
-            () -> new MaliciousWarHornItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).durability(100))
+            () -> new MaliciousWarHornItem(new Item.Properties().rarity(Rarity.EPIC).durability(100))
     );
     public static final Supplier<Item> ECHO_GONG = registerItem(
             "echo_gong",
@@ -284,88 +285,88 @@ public class BGItems {
             "gear_bag",
             () -> new SingleStackBundleItem(new Item.Properties().stacksTo(1))
     );
-    public static final Supplier<Item> AMOEBA_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> AMOEBA_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "amoeba_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.AMOEBA.get(), 0x6C9BB9, 0x8F8763, new Item.Properties())
+            BGEntityTypes.AMOEBA, 0x6C9BB9, 0x8F8763, new Item.Properties()
     );
-    public static final Supplier<Item> AQUIFAWN_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> AQUIFAWN_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "aquifawn_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.AQUIFAWN.get(), 0x0D2B50, 0x4E6F99, new Item.Properties())
+            BGEntityTypes.AQUIFAWN, 0x0D2B50, 0x4E6F99, new Item.Properties()
     );
-    public static final Supplier<Item> BIG_BEAK_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> BIG_BEAK_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "big_beak_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.BIG_BEAK.get(), 0x85c70a, 0xffae00, new Item.Properties())
+            BGEntityTypes.BIG_BEAK, 0x85c70a, 0xffae00, new Item.Properties()
     );
-    public static final Supplier<Item> COELACANTH_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> COELACANTH_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "coelacanth_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.COELACANTH.get(), 0x266a78, 0x238349, new Item.Properties())
+            BGEntityTypes.COELACANTH, 0x266a78, 0x238349, new Item.Properties()
     );
-    public static final Supplier<Item> COPPERBUG_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> COPPERBUG_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "copperbug_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.COPPERBUG.get(), 0x28e658, 0x25cba1, new Item.Properties())
+            BGEntityTypes.COPPERBUG, 0x28e658, 0x25cba1, new Item.Properties()
     );
-    public static final Supplier<Item> FUNGALPARENT_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> FUNGALPARENT_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "fungal_parent_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.FUNGAL_PARENT.get(), 0xf5f7e3, 0x3ed8fe, new Item.Properties())
+            BGEntityTypes.FUNGAL_PARENT, 0xf5f7e3, 0x3ed8fe, new Item.Properties()
     );
-    public static final Supplier<Item> GEIST_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> GEIST_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "geist_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.GEIST.get(), 0x254e6e, 0x3b9cde, new Item.Properties())
+            BGEntityTypes.GEIST, 0x254e6e, 0x3b9cde, new Item.Properties()
     );
-    public static final Supplier<Item> HAUNT_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> HAUNT_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "haunt_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.HAUNT.get(), 0x9AE4BC, 0xb2c7c8, new Item.Properties())
+            BGEntityTypes.HAUNT, 0x9AE4BC, 0xb2c7c8, new Item.Properties()
     );
-    public static final Supplier<Item> LITHY_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> LITHY_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "lithy_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.LITHY.get(), 0x5C5B5A, 0x323232, new Item.Properties())
+            BGEntityTypes.LITHY, 0x5C5B5A, 0x323232, new Item.Properties()
     );
-    public static final Supplier<Item> MOOBOO_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> MOOBOO_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "mooboo_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.MOOBOO.get(), 0x5be3e8, 0x9AE4BC, new Item.Properties())
+            BGEntityTypes.MOOBOO, 0x5be3e8, 0x9AE4BC, new Item.Properties()
     );
-    public static final Supplier<Item> MURKLING_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> MURKLING_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "murkling_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.MURKLING.get(), 0x696D44, 0xD4C39C, new Item.Properties())
+            BGEntityTypes.MURKLING, 0x696D44, 0xD4C39C, new Item.Properties()
     );
-    public static final Supplier<Item> PESKY_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> PESKY_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "pesky_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.PESKY.get(), 0x846B3C, 0xC66C11, new Item.Properties())
+            BGEntityTypes.PESKY, 0x846B3C, 0xC66C11, new Item.Properties()
     );
-    public static final Supplier<Item> PEST_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> PEST_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "pest_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.PEST.get(), 0x846B3C, 0x6C8031, new Item.Properties())
+            BGEntityTypes.PEST, 0x846B3C, 0x6C8031, new Item.Properties()
     );
-    public static final Supplier<Item> SABEAST_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> SABEAST_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "sabeast_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.SABEAST.get(), 0x131110, 0x564E4A, new Item.Properties())
+            BGEntityTypes.SABEAST, 0x131110, 0x564E4A, new Item.Properties()
     );
-    public static final Supplier<Item> SCUTTLE_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> SCUTTLE_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "scuttle_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.SCUTTLE.get(), 0x274772, 0xeab033, new Item.Properties())
+            BGEntityTypes.SCUTTLE, 0x274772, 0xeab033, new Item.Properties()
     );
-    public static final Supplier<Item> TRILOBITE_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> TRILOBITE_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "trilobite_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.TRILOBITE.get(), 0x233c56, 0x14a4aa, new Item.Properties())
+            BGEntityTypes.TRILOBITE, 0x233c56, 0x14a4aa, new Item.Properties()
     );
-    public static final Supplier<Item> WHISKBILL_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> WHISKBILL_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "whiskbill_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.WHISKBILL.get(), 0x50692C, 0x70922D, new Item.Properties())
+            BGEntityTypes.WHISKBILL, 0x50692C, 0x70922D, new Item.Properties()
     );
-    public static final Supplier<Item> NECTAUR_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> NECTAUR_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "nectaur_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.NECTAUR.get(), 0x50692C, 0x94262B, new Item.Properties())
+            BGEntityTypes.NECTAUR, 0x50692C, 0x94262B, new Item.Properties()
     );
-    public static final Supplier<Item> WRAITH_SPAWN_EGG = registerItem(
+    public static final Supplier<Item> WRAITH_SPAWN_EGG = Services.PLATFORM.registerSpawnEgg(
             "wraith_spawn_egg",
-            () -> new SpawnEggItem(BGEntityTypes.WRAITH.get(), 0x3c3c3c, 0x9de8c0, new Item.Properties())
+            BGEntityTypes.WRAITH, 0x3c3c3c, 0x9de8c0, new Item.Properties()
     );
     public static final Supplier<Item> AMOEBA_BUCKET = registerItem(
             (String) "bucket_o_amoeba", () ->
                     new MobBucketItem(
-                            BGEntityTypes.AMOEBA.get(),
-                            Fluids.WATER,
-                            SoundEvents.BUCKET_EMPTY_FISH,
+                            BGEntityTypes.AMOEBA,
+                            () -> Fluids.WATER,
+                            () -> SoundEvents.BUCKET_EMPTY_FISH,
                             (new Item.Properties())
                                     .stacksTo(1)
                     )
@@ -375,19 +376,20 @@ public class BGItems {
             () -> new Item(new Item.Properties().fireResistant())
     );
     public static final Supplier<Item> AMOEBA_GEL_ON_A_STICK = registerItem(
-            (String) "amoeba_gel_on_a_stick", () ->
-                    new FoodOnAStickItem(
-                            (
-                                    new Item.Properties()).durability(25), BGEntityTypes.AQUIFAWN.get(), 7
+            "amoeba_gel_on_a_stick", () ->
+                    new DeferredFoodOnAStickItem<>(
+                            new Item.Properties().durability(25),
+                            BGEntityTypes.AQUIFAWN,
+                            7
                     )
     );
 
     public static final Supplier<Item> COELECANTH_BUCKET = registerItem(
             (String) "coelacanth_bucket", () ->
                     new MobBucketItem(
-                            BGEntityTypes.COELACANTH.get(),
-                            Fluids.WATER,
-                            SoundEvents.BUCKET_EMPTY_FISH,
+                            BGEntityTypes.COELACANTH,
+                            () -> Fluids.WATER,
+                            () -> SoundEvents.BUCKET_EMPTY_FISH,
                             (new Item.Properties())
                                     .stacksTo(1)
                     )

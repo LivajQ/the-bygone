@@ -1,4 +1,4 @@
-package com.jamiedev.bygone.core.mixin;
+package com.jamiedev.bygone.core.mixin.client;
 
 import com.jamiedev.bygone.Bygone;
 import com.jamiedev.bygone.core.registry.BGMobEffects;

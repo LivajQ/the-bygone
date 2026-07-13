@@ -1,27 +1,21 @@
 {
   "type": "minecraft:canyon",
   "config": {
-    "lava_level": {
-      "above_bottom": 0
-    },
+    "lava_level": { "above_bottom": 0 },
     "probability": 0.005,
     "replaceable": "#bygone:bygone_carver_replaceables",
     "shape": {
       "distance_factor": {
         "type": "minecraft:uniform",
-        "max_exclusive": 2,
-        "min_inclusive": 1.5
+        "value": { "min_inclusive": 1.5, "max_exclusive": 2 }
       },
       "horizontal_radius_factor": {
         "type": "minecraft:uniform",
-        "max_exclusive": 2,
-        "min_inclusive": 1.5
+        "value": { "min_inclusive": 1.5, "max_exclusive": 2 }
       },
       "thickness": {
         "type": "minecraft:trapezoid",
-        "max": 6,
-        "min": 0,
-        "plateau": 2
+        "value": { "min": 0, "max": 6, "plateau": 2 }
       },
       "vertical_radius_center_factor": 0,
       "vertical_radius_default_factor": 1,
@@ -29,18 +23,13 @@
     },
     "vertical_rotation": {
       "type": "minecraft:uniform",
-      "max_exclusive": 0.25,
-      "min_inclusive": -0.25
+      "value": { "min_inclusive": -0.25, "max_exclusive": 0.25 }
     },
     "y": {
       "type": "minecraft:uniform",
-      "min_inclusive": {
-        "absolute": 160
-      },
-      "max_inclusive": {
-        "below_top": 16
-      }
+      "min_inclusive": { "absolute": 160 },
+      "max_inclusive": { "below_top": 16 }
     },
-    "yScale": 2
+    "yScale": 2.0
   }
 }
