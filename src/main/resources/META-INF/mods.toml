@@ -30,3 +30,17 @@ mandatory=true
 versionRange="[1.0.9,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="jinxedlib"
+mandatory=true
+versionRange="[1.0.3,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="lithostitched"
+mandatory=true
+versionRange="[1.4.11,)"
+ordering="AFTER"
+side="BOTH"
